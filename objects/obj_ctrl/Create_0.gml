@@ -30,6 +30,8 @@ global.am_creating_fd2 = 1
 
 global.am_creating = 0
 
+global.am_generate_random = 0
+
 global.game_mode = 1
 global.points_total = 0
 global.words_made = 0
@@ -53,6 +55,10 @@ global.current_copy_code = "ABCD_1-2-3-4"
 global.current_copy_url = "https://fermentergames.github.io/Sneakle/?loadBoard=ABCD&loadSecret=1-2-3-4"
 
 global.dictionary = new CheckWordDictionary(working_directory + "dictionaries/full/full.txt");
+
+global.dictionary_generate = new PickWordDictionary(working_directory + "dictionaries/simple_by_length/5.txt");
+
+global.generated_word = "HARMONY"
 
 scr_letter_data_init()
 

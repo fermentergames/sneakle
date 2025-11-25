@@ -145,7 +145,7 @@
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
-    "IDEVersion":"2024.8.1.171",
+    "IDEVersion":"2024.11.0.179",
   },
   "name":"hidle",
   "resources":[
@@ -187,6 +187,8 @@
     {"id":{"name":"INIT_HTML","path":"scripts/INIT_HTML/INIT_HTML.yy",},},
     {"id":{"name":"parse_query","path":"scripts/parse_query/parse_query.yy",},},
     {"id":{"name":"scr_board_init","path":"scripts/scr_board_init/scr_board_init.yy",},},
+    {"id":{"name":"scr_generate_board_setup","path":"scripts/scr_generate_board_setup/scr_generate_board_setup.yy",},},
+    {"id":{"name":"scr_generate_pick_word","path":"scripts/scr_generate_pick_word/scr_generate_pick_word.yy",},},
     {"id":{"name":"scr_letter_data_init","path":"scripts/scr_letter_data_init/scr_letter_data_init.yy",},},
     {"id":{"name":"scr_mouse_over_button","path":"scripts/scr_mouse_over_button/scr_mouse_over_button.yy",},},
     {"id":{"name":"scr_update_copy_code","path":"scripts/scr_update_copy_code/scr_update_copy_code.yy",},},

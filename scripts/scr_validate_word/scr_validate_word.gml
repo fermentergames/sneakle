@@ -11,7 +11,10 @@ function scr_validate_word() {
 		_valid_guess = 0
 		selected_word_is_valid = 0
 	}
-			
+	
+	
+	//show_debug_message(selected_word_array)
+	
 	
 	if _valid_guess = 1 {
 
@@ -22,17 +25,17 @@ function scr_validate_word() {
 		}
 		selected_word_str = _letters_str
 				
-		show_debug_message("selected word is: "+string(selected_word_str))
-		show_debug_message("length: "+string(selected_word_length))
-		show_debug_message("points: "+string(selected_word_base_points)+" x "+string(selected_word_length)+" = "+string(selected_word_base_points*selected_word_length))	
+		//show_debug_message("selected word is: "+string(selected_word_str))
+		//show_debug_message("length: "+string(selected_word_length))
+		//show_debug_message("points: "+string(selected_word_base_points)+" x "+string(selected_word_length)+" = "+string(selected_word_base_points*selected_word_length))	
 
 		//show_debug_message(global.dictionary)
 				
 		var word = string_lower(selected_word_str)
 		if (global.dictionary.check(word)) {
-			show_debug_message("\"" + word + "\" is a valid English word.");
+			//show_debug_message("\"" + word + "\" is a valid English word.");
 		} else {
-			show_debug_message("\"" + word + "\" is not a valid English word.");
+			//show_debug_message("\"" + word + "\" is not a valid English word.");
 			_valid_guess = 0
 			selected_word_not_in_dictionary = 1
 			selected_word_is_valid = 0

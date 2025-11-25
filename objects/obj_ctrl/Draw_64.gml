@@ -91,6 +91,19 @@ if global.game_phase = 0 {
 	draw_text_transformed(global.sw*0.8,global.sh*0.6,"CREATE\n7x7",0.1*_tscl,0.1*_tscl,0)
 	
 	
+	draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.2,global.sh*0.7,0.12*_tscl,0.12*_tscl,0,c_white,0.06)
+	draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.35,global.sh*0.7,0.12*_tscl,0.12*_tscl,0,c_white,0.06)
+	draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.5,global.sh*0.7,0.12*_tscl,0.12*_tscl,0,c_white,0.06)
+	draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.65,global.sh*0.7,0.12*_tscl,0.12*_tscl,0,c_white,0.06)
+	draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.8,global.sh*0.7,0.12*_tscl,0.12*_tscl,0,c_white,0.06)
+	
+	draw_text_transformed(global.sw*0.2,global.sh*0.7,"RANDOM\n3x3",0.1*_tscl,0.1*_tscl,0)
+	draw_text_transformed(global.sw*0.35,global.sh*0.7,"RANDOM\n4x4",0.1*_tscl,0.1*_tscl,0)
+	draw_text_transformed(global.sw*0.5,global.sh*0.7,"RANDOM\n5x5",0.1*_tscl,0.1*_tscl,0)
+	draw_text_transformed(global.sw*0.65,global.sh*0.7,"RANDOM\n6x6",0.1*_tscl,0.1*_tscl,0)
+	draw_text_transformed(global.sw*0.8,global.sh*0.7,"RANDOM\n7x7",0.1*_tscl,0.1*_tscl,0)
+	
+	
 	draw_set_alpha(0.3)
 	
 } else if global.game_phase = 1 {

@@ -19,7 +19,7 @@ function scr_update_copy_code(){
 		global.current_copy_code += global.letters_grid[l]
 		global.current_copy_url += global.letters_grid[l]
 		queryStr[0] += global.letters_grid[l]
-		show_debug_message(global.letters_grid[l])
+		//show_debug_message(global.letters_grid[l])
 	}
 	
 

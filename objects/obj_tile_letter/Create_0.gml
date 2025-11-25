@@ -55,7 +55,10 @@ spawn_slam = 1+random(0.2)
 
 am_part_of_secret_word = 0
 am_part_of_secret_word_fd = 0
+am_part_of_secret_word_order = -1
 image_blend_base = image_blend
+
+
 
 tile_going_to_replace = 0
 

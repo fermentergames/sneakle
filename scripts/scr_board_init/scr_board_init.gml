@@ -44,11 +44,16 @@ if (live_call()) return live_result;
 		//show_debug_message("/////////////")
 		
 		global.skip_create = 1 //0
-		global.game_phase = 1
-				
-		for (var l = 0; l <= string_length(global.letter_set_default)-1; ++l) {
-			//show_debug_message(global.letters_bag[l])
+		
+		if global.am_creating = 1 {
+			global.game_phase = 1
+		} else {
+			global.game_phase = 3	
 		}
+				
+		//for (var l = 0; l <= string_length(global.letter_set_default)-1; ++l) {
+			//show_debug_message(global.letters_bag[l])
+		//}
 		
 		show_debug_message(global.letters_bag)
 		
@@ -217,7 +222,14 @@ if (live_call()) return live_result;
 			}
 		}
 		
-		if global.am_creating = 1 {
+		
+		if global.am_generate_random = 1 {
+			
+			scr_generate_pick_word()
+			
+			scr_generate_board_setup()
+			
+		} else if global.am_creating = 1 {
 			
 			//keep defaults
 			scr_update_copy_code()
@@ -250,6 +262,8 @@ if (live_call()) return live_result;
 						if tile_id = other.secret_word_array[i] {
 							other.secret_word_array_id[i] = id
 							other.secret_word_str += string(my_letter_str)
+							
+							am_part_of_secret_word_order = i
 						}
 					}
 				}

@@ -4,6 +4,23 @@ if (live_call()) return live_result;
 //timey = 0
 timey += 1
 
+
+if keyboard_check_pressed(vk_space) {
+	
+	scr_generate_pick_word()
+	
+}
+
+
+if keyboard_check_pressed(vk_alt) {
+	
+	scr_generate_board_setup()
+	
+	
+}
+
+
+
 //if keyboard_check_pressed(vk_space) {
 //	if global.game_phase = 1 {
 //		global.game_phase = 2	
@@ -220,6 +237,75 @@ if mouse_check_button_pressed(mb_left) {
 				global.am_creating = 1
 				var _event_struct = { //
 				   screen_name: "Create7",
+				};
+				GoogHit("screen_view",_event_struct)
+				scr_board_init()
+			
+				////////////////////////////////////////
+			
+			} else if scr_mouse_over_button(global.sw*0.2,global.sh*0.7,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
+				
+				global.game_grid_size = 3
+				global.game_grid_size_sqr = sqr(global.game_grid_size)
+				global.am_creating = 1
+				var _event_struct = { //
+				   screen_name: "Random3",
+				};
+				GoogHit("screen_view",_event_struct)
+				scr_board_init()
+				
+			} else if scr_mouse_over_button(global.sw*0.35,global.sh*0.7,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
+				
+				global.game_grid_size = 4
+				global.game_grid_size_sqr = sqr(global.game_grid_size)
+				global.am_creating = 1
+				var _event_struct = { //
+				   screen_name: "Random4",
+				};
+				GoogHit("screen_view",_event_struct)
+				scr_board_init()
+				
+			} else if scr_mouse_over_button(global.sw*0.5,global.sh*0.7,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
+				
+				global.game_grid_size = 5
+				global.game_grid_size_sqr = sqr(global.game_grid_size)
+				global.am_creating = 0
+				global.skip_create = 1
+				
+				global.am_generate_random = 1
+				
+				//global.loadBoard = "IYEIORAOABEANEAEPCINMALNI"
+				//global.loadBoard = "XXXXXXXXXXXXXXXXXXXXXXXXX"
+				
+				var _event_struct = { //
+				   screen_name: "Random5",
+				};
+				GoogHit("screen_view",_event_struct)
+				
+				
+				
+				
+				scr_board_init()
+				
+				
+			} else if scr_mouse_over_button(global.sw*0.65,global.sh*0.7,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
+				
+				global.game_grid_size = 6
+				global.game_grid_size_sqr = sqr(global.game_grid_size)
+				global.am_creating = 1
+				var _event_struct = { //
+				   screen_name: "Random6",
+				};
+				GoogHit("screen_view",_event_struct)
+				scr_board_init()
+				
+			} else if scr_mouse_over_button(global.sw*0.8,global.sh*0.7,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
+				
+				global.game_grid_size = 7
+				global.game_grid_size_sqr = sqr(global.game_grid_size)
+				global.am_creating = 1
+				var _event_struct = { //
+				   screen_name: "Random7",
 				};
 				GoogHit("screen_view",_event_struct)
 				scr_board_init()
@@ -602,6 +688,8 @@ if mouse_check_button_released(mb_left) || _too_far_trigger_release = 1 {
 			
 			
 			_valid_guess = scr_validate_word()
+			
+			show_debug_message(selected_word_array)
 			
 			if _valid_guess = 1 {
 				
