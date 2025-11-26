@@ -55,6 +55,7 @@ global.current_copy_code = "ABCD_1-2-3-4"
 global.current_copy_url = "https://fermentergames.github.io/Sneakle/?loadBoard=ABCD&loadSecret=1-2-3-4"
 
 global.dictionary = new CheckWordDictionary(working_directory + "dictionaries/full/full.txt");
+global.dictionary_simple = new CheckWordDictionary(working_directory + "dictionaries/simple/full.txt");
 
 global.dictionary_generate = new PickWordDictionary(working_directory + "dictionaries/simple_by_length/5.txt");
 

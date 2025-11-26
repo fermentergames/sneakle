@@ -299,8 +299,12 @@ if global.game_phase = 0 {
 	}
 	
 	var _letters_str = ""
-	for (var l = 0; l < selected_word_length; ++l) {
-		_letters_str += global.letters_grid[selected_word_array[l]]
+	//for (var l = 0; l < selected_word_length; ++l) {
+	//	_letters_str += global.letters_grid[selected_word_array[l]]
+	//}
+	
+	if 1=1 {//global.game_phase = 4 {
+		_letters_str = secret_word_str	
 	}
 	
 	draw_set_valign(fa_top)
@@ -414,6 +418,12 @@ if global.game_phase >= 3 {
 	}
 	
 	draw_text_transformed(global.sw*0.9,25*_pos_scl,"share",_sscl*_tscl,_sscl*_tscl,0)
+	
+	if global.game_phase < 4 {
+		draw_text_transformed(global.sw*0.1,global.sh*1+(-25*_pos_scl),"give up",0.12*_tscl,0.12*_tscl,0)
+	} else if global.game_phase = 4 {
+		draw_text_transformed(global.sw*0.1,global.sh*1+(-35*_pos_scl),"play\nanother",0.12*_tscl,0.12*_tscl,0)
+	}
 
 }
 

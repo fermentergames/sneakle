@@ -17,7 +17,38 @@ if (live_call()) return live_result;
 	
 	var _generated_word_length = string_length(global.generated_word)
 
-	var _generated_arr_pattern = [ 21,22,23,17,16,11,12,13,18,24,19,14,8,9,5,10,4,3,2,7,1,6 ]
+	var _generated_arr_pattern_3_1 = [ 1,2,3,5,6,9,8,4,7]
+	var _generated_arr_pattern_3_2 = [ 6,9,5,3,2,1,4,8,7 ]
+	
+	var _generated_arr_pattern_4_1 = [ 9,13,10,14,15,16,12,7,11,6,1,5,2,3,8,4 ]
+	var _generated_arr_pattern_4_2 = [ 7,12,16,11,8,4,3,2,6,1,5,9,13,10,15,14 ]
+	
+	var _generated_arr_pattern_5_1 = [ 21,22,23,17,16,11,12,13,18,24,19,14,8,9,5,10,4,3,2,7,1,6 ]
+	var _generated_arr_pattern_5_2 = [ 12,18,23,24,25,20,19,15,10,5,9,13,14,8,4,3,2,7,1,6,11,17,16,22,21 ]
+	
+	var _generated_arr_pattern_6_1 = [ 20,26,27,33,32,25,19,13,14,15,22,28,34,35,36,30,29,24,18,23,17,12,6,5,10,9,8,1,7,2,3,4,11,16,21 ]
+	var _generated_arr_pattern_6_2 = [ 5,6,11,10,16,17,12,18,24,30,23,29,34,33,26,32,25,19,13,14,7,8,2,3,4,9,15,20,21,22,27,28,35,36 ]
+	
+	var _generated_arr_pattern_7_1 = [ 17,25,24,30,23,16,15,9,10,18,26,32,40,48,49,41,42,35,28,21,20,12,13,14,7,6,5,4,3,11,19,27,34,33,39,47,46,45,38,31,37,44,36,29,22 ]
+	var _generated_arr_pattern_7_2 = [ 21,20,19,13,7,6,12,18,24,25,17,11,4,10,16,9,8,15,22,23,31,30,37,29,36,44,38,32,33,40,39,46,47,41,34,28,35,27,26 ]
+	
+	
+	var _generated_arr_pattern = [1,2,3,4] //default
+	
+	if _grid_sz = 3 {
+		_generated_arr_pattern = choose(_generated_arr_pattern_3_1,_generated_arr_pattern_3_2)
+	} else if _grid_sz = 4 {
+		_generated_arr_pattern = choose(_generated_arr_pattern_4_1,_generated_arr_pattern_4_2)
+	} else if _grid_sz = 5 {
+		_generated_arr_pattern = choose(_generated_arr_pattern_5_1,_generated_arr_pattern_5_2)
+	} else if _grid_sz = 6 {
+		_generated_arr_pattern = choose(_generated_arr_pattern_6_1,_generated_arr_pattern_6_2)
+	} else if _grid_sz = 7 {
+		_generated_arr_pattern = choose(_generated_arr_pattern_7_1,_generated_arr_pattern_7_2)
+	} else if _grid_sz = 8 {
+		//_generated_arr_pattern = choose(_generated_arr_pattern_5_1,_generated_arr_pattern_5_2)
+	}
+	
 	var _generated_arr_pattern_offset = irandom(array_length(_generated_arr_pattern)-_generated_word_length)
 	var _generated_arr = [0]
 	

@@ -247,7 +247,9 @@ if mouse_check_button_pressed(mb_left) {
 				
 				global.game_grid_size = 3
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
+				global.am_creating = 0
+				global.skip_create = 1
+				global.am_generate_random = 1
 				var _event_struct = { //
 				   screen_name: "Random3",
 				};
@@ -258,7 +260,9 @@ if mouse_check_button_pressed(mb_left) {
 				
 				global.game_grid_size = 4
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
+				global.am_creating = 0
+				global.skip_create = 1
+				global.am_generate_random = 1
 				var _event_struct = { //
 				   screen_name: "Random4",
 				};
@@ -271,20 +275,11 @@ if mouse_check_button_pressed(mb_left) {
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
 				global.am_creating = 0
 				global.skip_create = 1
-				
 				global.am_generate_random = 1
-				
-				//global.loadBoard = "IYEIORAOABEANEAEPCINMALNI"
-				//global.loadBoard = "XXXXXXXXXXXXXXXXXXXXXXXXX"
-				
 				var _event_struct = { //
 				   screen_name: "Random5",
 				};
 				GoogHit("screen_view",_event_struct)
-				
-				
-				
-				
 				scr_board_init()
 				
 				
@@ -292,7 +287,9 @@ if mouse_check_button_pressed(mb_left) {
 				
 				global.game_grid_size = 6
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
+				global.am_creating = 0
+				global.skip_create = 1
+				global.am_generate_random = 1
 				var _event_struct = { //
 				   screen_name: "Random6",
 				};
@@ -303,7 +300,9 @@ if mouse_check_button_pressed(mb_left) {
 				
 				global.game_grid_size = 7
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
+				global.am_creating = 0
+				global.skip_create = 1
+				global.am_generate_random = 1
 				var _event_struct = { //
 				   screen_name: "Random7",
 				};
@@ -619,8 +618,8 @@ if mouse_check_button_pressed(mb_left) {
 		
 	} else if global.game_phase = 3 { //
 		
-		//back
-		if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.15)-(256*0.2*_tscl),(global.sh+(-30*global.pr))-(256*0.08*_tscl),(global.sw*0.15)+(256*0.2*_tscl),(global.sh+(-30*global.pr))+(256*0.08*_tscl)) {
+		//back to rearrange
+		/*if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.15)-(256*0.2*_tscl),(global.sh+(-30*global.pr))-(256*0.08*_tscl),(global.sw*0.15)+(256*0.2*_tscl),(global.sh+(-30*global.pr))+(256*0.08*_tscl)) {
 		
 			global.game_phase = 2
 			with (obj_tile_letter) {
@@ -634,9 +633,100 @@ if mouse_check_button_pressed(mb_left) {
 			selected_word_array	= secret_word_array
 			selected_word_array_id	= secret_word_array_id
 	
+		}*/
+		
+		
+		//give up
+		if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.15)-(256*0.2*_tscl),(global.sh+(-30*global.pr))-(256*0.08*_tscl),(global.sw*0.15)+(256*0.2*_tscl),(global.sh+(-30*global.pr))+(256*0.08*_tscl)) {
+		
+			show_debug_message("GIVE UP!")
+			
+			selected_word_str = secret_word_str
+		
+			if selected_word_str = secret_word_str {
+				
+				global.game_phase = 4
+
+							
+				var _event_struct = { //
+					level: guesses_count,
+				};
+				GoogHit("give_up",_event_struct)
+				
+				with (obj_tile_letter) {
+					if 1 = 1 {
+						for (var l = 0; l < obj_ctrl.secret_word_length; ++l) {
+							if obj_ctrl.secret_word_array[l] = tile_id {
+								am_clued = 1
+								am_clued_flash = 1
+								am_clued_won = 1
+								am_exed = 0
+							}
+						}
+						
+						if am_clued = 0 {
+							//am_exed = 1 //ex all
+							am_samelettered = 0
+						}
+						
+					}
+				}
+				
+			}
+	
+		}
+		
+	} else if global.game_phase = 4 { //
+		
+		
+		
+		//play another
+		if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.15)-(256*0.2*_tscl),(global.sh+(-30*global.pr))-(256*0.08*_tscl),(global.sw*0.15)+(256*0.2*_tscl),(global.sh+(-30*global.pr))+(256*0.08*_tscl)) {
+		
+			show_debug_message("PLAY ANOTHER!")
+			
+			show_debug_message("NEW LETTERS")
+				
+			with (obj_tile_letter) {
+				instance_destroy()
+			}
+			with (obj_tile_space) {
+				instance_destroy()
+			}
+
+			global.am_creating = 1
+			var _event_struct = { //
+				screen_name: "NewLetters"+string(global.game_grid_size),
+			};
+			GoogHit("screen_view",_event_struct)
+				
+			global.loadSecret = ""
+			global.loadBoard = ""
+			global.current_copy_code = ""
+			global.current_copy_link = ""
+			scr_update_copy_code()
+			
+			
+			global.game_phase = 3
+			
+			//global.game_grid_size = 6
+			//global.game_grid_size_sqr = sqr(global.game_grid_size)
+			global.am_creating = 0
+			global.skip_create = 1
+			global.am_generate_random = 1
+			var _event_struct = { //
+				screen_name: "RandomAnother",
+			};
+			GoogHit("screen_view",_event_struct)
+			scr_board_init()
+	
 		}
 		
 	}
+	
+	
+	///////////////
+	
 	
 	if global.game_phase >= 3 {
 		//share
