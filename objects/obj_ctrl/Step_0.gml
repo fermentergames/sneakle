@@ -646,7 +646,7 @@ if mouse_check_button_pressed(mb_left) {
 			if selected_word_str = secret_word_str {
 				
 				global.game_phase = 4
-
+				global.gave_up = 1
 							
 				var _event_struct = { //
 					level: guesses_count,
@@ -704,6 +704,31 @@ if mouse_check_button_pressed(mb_left) {
 			global.loadBoard = ""
 			global.current_copy_code = ""
 			global.current_copy_link = ""
+			
+			
+			//reset arrays
+			selected_word_length = 0
+			selected_word_str = ""
+			selected_word_array = 0
+			selected_word_array_id = 0
+			selected_word_latest_tile = -1
+			selected_word_latest_tile_id = -1
+			selected_word_not_in_dictionary = 0
+			selected_word_is_valid = 0
+			selected_word_base_points = 0
+
+			secret_word_length = 0
+			secret_word_str = ""
+			secret_word_array = 0
+
+			guesses_count = 0
+			guesses_list = 0
+			guesses_list[1] = ""
+			
+			global.gave_up = 0
+			
+			//
+			
 			scr_update_copy_code()
 			
 			

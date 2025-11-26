@@ -32,6 +32,7 @@ global.am_creating = 0
 
 global.am_generate_random = 0
 
+global.gave_up = 0
 global.game_mode = 1
 global.points_total = 0
 global.words_made = 0

@@ -310,7 +310,12 @@ if global.game_phase = 0 {
 	draw_set_valign(fa_top)
 	
 	draw_set_font(fnt_main_r)
-	draw_text_transformed(global.sw/2,global.sh*0.7,"SECRET WORD found!",0.2*_tscl,0.2*_tscl,0)
+	
+	if global.gave_up = 0 {
+		draw_text_transformed(global.sw/2,global.sh*0.7,"SECRET WORD found!",0.2*_tscl,0.2*_tscl,0)
+	} else {
+		draw_text_transformed(global.sw/2,global.sh*0.7,"gave up... SECRET WORD was:",0.2*_tscl,0.2*_tscl,0)
+	}
 	//draw_text_transformed(global.sw/2,global.sh*0.8,"\n\n\n\n"+string(guesses_count)+" guesses",0.15*_tscl,0.15*_tscl,0)
 	
 
