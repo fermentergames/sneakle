@@ -58,9 +58,13 @@ am_part_of_secret_word_fd = 0
 am_part_of_secret_word_order = -1
 image_blend_base = image_blend
 
+my_text_scl = 2
+
 
 
 tile_going_to_replace = 0
+
+
 
 
 

@@ -1,5 +1,7 @@
 if (live_call()) return live_result;
 
+//draw_clear(make_color_hsv(160,10,170))
+
 //draw_sprite(spr_sqr512,1,mouse_x,mouse_y)
 if keyboard_check(vk_control) {
 

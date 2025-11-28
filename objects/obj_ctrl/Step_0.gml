@@ -653,10 +653,15 @@ if mouse_check_button_pressed(mb_left) {
 				};
 				GoogHit("give_up",_event_struct)
 				
+				selected_word_array_id = secret_word_array_id
+				selected_word_length = secret_word_length
+				
 				with (obj_tile_letter) {
 					if 1 = 1 {
 						for (var l = 0; l < obj_ctrl.secret_word_length; ++l) {
 							if obj_ctrl.secret_word_array[l] = tile_id {
+								//obj_ctrl.selected_word_array_id[l] = tile_id
+								am_part_of_secret_word = 1
 								am_clued = 1
 								am_clued_flash = 1
 								am_clued_won = 1
@@ -835,11 +840,16 @@ if mouse_check_button_released(mb_left) || _too_far_trigger_release = 1 {
 							   level: guesses_count,
 							};
 							GoogHit("post_score",_event_struct)
+							
+							selected_word_array_id = secret_word_array_id
+							selected_word_length = secret_word_length
 				
 							with (obj_tile_letter) {
 								if 1 = 1 {
 									for (var l = 0; l < obj_ctrl.secret_word_length; ++l) {
 										if obj_ctrl.secret_word_array[l] = tile_id {
+											//obj_ctrl.selected_word_array_id[l] = tile_id
+											am_part_of_secret_word = 1
 											am_clued = 1
 											am_clued_flash = 1
 											am_clued_won = 1

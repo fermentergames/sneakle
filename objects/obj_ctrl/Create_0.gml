@@ -52,6 +52,9 @@ global.show_input_prompt = 0
 global.show_export_prompt = 0
 global.show_archives = 0
 
+global.tile_style = 1
+global.tile_raises = 0
+
 global.current_copy_code = "ABCD_1-2-3-4"
 global.current_copy_url = "https://fermentergames.github.io/Sneakle/?loadBoard=ABCD&loadSecret=1-2-3-4"
 
@@ -120,6 +123,7 @@ selected_word_latest_tile = -1
 selected_word_latest_tile_id = -1
 selected_word_not_in_dictionary = 0
 selected_word_is_valid = 0
+selected_word_already_guessed = 0
 selected_word_base_points = 0
 
 secret_word_length = 0

@@ -207,6 +207,8 @@ if global.game_phase = 0 {
 			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
 		} else if selected_word_not_in_dictionary >= 1 {
 			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"not a valid word",0.15*_tscl,0.15*_tscl,0)
+		} else if selected_word_already_guessed >= 1 {
+			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"already guessed",0.15*_tscl,0.15*_tscl,0)
 		} else {
 			//draw_text_transformed(global.sw/2,(global.sh*0.7)+(80*_pos_scl),selected_word_not_in_dictionary,0.15*_tscl,0.15*_tscl,0)
 		}
@@ -258,6 +260,8 @@ if global.game_phase = 0 {
 			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
 		} else if selected_word_not_in_dictionary >= 1 {
 			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"not a valid word",0.15*_tscl,0.15*_tscl,0)
+		} else if selected_word_already_guessed >= 1 {
+			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"already guessed",0.15*_tscl,0.15*_tscl,0)
 		}
 	}
 	//draw_text_transformed(global.sw/2,global.sh*0.8,"array:\n"+string(selected_word_array),0.12*_tscl,0.12*_tscl,0)
@@ -673,7 +677,7 @@ draw_set_alpha(1)
 //	draw_set_color(merge_color(letter_col,c_white,am_selected_fd))
 
 //	var _text_offset_y = -20//20
-//	var _text_scl = 2.2*scl //20
+//	var _text_scl = my_text_scl*scl //20
 
 //	draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90),y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam,string_lower(my_letter_str),_text_scl,_text_scl,image_angle)
 

@@ -113,8 +113,10 @@ am_clued_won_fd = lerp(am_clued_won_fd,am_clued_won,0.1)
 
 if global.game_phase < 3 {
 	am_part_of_secret_word_fd = lerp(am_part_of_secret_word_fd,am_part_of_secret_word,0.2)
-} else {
+} else if global.game_phase = 3 {
 	am_part_of_secret_word_fd = lerp(am_part_of_secret_word_fd,0,0.2)
+} else {
+	am_part_of_secret_word_fd = lerp(am_part_of_secret_word_fd,am_part_of_secret_word,0.2)
 }
 
 born_fd = lerp(born_fd,1,0.05)

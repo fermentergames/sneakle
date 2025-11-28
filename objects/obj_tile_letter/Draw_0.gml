@@ -2,7 +2,27 @@ if (live_call()) return live_result;
 
 if 1=1 {
 	
-	var _letter_hue = obj_ctrl.timey*0.2 mod 255
+	my_text_scl = 2.2 //2.2 //2.2
+	var _tile_scl_bs = 1.005 //1 //+(-0.05*global.am_creating_fd2)
+	var _tile_shape = 0
+	global.tile_raises = 0
+	
+	
+	if keyboard_check_pressed(ord("1")) {
+		global.tile_style = 1
+	}
+	if keyboard_check_pressed(ord("2")) {
+		global.tile_style = 2	
+	}
+	
+	if global.tile_style = 2 {
+		global.tile_raises = 1
+		my_text_scl = 2.2 //2.2 //2.2
+		_tile_scl_bs = 0.88 //1 //+(-0.05*global.am_creating_fd2)
+		_tile_shape = 5
+	}
+	
+	//var _letter_hue = obj_ctrl.timey*0.2 mod 255
 	var _letter_hue = 150//obj_ctrl.timey*0.2 mod 255
 
 
@@ -66,10 +86,10 @@ if 1=1 {
 	var _spawn_slam = sqr(spawn_slam)*-1000
 	
 	var _shad_ht = 0
-	var _tile_ht = 0*sqr(1-am_selected_flash2)
+	var _tile_ht = 5*sqr(1-am_selected_fd)*global.tile_raises
 
 
-	var _tile_shape = 0
+	
 	
 	if shad_fd > 0 {
 	//shadow
@@ -83,8 +103,23 @@ if 1=1 {
 	////flash on set
 	//draw_sprite_ext(spr_sqr512,1,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*2*sqr(1-am_set_flash),image_yscale*2*sqr(1-am_set_flash),image_angle,make_color_hsv(38,0,255),image_alpha*2*am_set_flash)
 	//}
-	var _tile_scl = 1//+(-0.05*global.am_creating_fd2)
 	
+	var _tile_scl = _tile_scl_bs
+	
+	
+	//main tile 3d edge
+	
+	
+	if global.tile_style = 2 {
+		var _shadow_offset_x = 0
+		var _shadow_offset_y = _tile_ht
+		var _shadow_col = merge_color(image_blend,c_black,0.5)
+	
+	
+		draw_sprite_ext(spr_sqr512,_tile_shape,x+lengthdir_x(-_tile_ht,image_angle-90)+(_shadow_offset_x),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam+(_shadow_offset_y),image_xscale*_tile_scl,image_yscale*_tile_scl,image_angle,_shadow_col,image_alpha)
+
+
+	}
 	
 	//main tile
 	draw_sprite_ext(spr_sqr512,_tile_shape,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl,image_yscale*_tile_scl,image_angle,image_blend,image_alpha)
@@ -93,12 +128,14 @@ if 1=1 {
 	//draggable
 	draw_sprite_ext(spr_sqr512_tile_dotted,0,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl,image_yscale*_tile_scl,image_angle,merge_color(image_blend,global.background_col,0.2),1*global.am_creating_fd2)
 
+
+	_tile_scl = _tile_scl_bs
 	
 
 	if am_selected_flash2 > 0 {
 	gpu_set_blendmode(bm_add)
 	//selected glow
-	draw_sprite_ext(spr_sqr512,0,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*(1+(0.0*am_selected_fd)),image_yscale*(1+(0.0*am_selected_fd)),image_angle,image_blend,image_alpha*(am_selected_flash2))
+	draw_sprite_ext(spr_sqr512,_tile_shape,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*(1+(0.0*am_selected_fd)),image_yscale*_tile_scl*(1+(0.0*am_selected_fd)),image_angle,image_blend,image_alpha*(am_selected_flash2))
 	//draw_sprite_ext(spr_sqr512_glow,0,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*(0.7+(0.3*am_selected_fd)),image_yscale*(0.7+(0.3*am_selected_fd)),image_angle,image_blend,image_alpha*(am_selected_fd+am_selected_flash2))
 	
 	}
@@ -111,7 +148,7 @@ if 1=1 {
 
 		gpu_set_blendmode(bm_add)
 		//secret glow
-		draw_sprite_ext(spr_sqr512,0,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*(1+(0.0*am_selected_fd)),image_yscale*(1+(0.0*am_selected_fd)),image_angle,c_white,image_alpha*(am_part_of_secret_word_fd*(0.12+(0.03*(sin(obj_ctrl.timey*0.1))))))
+		draw_sprite_ext(spr_sqr512,_tile_shape,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*(1+(0.0*am_selected_fd)),image_yscale*_tile_scl*(1+(0.0*am_selected_fd)),image_angle,c_white,image_alpha*(am_part_of_secret_word_fd*(0.12+(0.03*(sin(obj_ctrl.timey*0.1))))))
 	
 	}
 	
@@ -119,7 +156,7 @@ if 1=1 {
 
 		gpu_set_blendmode(bm_add)
 		//am_clued_won_fd glow
-		draw_sprite_ext(spr_sqr512,0,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*(1+(0.0*(am_clued_fd))),image_yscale*(1+(0.0*(am_clued_fd))),image_angle,image_blend,image_alpha*(am_clued_flash2*3))
+		draw_sprite_ext(spr_sqr512,_tile_shape,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*(1+(0.0*(am_clued_fd))),image_yscale*_tile_scl*(1+(0.0*(am_clued_fd))),image_angle,image_blend,image_alpha*(am_clued_flash2*3))
 	
 	}
 	
@@ -127,7 +164,7 @@ if 1=1 {
 
 		gpu_set_blendmode(bm_add)
 		//am_clued_won_fd glow
-		draw_sprite_ext(spr_sqr512,0,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*(1+(0.0*am_selected_fd)),image_yscale*(1+(0.0*am_selected_fd)),image_angle,image_blend,image_alpha*(am_clued_won_fd*(0.15+(0.15*(sin(obj_ctrl.timey*0.07))))))
+		draw_sprite_ext(spr_sqr512,_tile_shape,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*(1+(0.0*am_selected_fd)),image_yscale*_tile_scl*(1+(0.0*am_selected_fd)),image_angle,image_blend,image_alpha*(am_clued_won_fd*(0.15+(0.15*(sin(obj_ctrl.timey*0.07))))))
 	
 	}
 
@@ -157,7 +194,7 @@ if 1=1 {
 		draw_set_color(merge_color(letter_col,c_white,am_selected_fd))
 
 		var _text_offset_y = -0//20
-		var _text_scl = 2.2*scl //20
+		var _text_scl = my_text_scl*scl //20
 
 		draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90),y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam,string_upper(my_letter_str),_text_scl,_text_scl,image_angle)
 
@@ -172,7 +209,7 @@ if 1=1 {
 	
 	if 1=0 { //debug text
 	var _text_offset_y = -0//20
-	var _text_scl = 2.2*scl //20
+	var _text_scl = my_text_scl*scl //20
 	
 	draw_set_alpha(1)
 	draw_set_color(c_lime)//merge_color(letter_col,c_white,am_selected_fd))
@@ -183,7 +220,7 @@ if 1=1 {
 	
 	//if my_letter_num >= 1 {
 	//var _text_offset_y = -0//20
-	//var _text_scl = 2.2*scl //20
+	//var _text_scl = my_text_scl*scl //20
 	//draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90)+22,y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+22,global.letter_data[my_letter_num,LETTER_POINTS],_text_scl*0.25,_text_scl*0.25,image_angle)
 	//}
 
