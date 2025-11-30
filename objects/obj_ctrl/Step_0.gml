@@ -5,18 +5,20 @@ if (live_call()) return live_result;
 timey += 1
 
 
-if keyboard_check_pressed(vk_space) {
+if global.game_phase != 4 {
+	if keyboard_check_pressed(vk_space) {
 	
-	scr_generate_pick_word()
+		scr_generate_pick_word()
 	
-}
+	}
 
 
-if keyboard_check_pressed(vk_alt) {
+	if keyboard_check_pressed(vk_alt) {
 	
-	scr_generate_board_setup()
+		scr_generate_board_setup()
 	
 	
+	}
 }
 
 
@@ -34,6 +36,18 @@ if global.is_landscape = 1 {
 	_scl = (global.sh/800)
 }
 var _tscl = clamp(_scl*1,0.5*global.pr,2*global.pr)
+
+
+var _panel_bottom_y = global.sh+(-global.sw*1)
+var _panel_top_y = 50*_pos_scl
+if global.is_landscape = 1 {
+	_panel_bottom_y = global.sh+(-450*_scl)
+	_panel_top_y = 80*_pos_scl
+}
+	
+	
+var _panel_mid_y = mean(_panel_top_y,_panel_bottom_y)
+var _nav_mid_y = mean(0,_panel_top_y)
 
 
 
@@ -464,7 +478,7 @@ if mouse_check_button_pressed(mb_left) {
 	} else if global.game_phase = 2 { //
 		
 		//proceed
-		if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.5)-(256*0.65*_tscl),(global.sh+(-110*global.pr))-(256*0.15*_tscl),(global.sw*0.5)+(256*0.65*_tscl),(global.sh+(-110*global.pr))+(256*0.15*_tscl)) {
+		if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.5)-(256*0.65*_tscl),((_panel_mid_y)+(110*_scl))-(256*0.15*_tscl),(global.sw*0.5)+(256*0.65*_tscl),((_panel_mid_y)+(110*_scl))+(256*0.15*_tscl)) {
 			
 			
 			if global.game_mode = 1 && selected_word_is_valid >= 1 {
@@ -965,17 +979,33 @@ var _tile_sz_and_pad = global.tile_size+global.pad_size
 //global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+100)/w)*1.5
 //global.cam_zoom_fd = lerp(global.cam_zoom_fd,global.cam_zoom+(-0.35*(1-global.am_creating_fd)),0.05)
 
-global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+(w*0.1))/w)*1.7
+global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+(w*0.0))/w)*1.5//1.5
+//global.cam_zoom = (((_tile_sz_and_pad*(global.game_grid_size))))*0.005 //+(w*0.0))/w)*10
 
 if global.sw >= global.sh*0.65 {
 	global.is_landscape = 1
-	global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+(h*0.1))/h)*2.8
+	global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+(h*0.0))/h)*2.8
 }
-global.cam_zoom_fd = lerp(global.cam_zoom_fd,global.cam_zoom+(-0.35*(1-global.am_creating_fd)),0.05)
+global.cam_zoom_fd = lerp(global.cam_zoom_fd,global.cam_zoom+(0.35*(global.am_creating_fd)),0.05)
 
 //scr_update_room_dimensions(w*global.cam_zoom,h*global.cam_zoom)
 camera_set_view_size(view_camera[0], w*global.cam_zoom_fd, h*global.cam_zoom_fd);
+
 //center cam
 //camera_set_view_pos(view_camera[0],-(w*global.cam_zoom_fd/2),(-h*global.cam_zoom_fd*0.5)+(100*global.cam_zoom_fd*(1-global.am_creating_fd)))
-camera_set_view_pos(view_camera[0],-(w*global.cam_zoom_fd/2),(-h*global.cam_zoom_fd*0.0)+(-_tile_sz_and_pad*global.game_grid_size*0.5)+(-110*global.cam_zoom_fd))                                                                
+
+//board on top
+//camera_set_view_pos(view_camera[0],-(w*global.cam_zoom_fd/2),(-h*global.cam_zoom_fd*0.0)+(-_tile_sz_and_pad*global.game_grid_size*0.5)+(-110*global.cam_zoom_fd))                                                                
+
+
+var _cam_y_pos = (-h*global.cam_zoom_fd*1)+(-_tile_sz_and_pad*global.game_grid_size*-0.5)+(_tile_sz_and_pad*global.cam_zoom_fd)
+
+var _cam_y_pos_creating = (-h*global.cam_zoom_fd*0.0)+(-_tile_sz_and_pad*global.game_grid_size*0.5)+(-110*global.cam_zoom_fd)
+
+_cam_y_pos = lerp(_cam_y_pos,_cam_y_pos_creating,global.am_creating_fd2)
+
+//board on bottom
+camera_set_view_pos(view_camera[0],-(w*global.cam_zoom_fd/2),_cam_y_pos)   
+
+
 

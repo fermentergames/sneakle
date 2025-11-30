@@ -32,15 +32,15 @@ function scr_validate_word() {
 		selected_word_str = _letters_str
 		
 		
-		show_debug_message("guesses_list: "+string(guesses_list))
+		//show_debug_message("guesses_list: "+string(guesses_list))
 		
 		for (var g = 1; g < array_length(guesses_list); ++g) {
 			
-			show_debug_message("guess #: "+string(g))
+			//show_debug_message("guess #: "+string(g))
 			if guesses_list[g] = string(selected_word_str) {
 				_already_guessed = 1
 				_valid_guess = 0
-				show_debug_message("selected word already guessed: "+string(selected_word_str))
+				//show_debug_message("selected word already guessed: "+string(selected_word_str))
 				selected_word_already_guessed = 1
 				selected_word_is_valid = 0
 			}

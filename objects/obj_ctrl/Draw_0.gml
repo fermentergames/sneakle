@@ -1,6 +1,13 @@
 if (live_call()) return live_result;
 
-//draw_clear(make_color_hsv(160,10,170))
+
+
+var _letter_hue = 155
+global.background_col = make_color_hsv(_letter_hue,120,50)
+var background = layer_background_get_id(layer_get_id("Background"));
+layer_background_blend(background, global.background_col)
+
+//draw_clear(make_color_hsv(_letter_hue,110,50))
 
 //draw_sprite(spr_sqr512,1,mouse_x,mouse_y)
 if keyboard_check(vk_control) {

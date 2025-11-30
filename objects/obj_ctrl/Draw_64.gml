@@ -8,6 +8,8 @@ if global.is_landscape = 1 {
 	_scl = (global.sh/850)
 }
 
+
+
 //if keyboard_check(vk_shift) {
 //	//_scl = 2
 //}
@@ -29,6 +31,38 @@ var _tscl = clamp(_scl*1,0.5*global.pr,2*global.pr)//0.5
 
 var _highlight_blue = make_color_hsv(145,180,140)
 var _overlay_blue = make_color_hsv(145,120,20)
+var _green_check_col = make_color_hsv(100,255,210)
+var _green_check_txt = make_color_hsv(100,215,250)
+
+
+draw_set_alpha(0.3)
+draw_set_color(c_red)
+	
+var _panel_bottom_y = global.sh+(-global.sw*1)
+var _panel_top_y = 50*_pos_scl
+if global.is_landscape = 1 {
+	_panel_bottom_y = global.sh+(-450*_scl)
+	_panel_top_y = 80*_pos_scl
+}
+	
+	
+var _panel_mid_y = mean(_panel_top_y,_panel_bottom_y)
+var _nav_mid_y = mean(0,_panel_top_y)
+	
+
+//nav menu top
+draw_set_alpha(0.7)
+draw_set_color(_overlay_blue)
+//draw_rectangle(0,0,global.sw,_panel_top_y,0)
+
+//scoring panel
+draw_set_alpha(0.5)
+draw_set_color(_overlay_blue)
+//draw_rectangle(0,_panel_top_y,global.sw,_panel_bottom_y,0)
+
+//
+
+
 
 
 gpu_set_tex_filter(true)
@@ -43,7 +77,7 @@ draw_set_valign(fa_middle)
 //draw_set_color(make_color_hsv(160,150,150))
 draw_set_color(c_white)
 draw_set_alpha(0.3)
-draw_text_transformed(global.sw/2,25*_pos_scl,"s n e a k l e",0.22*_tscl,0.22*_tscl,0)
+draw_text_transformed(global.sw/2,_nav_mid_y,"s n e a k l e",0.22*_tscl,0.22*_tscl,0)
 //draw_text_transformed(global.sw/2,45*_pos_scl,_tscl,0.1*_tscl,0.1*_tscl,0)
 
 //draw_set_color(c_white)
@@ -166,21 +200,21 @@ if global.game_phase = 0 {
 	
 	if ready_for_phase3 = 1 {
 		draw_set_alpha(1)
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,(global.sh*1)+(-110*_pos_scl),0.65*_tscl,0.15*_tscl,0,c_white,0.06)
+		draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(110*_scl),0.65*_tscl,0.15*_tscl,0,c_white,0.06)
 		
 		var _confirm_word_str = "CONFIRM SECRET WORD?"
 		if global.game_mode = 2 {
 			_confirm_word_str = "SUBMIT"
 		}
 		
-		draw_text_transformed(global.sw/2,(global.sh*1)+(-110*_pos_scl),_confirm_word_str,0.15*_tscl,0.15*_tscl,0)
+		draw_text_transformed(global.sw/2,(_panel_mid_y)+(110*_scl),_confirm_word_str,0.15*_tscl,0.15*_tscl,0)
 		draw_set_alpha(0.3)
 	}
 	
 	draw_set_alpha(0.3)
 	draw_set_font(fnt_main_r)
 	//draw_text_transformed(global.sw/2,(global.sh*1)+(-240*_pos_scl),"your SECRET WORD is",0.12*_tscl,0.12*_tscl,0)
-	draw_text_transformed(global.sw/2,(global.sh*0)+(500*_scl),"your SECRET WORD is",0.12*_tscl,0.12*_tscl,0)
+	draw_text_transformed(global.sw/2,(_panel_mid_y)+(-55*_scl),"your SECRET WORD is",0.12*_tscl,0.12*_tscl,0)
 	draw_set_font(fnt_main)
 
 	
@@ -196,21 +230,17 @@ if global.game_phase = 0 {
 	}
 	
 	//draw_text_transformed(global.sw/2,(global.sh*1)+(-200*_pos_scl),string(_letters_str),0.3*_tscl,0.3*_tscl,0)
-	draw_text_transformed(global.sw/2,(global.sh*0)+(540*_scl),string(_letters_str),0.3*_tscl,0.3*_tscl,0)
+	draw_text_transformed(global.sw/2,(_panel_mid_y),string(_letters_str),0.3*_tscl,0.3*_tscl,0)
 	
 	draw_set_alpha(0.3)
-	
 	draw_set_font(fnt_main_r)
-	
 	if selected_word_length > 0 {
 		if selected_word_length <= 3 {
-			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
 		} else if selected_word_not_in_dictionary >= 1 {
-			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"not a valid word",0.15*_tscl,0.15*_tscl,0)
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"not a valid word",0.15*_tscl,0.15*_tscl,0)
 		} else if selected_word_already_guessed >= 1 {
-			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"already guessed",0.15*_tscl,0.15*_tscl,0)
-		} else {
-			//draw_text_transformed(global.sw/2,(global.sh*0.7)+(80*_pos_scl),selected_word_not_in_dictionary,0.15*_tscl,0.15*_tscl,0)
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"already guessed",0.15*_tscl,0.15*_tscl,0)
 		}
 	}
 
@@ -221,56 +251,113 @@ if global.game_phase = 0 {
 	//draw_text_transformed(global.sw/2,global.sh*0.8,"array:\n"+string(selected_word_array),0.12*_tscl,0.12*_tscl,0)
 	
 	
-} else if global.game_phase = 3 {
+}
+
+
+
+
+//playing or victory
+if global.game_phase = 3 || global.game_phase = 4 {
+	
 	
 	draw_set_alpha(0.3)
-	
-	draw_set_font(fnt_main_r)
-	draw_text_transformed(global.sw/2,75*_pos_scl,"can you guess the SECRET WORD?",0.15*_tscl,0.15*_tscl,0)
+	draw_set_color(c_white)
 	draw_set_font(fnt_main)
 	
+	if global.game_phase != 4 {
+	draw_set_font(fnt_main_r)
+	draw_text_transformed(global.sw/2,(_panel_mid_y)+(-95*_scl),"can you guess the SECRET WORD?",0.15*_tscl,0.15*_tscl,0)
+	draw_set_font(fnt_main)
+	}
 	
 	
-	//draw_text_transformed(global.sw*0.15,global.sh-30*_pos_scl,"BACK",0.12*_tscl,0.12*_tscl,0)
 	
-	if ready_for_phase3 = 1 {
-	//draw_text_transformed(global.sw*0.7,global.sh-30,"CONFIRM SECRET WORD",0.12*_tscl,0.12*_tscl,0)
+	
+	
+	if global.game_phase = 4 {
+	draw_set_font(fnt_main)
+	draw_set_color(_green_check_txt)
+	draw_set_alpha(0.9)
+	draw_sprite_ext(spr_checkmark,0,global.sw/2+(0*_scl),(_panel_mid_y)+(-120*_scl),(0.8+(0+(-0.02*(sin(obj_ctrl.timey*0.11)))))*_tscl,(0.8+(0+(0.02*(sin(obj_ctrl.timey*0.11)))))*_tscl,0,_green_check_col,0.2)
+	//draw_sprite_ext(spr_checkmark,0,global.sw/2+( 120*_scl),(_panel_mid_y)+(-120*_scl),0.6*_tscl,0.6*_tscl,0,_green_check_col,0.5+(0.3*(sin(obj_ctrl.timey*0.06))))
+	draw_text_transformed(global.sw/2,(_panel_mid_y)+(-110*_scl),"c o m p l e t e !",0.15*_tscl,0.15*_tscl,(0+(3*(sin(obj_ctrl.timey*0.06)))))
+	}
+	
+	draw_set_alpha(1)
+	draw_set_color(c_white)
+	
+
+	var _letters_str = ""
+
+	if global.game_phase = 4 {
+		_letters_str = secret_word_str	
+	} else {
+		for (var l = 0; l < selected_word_length; ++l) {
+			_letters_str += global.letters_grid[selected_word_array[l]]
+		}
+	}
+	
+
+	
+	if global.game_phase = 4 {
+		
+		draw_set_alpha(0.5)
+		draw_set_font(fnt_main_r)
+		
+		if global.gave_up = 0 {
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(-55*_scl),"SECRET WORD found!",0.2*_tscl,0.2*_tscl,0)
+		} else {
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(-55*_scl),"gave up... SECRET WORD was:",0.2*_tscl,0.2*_tscl,0)
+		}
 	}
 
 	
-	var _letters_str = ""
-	for (var l = 0; l < selected_word_length; ++l) {
-		_letters_str += global.letters_grid[selected_word_array[l]]
-	}
-	
-	draw_set_alpha(0.3)
-	
-	if selected_word_length >= 4 {
-		draw_set_alpha(0.7)
-	}
-	
+	draw_set_font(fnt_main)
 	if _letters_str != "" {
-		draw_text_transformed(global.sw/2,(global.sh*0)+(540*_scl),string(_letters_str)+"?",0.3*_tscl,0.3*_tscl,0)
+		
+		if global.game_phase = 4 {
+			
+			draw_set_alpha(0.9)
+			draw_set_color(_green_check_txt)
+			
+		} else {
+			
+			draw_set_alpha(0.3)
+			if selected_word_length >= 4 {
+				draw_set_alpha(0.7)
+			}
+			
+			_letters_str += "?"
+		}
+		
+		draw_text_transformed(global.sw/2,_panel_mid_y,string(_letters_str),0.3*_tscl,0.3*_tscl,0)
 	}
 	
-	draw_set_alpha(0.3)
-	draw_set_font(fnt_main_r)
-	if selected_word_length > 0 {
-		if selected_word_length <= 3 {
-			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
-		} else if selected_word_not_in_dictionary >= 1 {
-			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"not a valid word",0.15*_tscl,0.15*_tscl,0)
-		} else if selected_word_already_guessed >= 1 {
-			draw_text_transformed(global.sw/2,(global.sh*0)+(590*_scl),"already guessed",0.15*_tscl,0.15*_tscl,0)
+	draw_set_color(c_white)
+	
+	
+	if global.game_phase = 3 {
+		draw_set_alpha(0.3)
+		draw_set_font(fnt_main_r)
+		if selected_word_length > 0 {
+			if selected_word_length <= 3 {
+				draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
+			} else if selected_word_not_in_dictionary >= 1 {
+				draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"not a valid word",0.15*_tscl,0.15*_tscl,0)
+			} else if selected_word_already_guessed >= 1 {
+				draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"already guessed",0.15*_tscl,0.15*_tscl,0)
+			}
 		}
 	}
 	//draw_text_transformed(global.sw/2,global.sh*0.8,"array:\n"+string(selected_word_array),0.12*_tscl,0.12*_tscl,0)
 	
+	
+	draw_set_alpha(0.3)
 	draw_set_valign(fa_top)
 	draw_set_font(fnt_main_r)
 	var _guesses_str = " guesses"
 	if guesses_count = 1 {_guesses_str = " guess"}
-	draw_text_transformed(global.sw/2,(global.sh*0)+(620*_scl),string(guesses_count)+string(_guesses_str),0.12*_tscl,0.12*_tscl,0)
+	draw_text_transformed(global.sw/2,(_panel_mid_y)+(90*_scl),string(guesses_count)+string(_guesses_str),0.12*_tscl,0.12*_tscl,0)
 	
 	var _guess_list_str = ""
 	for (var i = 1; i < array_length(guesses_list); ++i) {
@@ -280,13 +367,21 @@ if global.game_phase = 0 {
 		}
 	}
 	
-	draw_text_ext_transformed(global.sw/2,(global.sh*0)+(650*_scl),string(_guess_list_str),150,global.sw*0.45*10,0.1*_tscl,0.1*_tscl,0)
+	draw_text_ext_transformed(global.sw/2,(_panel_mid_y)+(120*_scl),string(_guess_list_str),150,global.sw*0.6*10*(1/global.pr),0.1*_tscl,0.1*_tscl,0)
+	
+	
+	
+	
 	
 	
 	draw_set_valign(fa_middle)
 	draw_set_font(fnt_main)
+	draw_set_alpha(1)
 	
-} else if global.game_phase = 4 {
+} 
+
+/*
+if global.game_phase = 44 {
 	
 	draw_set_font(fnt_main_r)
 	
@@ -359,6 +454,7 @@ if global.game_phase = 0 {
 	
 	
 }
+*/
 
 
 if global.game_phase = 1 || global.game_phase = 2 {
@@ -412,7 +508,7 @@ draw_set_font(fnt_main)
 draw_set_alpha(0.6)
 
 if global.game_phase >= 1 {
-draw_text_transformed(global.sw*0.1,25*_pos_scl,"menu",0.12*_tscl,0.12*_tscl,0)
+draw_text_transformed(global.sw*0.1,_nav_mid_y,"menu",0.12*_tscl,0.12*_tscl,0)
 }
 
 if global.game_phase >= 3 {
@@ -423,10 +519,10 @@ if global.game_phase >= 3 {
 		draw_set_alpha(0.8*(0.8+(0.4*(sin(obj_ctrl.timey*0.08)))))
 		_sscl = 0.12*(1+(0.1*(sin(obj_ctrl.timey*0.08))))
 		
-		draw_sprite_ext(spr_sqr512,0,global.sw*0.9,25*_pos_scl,1.2*_sscl*_tscl,0.6*_sscl*_tscl,0,make_color_hsv(100,255,210),draw_get_alpha()*1.2)
+		draw_sprite_ext(spr_sqr512,0,global.sw*0.9,_nav_mid_y,1.2*_sscl*_tscl,0.6*_sscl*_tscl,0,make_color_hsv(100,255,210),draw_get_alpha()*1.2)
 	}
 	
-	draw_text_transformed(global.sw*0.9,25*_pos_scl,"share",_sscl*_tscl,_sscl*_tscl,0)
+	draw_text_transformed(global.sw*0.9,_nav_mid_y,"share",_sscl*_tscl,_sscl*_tscl,0)
 	
 	if global.game_phase < 4 {
 		draw_text_transformed(global.sw*0.1,global.sh*1+(-25*_pos_scl),"give up",0.12*_tscl,0.12*_tscl,0)
