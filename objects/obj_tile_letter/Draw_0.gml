@@ -3,7 +3,7 @@ if (live_call()) return live_result;
 if 1=1 {
 	
 	my_text_scl = 2.2 //2.2 //2.2
-	var _tile_scl_bs = 1 //1 //+(-0.05*global.am_creating_fd2)
+	var _tile_scl_bs = 1.002 //1 //+(-0.05*global.am_creating_fd2)
 	var _tile_shape = 0
 	global.tile_raises = 0
 	
