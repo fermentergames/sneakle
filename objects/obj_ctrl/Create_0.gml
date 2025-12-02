@@ -104,6 +104,13 @@ if !instance_exists(obj_ctrlp) {
 timey = 0
 
 global.game_phase = 0
+global.game_timer = 0
+global.game_timer_meta = 0
+
+global.game_hints_used = 0
+global.game_hint_length_used = 0
+global.game_hint_letter_used = 0
+
 just_phase_changed = 0
 
 ready_for_phase2 = 0

@@ -289,6 +289,11 @@ if (live_call()) return live_result;
 		prev_targ_id = targ_id
 		am_set_flash = 1
 		
+		spawn_slam = 2+(-0.5*tile_col*(1/global.game_grid_size))+(-0.5*tile_row*(1/global.game_grid_size))	
+		image_angle = (-120+random(240))
+		
+		
+		
 	}
 	
 	

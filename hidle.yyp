@@ -205,6 +205,7 @@
     {"id":{"name":"INIT_HTML","path":"scripts/INIT_HTML/INIT_HTML.yy",},},
     {"id":{"name":"parse_query","path":"scripts/parse_query/parse_query.yy",},},
     {"id":{"name":"scr_board_init","path":"scripts/scr_board_init/scr_board_init.yy",},},
+    {"id":{"name":"scr_format_time","path":"scripts/scr_format_time/scr_format_time.yy",},},
     {"id":{"name":"scr_generate_board_setup","path":"scripts/scr_generate_board_setup/scr_generate_board_setup.yy",},},
     {"id":{"name":"scr_generate_pick_word","path":"scripts/scr_generate_pick_word/scr_generate_pick_word.yy",},},
     {"id":{"name":"scr_letter_data_init","path":"scripts/scr_letter_data_init/scr_letter_data_init.yy",},},

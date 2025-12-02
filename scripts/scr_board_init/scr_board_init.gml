@@ -21,6 +21,11 @@ if (live_call()) return live_result;
 	}
 	*/
 	
+	global.game_timer = 0//reset
+	global.game_hints_used = 0
+	global.game_hint_length_used = 0
+	global.game_hint_letter_used = 0
+	
 	global.letters_grid = 0//reset
 	
 	

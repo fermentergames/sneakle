@@ -5,6 +5,11 @@ if (live_call()) return live_result;
 timey += 1
 
 
+if global.game_phase = 3 {
+	global.game_timer += 1
+}
+
+
 if global.game_phase != 4 {
 	if keyboard_check_pressed(vk_space) {
 	
@@ -695,6 +700,39 @@ if mouse_check_button_pressed(mb_left) {
 	
 		}
 		
+		
+		//hint
+		if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.85)-(256*0.2*_tscl),(global.sh+(-30*global.pr))-(256*0.08*_tscl),(global.sw*0.85)+(256*0.2*_tscl),(global.sh+(-30*global.pr))+(256*0.08*_tscl)) {
+		
+			
+			
+		
+			if 1 = 1 {
+				
+				global.game_hints_used += 1
+				
+				show_debug_message("HINT! "+string(global.game_hints_used))
+							
+				var _event_struct = { //
+					level: global.game_hints_used,
+				};
+				GoogHit("hint_used",_event_struct)
+				
+				
+				if global.game_hints_used = 1 {
+					global.game_hint_length_used = 1	
+				} else {
+					if global.game_hint_letter_used < string_length(secret_word_str) {
+						global.game_hint_letter_used += 1
+					}
+				}
+				
+			}
+
+	
+		}
+		
+		
 	} else if global.game_phase = 4 { //
 		
 		
@@ -807,12 +845,29 @@ if selecting >= 1 {
 			
 			_too_far_trigger_release = 1
 			
+			selecting = 0
+			selected_word_latest_tile = -1
+			selected_word_latest_tile_id = -1
+	
+			with (obj_tile_letter) {
+				if am_selected >= 1 {
+					am_selected = 0
+					am_selected_start = 0
+					am_selected_end = 0
+					am_selected_num = 0
+					if global.game_phase = 2 && _valid_guess = 1 {
+						am_part_of_secret_word = 1
+					}
+				}	
+			}
+			
+			
 		}
 	}
 }
 
 
-if mouse_check_button_released(mb_left) || _too_far_trigger_release = 1 {
+if mouse_check_button_released(mb_left) {//|| _too_far_trigger_release = 1 {
 	
 	if (global.game_phase = 2 || global.game_phase = 3) && just_phase_changed <= 0  {
 		if selecting >= 1 {
@@ -979,12 +1034,12 @@ var _tile_sz_and_pad = global.tile_size+global.pad_size
 //global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+100)/w)*1.5
 //global.cam_zoom_fd = lerp(global.cam_zoom_fd,global.cam_zoom+(-0.35*(1-global.am_creating_fd)),0.05)
 
-global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+(w*0.0))/w)*1.5//1.5
+global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+(w*0.0))/w)*1.3//1.5
 //global.cam_zoom = (((_tile_sz_and_pad*(global.game_grid_size))))*0.005 //+(w*0.0))/w)*10
 
 if global.sw >= global.sh*0.65 {
 	global.is_landscape = 1
-	global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+(h*0.0))/h)*2.8
+	global.cam_zoom = (((_tile_sz_and_pad*global.game_grid_size)+(h*0.0))/h)*2.4
 }
 global.cam_zoom_fd = lerp(global.cam_zoom_fd,global.cam_zoom+(0.35*(global.am_creating_fd)),0.05)
 
@@ -998,7 +1053,7 @@ camera_set_view_size(view_camera[0], w*global.cam_zoom_fd, h*global.cam_zoom_fd)
 //camera_set_view_pos(view_camera[0],-(w*global.cam_zoom_fd/2),(-h*global.cam_zoom_fd*0.0)+(-_tile_sz_and_pad*global.game_grid_size*0.5)+(-110*global.cam_zoom_fd))                                                                
 
 
-var _cam_y_pos = (-h*global.cam_zoom_fd*1)+(-_tile_sz_and_pad*global.game_grid_size*-0.5)+(_tile_sz_and_pad*global.cam_zoom_fd)
+var _cam_y_pos = (-h*global.cam_zoom_fd*1)+(-_tile_sz_and_pad*global.game_grid_size*-0.5)+(65*global.cam_zoom_fd)
 
 var _cam_y_pos_creating = (-h*global.cam_zoom_fd*0.0)+(-_tile_sz_and_pad*global.game_grid_size*0.5)+(-110*global.cam_zoom_fd)
 
