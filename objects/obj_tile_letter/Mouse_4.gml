@@ -39,6 +39,9 @@ if global.game_phase = 2 || global.game_phase = 3 {
 		obj_ctrl.selected_word_latest_tile_id = id
 		obj_ctrl.selected_word_array[obj_ctrl.selected_word_length-1] = tile_id
 		obj_ctrl.selected_word_array_id[obj_ctrl.selected_word_length-1] = id
+		
+		audio_play_sound(snd_mm_toggle_on,0,0,0.2,0,0.6+(0.06*obj_ctrl.selected_word_length))
+				
 	}
 
 }

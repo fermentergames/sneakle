@@ -11,12 +11,12 @@
   "androidsourcedir":"",
   "author":"",
   "classname":"",
-  "copyToTargets":32,
+  "copyToTargets":17179869216,
   "description":"",
   "exportToGame":true,
   "extensionVersion":"0.0.1",
   "files":[
-    {"$GMExtensionFile":"","%Name":"","constants":[],"copyToTargets":32,"filename":"myHTML5Extension.js","final":"","functions":[
+    {"$GMExtensionFile":"v1","%Name":"","constants":[],"copyToTargets":19327352864,"filename":"myHTML5Extension.js","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"showElemID","argCount":0,"args":[1,],"documentation":"","externalName":"showElemID","help":"","hidden":false,"kind":5,"name":"showElemID","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"hideElemID","argCount":0,"args":[1,],"documentation":"","externalName":"hideElemID","help":"","hidden":false,"kind":5,"name":"hideElemID","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"addClassElemID","argCount":0,"args":[1,1,],"documentation":"","externalName":"addClassElemID","help":"","hidden":false,"kind":5,"name":"addClassElemID","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
@@ -31,12 +31,7 @@
         {"$GMExtensionFunction":"","%Name":"focus_window","argCount":0,"args":[],"documentation":"","externalName":"","help":"","hidden":false,"kind":5,"name":"focus_window","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"generatePuzzleList","argCount":0,"args":[],"documentation":"","externalName":"","help":"","hidden":false,"kind":5,"name":"generatePuzzleList","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"funcCloseArchiveMenu","argCount":0,"args":[],"documentation":"","externalName":"","help":"","hidden":false,"kind":5,"name":"funcCloseArchiveMenu","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
-      ],"init":"","kind":5,"name":"","order":[
-        {"name":"showElemID","path":"extensions/myHTML5Extension/myHTML5Extension.yy",},
-        {"name":"hideElemID","path":"extensions/myHTML5Extension/myHTML5Extension.yy",},
-        {"name":"addClassElemID","path":"extensions/myHTML5Extension/myHTML5Extension.yy",},
-        {"name":"removeClassElemID","path":"extensions/myHTML5Extension/myHTML5Extension.yy",},
-      ],"origname":"","ProxyFiles":[],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
+      ],"init":"","kind":5,"name":"","origname":"","ProxyFiles":[],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
   ],
   "gradleinject":"",
   "hasConvertedCodeInjection":true,

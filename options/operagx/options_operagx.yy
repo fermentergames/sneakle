@@ -1,5 +1,5 @@
 {
-  "$GMOperaGXOptions":"",
+  "$GMOperaGXOptions":"v1",
   "%Name":"Opera GX",
   "name":"Opera GX",
   "option_operagx_display_cursor":true,
@@ -23,6 +23,7 @@
   "option_operagx_team_id":"3e4d27d9-8833-46a4-b019-ee82041e3877",
   "option_operagx_team_name":"FermenterGames studio",
   "option_operagx_texture_page":"4096x4096",
+  "option_operagx_transparent_background":false,
   "option_operagx_version":"1.0.0.3",
   "resourceType":"GMOperaGXOptions",
   "resourceVersion":"2.0",

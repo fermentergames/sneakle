@@ -7,6 +7,8 @@ draw_set_font(fnt_main)
 //	device_mouse_dbclick_enable(true);
 //}
 
+
+
 var _letter_hue = 160
 global.background_col = make_color_hsv(_letter_hue,110,30)
 var background = layer_background_get_id(layer_get_id("Background"));
@@ -19,6 +21,7 @@ global.grid_y_origin = 0
 
 global.sw = browser_width
 global.sh = browser_height
+global.ar = global.sw/global.sh
 global.cam_zoom = 1
 global.cam_zoom_fd = 1
 
@@ -29,6 +32,7 @@ global.am_creating_fd = 1
 global.am_creating_fd2 = 1
 
 global.am_creating = 0
+global.skip_create = 0
 
 global.am_generate_random = 0
 
@@ -46,11 +50,18 @@ global.pad_size = 0
 
 global.loadBoard = ""
 global.loadSecret = ""
-global.show_any_menu = 0
-global.show_any_menu_fd = 0
+global.show_any_modal = 0
+global.show_any_modal_fd = 0
 global.show_input_prompt = 0
 global.show_export_prompt = 0
 global.show_archives = 0
+global.show_lb = 0
+global.show_howto = 0
+global.show_options = 0
+
+global.show_lb_fd = 0
+global.show_howto_fd = 0
+global.show_options_fd = 0
 
 global.tile_style = 1
 global.tile_raises = 0
@@ -58,14 +69,9 @@ global.tile_raises = 0
 global.current_copy_code = "ABCD_1-2-3-4"
 global.current_copy_url = "https://fermentergames.github.io/Sneakle/?loadBoard=ABCD&loadSecret=1-2-3-4"
 
-global.dictionary = new CheckWordDictionary(working_directory + "dictionaries/full/full.txt");
-global.dictionary_simple = new CheckWordDictionary(working_directory + "dictionaries/simple/full.txt");
-
-global.dictionary_generate = new PickWordDictionary(working_directory + "dictionaries/simple_by_length/5.txt");
-
 global.generated_word = "HARMONY"
 
-scr_letter_data_init()
+global.light_mode = 0
 
 //am_screenshotting = 0
 //am_screenshotting_fd = 0
@@ -79,7 +85,56 @@ if os_browser != browser_not_a_browser {
 	global.is_browser = 1	
 }
 
+
+
+var _info_ds_map = os_get_info();
+
+show_debug_message("os_get_info()")
+show_debug_message(_info_ds_map)
+show_debug_message(_info_ds_map[? "mobile"])
+
+//doesn't work on html5, only reddit
+global.is_mobile = 0
+if _info_ds_map[? "mobile"] = 1 {
+	global.is_mobile = 1
+	show_debug_message("mobile detected")
+} else {
+	show_debug_message("mobile NOT detected")	
+}
+
+var _info_href = _info_ds_map[? "window.location.href"]
+show_debug_message("_info_href: "+string(_info_href))
+global.is_reddit = 0
+if string_count("devvit",_info_href) > 0 {
+	global.is_reddit = 1
+	show_debug_message("Reddit detected")
+} else {
+	show_debug_message("Reddit NOT detected")	
+}
+
+
+show_debug_message("--");
+var map_string = json_encode(_info_ds_map);
+show_debug_message(map_string);
+
+
+ds_map_destroy(_info_ds_map) 
+
+
+
 global.game_grid_size = 4
+
+gui_pos_scl = 1
+gui_sz_scl = 1
+gui_txt_scl = 1
+
+gui_panel_bottom_y = 1
+gui_panel_top_y	 = 1
+gui_panel_mid_y	 = 1
+gui_nav_mid_y		 = 1
+gui_footer_top_y =	1
+gui_footer_mid_y =	1
+
 
 curr_width = browser_width
 curr_height = browser_height
@@ -87,9 +142,7 @@ curr_height = browser_height
 event_user(0);
 
 if global.is_browser = 1 {
-	
-	
-
+	//
 } else {
 	if !instance_exists(obj_gmlive) {
 		instance_create_layer(x,y,layer,obj_gmlive)
@@ -102,6 +155,10 @@ if !instance_exists(obj_ctrlp) {
 
 
 timey = 0
+pulse_1 = sin(timey*0.09)
+pulse_2 = sin(timey*0.23)
+pulse_3 = sin(timey*0.6)
+pulse_4 = sin(timey*0.02)
 
 global.game_phase = 0
 global.game_timer = 0
@@ -110,6 +167,12 @@ global.game_timer_meta = 0
 global.game_hints_used = 0
 global.game_hint_length_used = 0
 global.game_hint_letter_used = 0
+
+global.game_score_guesses_and_hints = 0
+global.game_score_time_bonus = 0
+global.game_score_total = 0
+
+ctrl_fd = 0
 
 just_phase_changed = 0
 
@@ -141,13 +204,37 @@ guesses_count = 0
 guesses_list = 0
 guesses_list[1] = ""
 
+global.tile_letter[1] = -1
+
+glow_trail_fd = 0
+glow_trail_letter = 1
+glow_trail_perc = 0
+gx1 = 0
+gy1 = 0
+
+gdir = 0
+gdir_fd = 0
+
+game_finished = 0
+game_finished_fd = 0
+game_finished_delay = 0
+game_finished_delay_max = 120
+
+game_finished_fd2 = 0
+
+game_finished_flash = 0
+game_finished_flash2 = 0
 
 
 randomize()
 
 p_string = 0 //reset
-get_query()
 
+if global.is_reddit = 1 {
+	//get_query_reddit() //handled in obj_ctrlp create with http response
+} else {
+	get_query()
+}
 //if global.loadBoard = "" && global.loadSecret = "" {
 	
 //	show_debug_message("no query loaded, try to load from parent")

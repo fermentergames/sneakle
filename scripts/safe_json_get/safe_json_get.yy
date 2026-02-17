@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"safe_json_get",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"safe_json_get",
+  "parent":{
+    "name":"Scripts",
+    "path":"folders/Scripts.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

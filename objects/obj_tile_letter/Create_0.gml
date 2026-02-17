@@ -37,6 +37,8 @@ am_clued_flash2 = 0
 am_clued_won = 0
 am_clued_won_fd = 0
 
+am_corner = 0
+
 am_samelettered = 0
 am_samelettered_fd = 0
 

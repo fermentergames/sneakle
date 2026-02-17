@@ -6,10 +6,8 @@ if (live_call()) return live_result;
 	//curr_height = browser_height
 	
 	show_debug_message("scr_board_init")
-
 	
-
-
+with (obj_ctrl) {
 	
 
 
@@ -26,12 +24,19 @@ if (live_call()) return live_result;
 	global.game_hint_length_used = 0
 	global.game_hint_letter_used = 0
 	
+	//reset
+	global.game_score_guesses_and_hints = 0
+	global.game_score_time_bonus = 0
+	global.game_score_total = 0
+	
 	global.letters_grid = 0//reset
 	
 	
 	if global.loadBoard = "" {
 				
 		global.letter_set_default = "AAAAAAAAAAAAABBBCCCDDDDDDEEEEEEEEEEEEEEEEEEFFFGGGGHHHIIIIIIIIIIIIJJKKLLLLLMMMNNNNNNNNOOOOOOOOOOOPPPQQRRRRRRRRRSSSSSSTTTTTTTTTUUUUUUVVVWWWXXYYYZZ"
+	
+		//global.letter_set_default = "TSECRETWORDINSIDE"
 	
 		//global.letter_set_default = "AAAAQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 	
@@ -60,7 +65,7 @@ if (live_call()) return live_result;
 			//show_debug_message(global.letters_bag[l])
 		//}
 		
-		show_debug_message(global.letters_bag)
+		//show_debug_message(global.letters_bag)
 		
 		var _grid_sz = global.game_grid_size
 	
@@ -192,7 +197,7 @@ if (live_call()) return live_result;
 				
 				
 				for (var l = 1; l <= array_length(global.letter_data); ++l) {
-					show_debug_message(string(l)+": "+string(my_letter_str))
+					//show_debug_message(string(l)+": "+string(my_letter_str))
 				   if my_letter_str = global.letter_data[l,1] {
 						my_letter_num = l
 						l = array_length(global.letter_data)
@@ -307,6 +312,26 @@ if (live_call()) return live_result;
 				};
 				GoogHit("screen_view",_event_struct)
 			
+			
+			
+				with (obj_ctrlp) {
+					if load_state_complete >= 1 {
+						//if state of this puzzle is not started, update state AND user profile stat
+						if level_status <= LEVEL_STATUS_NotStarted {
+							level_status = LEVEL_STATUS_Started
+							api_save_state(postId,{level_status},undefined)
+							if puzzle_is_daily = 1 {
+								stat_d_total_started = string(real(stat_d_total_started)+1)
+								api_save_profile({stat_d_total_started},undefined)
+							} else {
+								stat_u_total_started = string(real(stat_u_total_started)+1)
+								api_save_profile({stat_u_total_started},undefined)
+							}
+						}
+					} else {
+						show_debug_message("load_state_complete but board init'd, uh oh!")	
+					}
+				}
 				
 				global.game_phase = 3
 				just_phase_changed = 1
@@ -314,6 +339,77 @@ if (live_call()) return live_result;
 			}
 		}
 		
+		////////////////////////////
+		
+		with (obj_ctrlp) {
+			
+			if already_finished >= 1 {
+			
+				show_debug_message("already_finished = 1, auto complete board")
+				
+				//now complete game from obj_ctrl
+				with (obj_ctrl) {
+					
+					//set game vars from api_load_state
+					guesses_count = obj_ctrlp.score_guesses
+					global.game_hints_used = obj_ctrlp.score_hints
+					global.game_timer = obj_ctrlp.score_time
+					global.game_score_total = obj_ctrlp.score_combined //gets recalc'd anyway
+					
+					
+					global.game_phase = 4
+					game_finished = 1
+					game_finished_flash = 1
+					game_finished_delay = game_finished_delay_max
+					
+					if obj_ctrlp.level_status = LEVEL_STATUS_GaveUp {
+						global.gave_up = 1
+					}
+				
+					scr_game_score_calc()
+					scr_game_score_submit()
+	
+					var _event_struct = { //
+						level: guesses_count,
+					};
+					GoogHit("already_finished_load",_event_struct)
+				
+					selected_word_array_id = secret_word_array_id
+					selected_word_length = secret_word_length
+					
+					glow_trail_fd = 0
+					glow_trail_letter = 1
+					glow_trail_perc = 0
+					selected_word_array_id[glow_trail_letter-1].am_selected_flash = 1
+				
+					with (obj_tile_letter) {
+						for (var l = 0; l < obj_ctrl.secret_word_length; ++l) {
+							if obj_ctrl.secret_word_array[l] = tile_id {
+								//obj_ctrl.selected_word_array_id[l] = tile_id
+								am_part_of_secret_word = 1
+								am_clued = 1
+								am_clued_flash = 1
+								am_clued_won = 1
+								am_exed = 0
+							}
+						}
+						if am_clued = 0 {
+							//am_exed = 1 //ex all
+							am_samelettered = 0
+						}
+					}	
+				}
+				
+			}
+	
+		}
+		
 	}
+	
+	//
+	
+	
+	
+}
 	
 }

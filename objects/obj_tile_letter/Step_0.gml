@@ -1,9 +1,9 @@
 if (live_call()) return live_result;
 
 
-if my_letter_num != 0 {
-	//my_letter_str	
-}
+//if my_letter_num != 0 {
+//	//my_letter_str	
+//}
 
 if am_dragging = 1 {
 	
@@ -74,11 +74,15 @@ if am_set = 0 && am_dragging = 0 {
 }
 
 
+
 var _fast_lerp = clamp(am_set-am_dragging,0,1)
 
-x = lerp(x,x_targ,0.2+(0.3*_fast_lerp))
-y = lerp(y,y_targ+((1-born_fd)*0),0.2+(0.3*_fast_lerp))
-
+if x != x_targ {
+	x = lerp(x,x_targ,0.2+(0.3*_fast_lerp))
+}
+if y != y_targ {
+	y = lerp(y,y_targ+((1-born_fd)*0),0.2+(0.3*_fast_lerp))
+}
 
 var _dragging_or_set = clamp(am_dragging_fd+am_set_fd,0,1)
 
@@ -140,21 +144,23 @@ if am_set = 0 || am_dragging = 1 {
 	image_angle -= angle_difference(image_angle,_ang_targ)*0.06*clamp(am_dragging_fd+am_being_pushed,0,1)
 } else {
 	var _tile_ang = 0//+(2*global.am_creating_fd2*(sin((-1*tile_id)+(obj_ctrl.timey*0.1))))
-	image_angle -= angle_difference(image_angle,_tile_ang)*0.3
+	if image_angle != 0 {
+		image_angle -= angle_difference(image_angle,_tile_ang)*0.3
+	}
 }
 
 
 if tile_going_to_replace > 0 {
-tile_going_to_replace -= 0.1 //reset
+	tile_going_to_replace -= 0.1 //reset
 }
 
 if am_dragging = 1 {
-var _col_tile = collision_point(x,y,obj_tile_letter,true,true)
+	var _col_tile = collision_point(x,y,obj_tile_letter,true,true)
 	
-if _col_tile != noone {
-	if _col_tile.am_set = 1 && _col_tile.am_dragging = 0 {
-		_col_tile.tile_going_to_replace = 1	
+	if _col_tile != noone {
+		if _col_tile.am_set = 1 && _col_tile.am_dragging = 0 {
+			_col_tile.tile_going_to_replace = 1	
+		}
 	}
-}
 }
 

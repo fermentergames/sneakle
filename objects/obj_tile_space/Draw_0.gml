@@ -1,19 +1,24 @@
 if (live_call()) return live_result;
 
 
-image_alpha = 0.02
 
-if global.game_phase = 1 {
+
+if global.game_phase = 1 && global.game_phase = 2 {
+	
+	image_alpha = 0.02
+	
 	if mouse_check_button(mb_left) {
 		if point_distance(mouse_x,mouse_y,x,y)	< 30 {
 			image_alpha = 0.1
 		}
 	}
+
+	draw_sprite_ext(spr_sqr512,2,x,y+0,image_xscale*0.9,image_yscale*0.9,image_angle,c_white,image_alpha)
+
 }
 
 //draw_self()
 
-draw_sprite_ext(spr_sqr512,2,x,y+0,image_xscale*0.9,image_yscale*0.9,image_angle,c_white,image_alpha)
 
 
 //if 1=0 {

@@ -50,7 +50,7 @@ function scr_update_copy_code(){
 	show_debug_message(global.current_copy_url)
 	
 
-	
+	//js
 	changeQuery("loadBoard",string(queryStr[0]),"loadSecret",queryStr[1])
 	
 

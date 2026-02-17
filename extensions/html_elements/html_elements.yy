@@ -16,7 +16,7 @@
   "exportToGame":true,
   "extensionVersion":"0.0.1",
   "files":[
-    {"$GMExtensionFile":"","%Name":"","constants":[],"copyToTargets":-1,"filename":"html_elements.js","final":"","functions":[
+    {"$GMExtensionFile":"v1","%Name":"","constants":[],"copyToTargets":-1,"filename":"html_elements.js","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"_html_elements_create","argCount":0,"args":[1,1,1,1,],"documentation":"","externalName":"","help":"_html_elements_create(type, html_id, parent, insert_after)","hidden":false,"kind":5,"name":"_html_elements_create","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"_html_elements_remove","argCount":0,"args":[1,],"documentation":"","externalName":"","help":"_html_elements_remove(id)","hidden":false,"kind":5,"name":"_html_elements_remove","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"_html_elements_set_property","argCount":0,"args":[1,1,1,],"documentation":"","externalName":"","help":"_html_elements_set_property(html_id, key, value)","hidden":false,"kind":5,"name":"_html_elements_set_property","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
@@ -25,16 +25,7 @@
         {"$GMExtensionFunction":"","%Name":"_html_elements_get_y","argCount":0,"args":[],"documentation":"","externalName":"","help":"_html_elements_get_y(html_id)","hidden":false,"kind":5,"name":"_html_elements_get_y","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"_html_elements_get_mouse_x","argCount":0,"args":[],"documentation":"","externalName":"","help":"_html_elements_get_mouse_x()","hidden":false,"kind":5,"name":"_html_elements_get_mouse_x","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"_html_elements_get_mouse_y","argCount":0,"args":[],"documentation":"","externalName":"","help":"_html_elements_get_mouse_x()","hidden":false,"kind":5,"name":"_html_elements_get_mouse_y","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
-      ],"init":"","kind":5,"name":"","order":[
-        {"name":"_html_elements_create","path":"extensions/html_elements/html_elements.yy",},
-        {"name":"_html_elements_remove","path":"extensions/html_elements/html_elements.yy",},
-        {"name":"_html_elements_set_property","path":"extensions/html_elements/html_elements.yy",},
-        {"name":"_html_style_add","path":"extensions/html_elements/html_elements.yy",},
-        {"name":"_html_elements_get_x","path":"extensions/html_elements/html_elements.yy",},
-        {"name":"_html_elements_get_y","path":"extensions/html_elements/html_elements.yy",},
-        {"name":"_html_elements_get_mouse_x","path":"extensions/html_elements/html_elements.yy",},
-        {"name":"_html_elements_get_mouse_y","path":"extensions/html_elements/html_elements.yy",},
-      ],"origname":"","ProxyFiles":[],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
+      ],"init":"","kind":5,"name":"","origname":"","ProxyFiles":[],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
   ],
   "gradleinject":"",
   "hasConvertedCodeInjection":true,

@@ -25,6 +25,8 @@ if global.game_phase = 2 || global.game_phase = 3 {
 					scr_validate_word()
 				}
 				
+				audio_play_sound(snd_mm_toggle_on,0,0,0.2,0,0.6+(0.06*obj_ctrl.selected_word_length))
+				
 				
 			}
 		
@@ -53,7 +55,7 @@ if global.game_phase = 2 || global.game_phase = 3 {
 				//obj_ctrl.selected_word_array = array_resize(obj_ctrl.selected_word_array,am_selected_num)
 				
 				am_selected = 1
-				am_selected_flash = 1
+				//am_selected_flash = 1
 		
 				obj_ctrl.selected_word_length = am_selected_num
 				//am_selected_num = obj_ctrl.selected_word_length
@@ -63,6 +65,8 @@ if global.game_phase = 2 || global.game_phase = 3 {
 				obj_ctrl.selected_word_latest_tile_id = id
 				obj_ctrl.selected_word_array[obj_ctrl.selected_word_length-1] = tile_id
 				obj_ctrl.selected_word_array_id[obj_ctrl.selected_word_length-1] = id
+				
+				audio_play_sound(snd_mm_toggle_off,0,0,0.14,0,0.5+(0.06*obj_ctrl.selected_word_length))
 				
 				with (obj_ctrl) {
 					scr_validate_word()
