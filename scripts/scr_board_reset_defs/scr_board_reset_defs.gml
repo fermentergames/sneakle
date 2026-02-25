@@ -31,7 +31,7 @@ with (obj_ctrl) {
 	selected_word_array = 0
 	selected_word_array_id = 0
 	selected_word_latest_tile = -1
-	selected_word_latest_tile_id = -1
+	selected_word_latest_tile_id = noone
 	selected_word_not_in_dictionary = 0
 	selected_word_is_valid = 0
 	selected_word_base_points = 0

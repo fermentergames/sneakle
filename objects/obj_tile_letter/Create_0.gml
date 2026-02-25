@@ -42,6 +42,8 @@ am_corner = 0
 am_samelettered = 0
 am_samelettered_fd = 0
 
+am_hovered = 0
+
 
 targ_id = self//instance_nearest(x,y,obj_tile_space)
 x_targ = targ_id.x
@@ -62,9 +64,14 @@ image_blend_base = image_blend
 
 my_text_scl = 2
 
+swipe_radius = 28
+
+hovered_over_changer = 0
+
 
 
 tile_going_to_replace = 0
+tile_going_to_replace_id = noone
 
 
 

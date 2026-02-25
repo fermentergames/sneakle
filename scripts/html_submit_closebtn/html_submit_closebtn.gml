@@ -8,6 +8,7 @@ function html_submit_closebtn() {
 	global.show_howto = 0
 	global.show_options = 0
 	
+	//global.show_submitting_post = 0
 	
 
 	//removeClassElemID("puzzleMenuWrapper","show")

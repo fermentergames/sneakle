@@ -14,6 +14,8 @@ global.dictionary_generate = new PickWordDictionary(working_directory + "diction
 
 scr_letter_data_init()
 
+global.light_mode = 0
+
 #macro COL_RED_EXED make_color_hsv(245,220,20)
 #macro COL_RED_EXED_BORD make_color_hsv(250,255,205)
 #macro COL_CLUED_GREEN make_color_hsv(100,255,210)

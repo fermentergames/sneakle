@@ -8,12 +8,12 @@ if global.game_phase = 1 {
 
 	if _col_tile != noone {
 		if _col_tile.am_set = 1 && _col_tile.am_dragging = 0 {
-			tile_filled = 1	
+			tile_filled = 1
 		}
 	}
 
 } else {
-	tile_filled = 1	
+	tile_filled = 1
 }
 
 

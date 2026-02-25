@@ -7,6 +7,9 @@ draw_set_color(c_black)
 //gpu_set_blendmode(bm_add)
 
 
+
+
+
 if selected_word_length >= 0 && (selecting = 1 || global.game_phase = 2 || global.game_phase = 4) && is_array(selected_word_array_id) {
 
 
@@ -32,7 +35,7 @@ if selected_word_length >= 0 && (selecting = 1 || global.game_phase = 2 || globa
 	//selected starting letter highlight
 	draw_sprite_ext(spr_circ512,0,_lx1,_ly1,(48/512),(48/512),0,_line_col,1)
 
-	if selected_word_length >= 2 {
+	if selected_word_length >= 2 && (selecting >= 1 || (global.game_phase = 2 && ready_for_phase3 >= 1) || (global.game_phase = 4)) {
 	for (var l = 1; l < selected_word_length; ++l) {
 		//
 	
@@ -80,7 +83,7 @@ if selected_word_length >= 0 && (selecting = 1 || global.game_phase = 2 || globa
 	//show_debug_message(selected_word_length)
 	
 	//line to current cursor
-	if global.game_phase < 4 {
+	if global.game_phase < 4 && selecting >= 1 && selected_word_length > 0 {
 	for (var l = 0; l < selected_word_length; ++l) {
 		if l = selected_word_length-1 {
 			
@@ -277,40 +280,55 @@ with (obj_tile_letter) {
 	
 	var _tile_ht = 5*sqr(1-am_selected_fd)*global.tile_raises
 	var _spawn_slam = sqr(spawn_slam)*-1000
+	var _tile_scl = 1.002
+	var _tile_rot = 0
 	
 	if global.game_phase >= 2 {
 		
-	var _letter_col_highlight = c_white
-	if global.light_mode = 1 {
-		//_letter_col_highlight = make_color_hsv(150,0,255)
-	}
+		var _letter_col_highlight = c_white
+		if global.light_mode = 1 {
+			//_letter_col_highlight = make_color_hsv(150,0,255)
+		}
 		
 	
 	
-	draw_set_alpha(lerp(0.6,1,clamp(am_selected_fd+am_clued_fd+am_part_of_secret_word_fd+(1*am_exed_fd),0,1)))
-	draw_set_color(letter_col)//merge_color(letter_col,c_white,am_selected_fd))
-	draw_set_color(merge_color(letter_col,_letter_col_highlight,am_selected_fd))
+		draw_set_alpha(lerp(0.6,1,clamp(am_selected_fd+am_clued_fd+am_part_of_secret_word_fd+(1*am_exed_fd),0,1)))
+		draw_set_color(letter_col)//merge_color(letter_col,c_white,am_selected_fd))
+		draw_set_color(merge_color(letter_col,_letter_col_highlight,am_selected_fd))
 
-	var _text_offset_y = -0//20
-	var _text_scl = (my_text_scl+(am_selected_flash2*2))*scl
+		var _text_offset_y = -0//20
+		var _text_scl = (my_text_scl+(am_selected_flash2*2))*scl
 	
 	
-	if global.game_mode = 2 && my_letter_num >= 1 {
-		draw_set_color(merge_color(letter_col,c_yellow,clamp(am_selected_fd+am_part_of_secret_word_fd,0,1*obj_ctrl.selected_word_is_valid)))
-	}
+		if global.game_mode = 2 && my_letter_num >= 1 {
+			draw_set_color(merge_color(letter_col,c_yellow,clamp(am_selected_fd+am_part_of_secret_word_fd,0,1*obj_ctrl.selected_word_is_valid)))
+		}
 
-	draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90),y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam,string_upper(my_letter_str),_text_scl,_text_scl,image_angle)
+		draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90),y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam,string_upper(my_letter_str),_text_scl,_text_scl,image_angle)
 
-	//draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90),y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+24,tile_id,_text_scl*0.2,_text_scl*0.2,image_angle)
+		//draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90),y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+24,tile_id,_text_scl*0.2,_text_scl*0.2,image_angle)
 
-	if global.game_mode = 2 && my_letter_num >= 1 {
-		draw_set_color(merge_color(letter_col,c_yellow,clamp(am_selected_fd+am_part_of_secret_word_fd,0,1*obj_ctrl.selected_word_is_valid)))
-		draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90)+0,y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+22,global.letter_data[my_letter_num,LETTER_POINTS],_text_scl*0.25,_text_scl*0.25,image_angle)
-	}
+		if global.game_mode = 2 && my_letter_num >= 1 {
+			draw_set_color(merge_color(letter_col,c_yellow,clamp(am_selected_fd+am_part_of_secret_word_fd,0,1*obj_ctrl.selected_word_is_valid)))
+			draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90)+0,y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+22,global.letter_data[my_letter_num,LETTER_POINTS],_text_scl*0.25,_text_scl*0.25,image_angle)
+		}
 
-	draw_set_color(c_white)	
+		draw_set_color(c_white)	
 	
 	}
+	
+	//if am_selected >= 1 {
+		//depth = -y-5000
+	//}
+	
+	
+	
+	//draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90)+0,y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+22,depth,_text_scl*0.25,_text_scl*0.25,image_angle)
+	
+	//if global.tile_style = 3 {
+	//	//border_col = make_colour_hsv(irandom(255),255*am_selected,255)
+	//	draw_sprite_ext(spr_sqr512,1,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*1.03,image_yscale*_tile_scl*1.03,image_angle+_tile_rot,border_col,image_alpha*0.9)
+	//}
 	
 	if am_set_flash > 0 {
 		//flash on set
@@ -318,4 +336,63 @@ with (obj_tile_letter) {
 	}
 	
 }
+
+//if global.game_phase >= 2 {
+//for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+//	with (global.tile_letter[i]) {
+//		if global.tile_style = 3 {
+//			if am_selected <= 0 {
+//				draw_sprite_ext(spr_sqr512,1,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*1.00,image_yscale*_tile_scl*1.00,image_angle+_tile_rot,border_col,image_alpha*1)
+//			}
+//		}
+//	}
+	
+//}
+
+
+//for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+//	with (global.tile_letter[i]) {
+//		if global.tile_style = 3 {
+//			if am_selected >= 1 {
+//				draw_sprite_ext(spr_sqr512,1,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*1.00,image_yscale*_tile_scl*1.00,image_angle+_tile_rot,border_col,image_alpha*1)
+//			}
+//		}
+//	}
+//}
+//}
+
+
+
+
+
+		//with (instance_create_layer(_grid_x+(-20+random(40)),_grid_y+(-20+random(40)),layer_get_id("lyr_2"),obj_tile_letter)) {
+			//tile_id = 
+			//tile_col = i
+			//tile_row = o
+			//global.tile_letter[tile_id] = id
+
+
+//draw_set_color(c_red)	
+//draw_set_alpha(0.3)
+//with (obj_tile_letter) {
+//	draw_set_color(c_red)
+//	//swipe_radius = 28
+//	draw_circle(x,y,swipe_radius,1)
+	
+//	draw_set_color(c_orange)
+//	draw_circle(x,y,100,1)
+	
+//}
+
+//if instance_exists(selected_word_latest_tile_id) && selected_word_latest_tile_id != noone {
+//	with (selected_word_latest_tile_id) {
+//		draw_set_color(c_yellow)	
+//		draw_set_alpha(1)
+//		draw_circle(x,y,obj_ctrl.swipe_allowed_distance,1)	
+//	}
+//}
+
+
+draw_set_color(c_white)	
+draw_set_alpha(1)
 

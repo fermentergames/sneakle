@@ -5,9 +5,9 @@ if (live_call()) return live_result;
 
 
 
-var _letter_hue = 155
-global.background_col = make_color_hsv(_letter_hue,120,60)
-global.border_col = make_color_hsv(_letter_hue,130,50)
+var _letter_hue = 150
+global.background_col = make_color_hsv(_letter_hue,130,60)
+global.border_col = make_color_hsv(_letter_hue,140,50)
 
 if global.light_mode = 1 {
 global.background_col = make_color_hsv(30,0,225)

@@ -58,6 +58,7 @@ global.show_archives = 0
 global.show_lb = 0
 global.show_howto = 0
 global.show_options = 0
+global.show_submitting_post = 0
 
 global.show_lb_fd = 0
 global.show_howto_fd = 0
@@ -71,7 +72,7 @@ global.current_copy_url = "https://fermentergames.github.io/Sneakle/?loadBoard=A
 
 global.generated_word = "HARMONY"
 
-global.light_mode = 0
+
 
 //am_screenshotting = 0
 //am_screenshotting_fd = 0
@@ -159,6 +160,7 @@ pulse_1 = sin(timey*0.09)
 pulse_2 = sin(timey*0.23)
 pulse_3 = sin(timey*0.6)
 pulse_4 = sin(timey*0.02)
+pulse_5 = 0
 
 global.game_phase = 0
 global.game_timer = 0
@@ -190,7 +192,7 @@ selected_word_str = ""
 selected_word_array = 0
 selected_word_array_id = 0
 selected_word_latest_tile = -1
-selected_word_latest_tile_id = -1
+selected_word_latest_tile_id = noone
 selected_word_not_in_dictionary = 0
 selected_word_is_valid = 0
 selected_word_already_guessed = 0
@@ -225,6 +227,11 @@ game_finished_fd2 = 0
 game_finished_flash = 0
 game_finished_flash2 = 0
 
+swipe_allowed_distance = 110
+
+hovered_over_changer = 0
+hovered_over_changer_timey = 0
+
 
 randomize()
 
@@ -253,6 +260,12 @@ if global.is_reddit = 1 {
 //}
 
 form_is_loading = false;
+
+async_msg_letters = -1
+create_typed_letters = ""
+
+async_msg_title = -1
+create_title = ""
 
 //global.loadBoard = "THAINORAYMFUJCET"
 //global.loadSecret = "2-6-10-15"

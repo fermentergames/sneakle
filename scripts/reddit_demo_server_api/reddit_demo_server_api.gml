@@ -308,6 +308,116 @@ function api_get_surrounding_daily_ids(_postId,_callback) {
 }
 
 
+
+//create post
+
+/// @desc This function allows you ---------------
+/// For more details check the server demo implementation under the output folder:
+/// <output>/<project_name>/src/server/index.ts
+/// @param {Any} _data The data you want to save.
+/// @param {Function} _callback The callback that you want to be executed upon task completion.
+function api_create_user_post(_username, _title, _puzzle_data, _callback) {
+		
+	// Build request url
+    var _url = reddit_get_base_url() + "/api/create-user-post";
+
+	// Build request headers
+    var _headers = ds_map_create();
+    ds_map_add(_headers, "Content-Type", "application/json");
+    ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
+
+	// Build request body
+    var _body = {};
+	 if (is_string(_username)) _body.username = _username;
+	 if (is_string(_title)) _body.title = _title;
+	 if (is_string(_puzzle_data)) _body.puzzleData = _puzzle_data;
+	
+	// Make request
+    var _json = json_stringify(_body);
+	 
+	 show_debug_message("api_create_user_post json")
+	 show_debug_message(_json)
+	 
+    var _req = http_request(_url, "POST", _headers, _json);
+	
+	// Free memory
+    ds_map_destroy(_headers);
+	
+	// Register request callback
+	if (is_callable(_callback)) api_register_request(_req, _callback);
+	
+	//scr_profile_update_stats()
+
+	return _req; // keep to match in Async HTTP event
+}
+
+
+
+/// @desc This function allows you ---------------
+/// For more details check the server demo implementation under the output folder:
+/// <output>/<project_name>/src/server/index.ts
+/// @param {Any} _data The data you want to save.
+/// @param {Function} _callback The callback that you want to be executed upon task completion.
+function api_navigateTo(_post, _callback) {
+		
+	// Build request url
+    var _url = reddit_get_base_url() + "/api/create-user-post";
+
+	// Build request headers
+    var _headers = ds_map_create();
+    ds_map_add(_headers, "Content-Type", "application/json");
+    ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
+
+	// Build request body
+    var _body = {};
+	 if (is_string(_post)) _body.postObj = _post;
+	 //if (is_real(_stat_2)) _body.stat_2 = _stat_2;
+    //if (is_struct(_data)) _body.data = _data;
+	
+	// Make request
+    var _json = json_stringify(_body);
+	 
+	 show_debug_message("api_navigateTo json")
+	 show_debug_message(_json)
+	 
+    var _req = http_request(_url, "POST", _headers, _json);
+	
+	// Free memory
+    ds_map_destroy(_headers);
+	
+	// Register request callback
+	if (is_callable(_callback)) api_register_request(_req, _callback);
+	
+	//scr_profile_update_stats()
+
+	return _req; // keep to match in Async HTTP event
+	
+	
+	
+	//then do something like this in index.ts
+	/*
+	import { navigateTo } from '@devvit/web/client';
+
+	// Navigate to external URLs
+	navigateTo('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+
+	// Navigate to Reddit URLs
+	navigateTo('https://www.reddit.com/r/movies/comments/tzxev3/');
+
+	// Navigate to Reddit objects
+	async function goToPost() {
+	  const post = await fetch('/api/getPost').then(r => r.json());
+	  navigateTo(post);
+	}
+	*/
+	
+}
+
+
+
+
+
+
 /// @desc This function allows you to submit a new user highscore.
 /// For more details check the server demo implementation under the output folder:
 /// <output>/<project_name>/src/server/index.ts

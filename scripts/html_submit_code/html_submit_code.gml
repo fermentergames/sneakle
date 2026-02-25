@@ -51,10 +51,7 @@ function html_submit_code(argument0) {
 			changeQuery("loadBoard","","loadSecret","")
 			html_submit_closebtn()
 		}
-		
-		
-		
-		
+
 		
 	}
 

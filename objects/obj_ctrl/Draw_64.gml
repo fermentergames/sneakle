@@ -1,5 +1,6 @@
 if (live_call()) return live_result;
 
+gpu_set_tex_filter(true)
 
 var _pos_scl = gui_pos_scl
 var _scl = gui_sz_scl
@@ -13,6 +14,7 @@ var _nav_mid_y = gui_nav_mid_y
 
 var _highlight_blue = make_color_hsv(145,180,140)
 var _overlay_blue = make_color_hsv(145,120,20)
+var _overlay_blue_dk = _overlay_blue
 var _green_check_col = make_color_hsv(100,255,210)
 var _green_check_txt = make_color_hsv(100,215,250)
 
@@ -20,14 +22,12 @@ var _c_gray = c_gray
 var _c_white = c_white
 
 if global.light_mode = 1 {
-	_c_white = make_color_hsv(155,240,20)
+	_c_white = make_color_hsv(25,240,30)
 	_overlay_blue = make_color_hsv(30,20,220)
+	_green_check_txt = make_color_hsv(100,215,150)
 }
 
 
-
-draw_set_alpha(0.3)
-draw_set_color(c_red)
 
 draw_set_font(fnt_main)
 
@@ -56,15 +56,6 @@ if global.game_phase > 0 && 1=0 {
 
 
 
-gpu_set_tex_filter(true)
-draw_set_font(fnt_main)
-
-draw_set_alpha(1)
-draw_set_color(_c_white)
-
-draw_set_halign(fa_center)
-draw_set_valign(fa_middle)
-
 //draw_set_color(make_color_hsv(160,150,150))
 draw_set_color(_c_white)
 draw_set_alpha(0.3)
@@ -73,7 +64,15 @@ draw_set_alpha(0.3)
 //draw_text_transformed(global.sw/2,_nav_mid_y,"s n e a k l e",0.22*_tscl,0.22*_tscl,0)
 
 if global.game_phase != 0 {
-draw_sprite_ext(spr_sneakle_logo,0,(global.sw*0.0)+(20*_scl),_nav_mid_y,0.08*_tscl,0.08*_tscl,0,_c_white,0.7) 
+	
+	var _nav_logo_col = _c_white
+	var _nav_logo_alp = 0.7
+	if global.light_mode = 1 {
+		_nav_logo_col = _highlight_blue
+		_nav_logo_alp = 0.9
+	}
+	draw_sprite_ext(spr_sneakle_logo,0,(global.sw*0.0)+(20*_scl),_nav_mid_y,0.08*_tscl,0.08*_tscl,0,_nav_logo_col,_nav_logo_alp) 
+
 }
 
 //draw_text_transformed(global.sw/2,45*_pos_scl,_tscl,0.1*_tscl,0.1*_tscl,0)
@@ -107,27 +106,41 @@ if global.game_phase = 0 {
 		obj_ctrlp.postData_dailyID = -1
 		
 		var _daily_id = string(obj_ctrlp.postData_dailyID)
-		var _daily_btn_si = 1
+		var _daily_btn_si = 4
 		if _daily_id = "-1" {
 			_daily_id = "-"
-			_daily_btn_si = 0
+			_daily_btn_si = 3
 		}
 		
 		draw_set_alpha(0.9*ctrl_fd)
 		
-		draw_sprite_ext(spr_sneakle_logo,0,(global.sw*0.5)+(-600*0.2*_scl),0+(100*_scl)+(2*pulse_4*_scl),0.2*_scl,0.2*_scl,0,_c_white,0.8*ctrl_fd) 
+		
+		//gpu_set_blendmode(bm_add)
+		
+		if global.light_mode = 0 {
+			draw_sprite_ext(spr_sneakle_logo_2,0,(global.sw*0.5)+(-6*_scl),0+(100*_scl)+(0*pulse_4*_scl)+(4*_scl),0.2*_scl*(1+(-0.02*pulse_1)),0.2*_scl*(1+(0.02*pulse_1)),0,c_black,0.2*ctrl_fd) 
+			draw_sprite_ext(spr_sneakle_logo_2,0,(global.sw*0.5),0+(100*_scl)+(0*pulse_4*_scl),0.2*_scl*(1+(-0.02*pulse_1)),0.2*_scl*(1+(0.02*pulse_1)),0,_c_white,0.9*ctrl_fd) 
+		} else {
+			//draw_sprite_ext(spr_sneakle_logo_2,0,(global.sw*0.5)+(-6*_scl),0+(100*_scl)+(0*pulse_4*_scl)+(4*_scl),0.2*_scl*(1+(-0.02*pulse_1)),0.2*_scl*(1+(0.02*pulse_1)),0,c_white,0.6*ctrl_fd) 
+			draw_sprite_ext(spr_sneakle_logo_2,0,(global.sw*0.5),0+(100*_scl)+(0*pulse_4*_scl),0.2*_scl*(1+(-0.02*pulse_1)),0.2*_scl*(1+(0.02*pulse_1)),0,_highlight_blue,1*ctrl_fd) 
+		}
+
+		//gpu_set_blendmode(bm_normal)
 		
 		draw_sprite_ext(spr_btn_6,_daily_btn_si,(global.sw*0.5),0+(220*_scl)+(110*_scl*0)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_6,_daily_btn_si,(global.sw*0.5),0+(220*_scl)+(110*_scl*0),0.25*_scl,0.25*_scl,0,_c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_6,_daily_btn_si,(global.sw*0.5),0+(220*_scl)+(110*_scl*0),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
 		draw_set_font(fnt_main)
 		if _daily_id != "-" {
+			draw_set_color(c_white)
 			draw_text_transformed(global.sw/2,0+(220*_scl)+(110*_scl*0)+(15*_scl),_daily_id,0.17*_scl,0.17*_scl,0)
 		}
 		
+		draw_set_color(c_white)
 		
-		draw_sprite_ext(spr_btn_6,2,(global.sw*0.5),0+(220*_scl)+(110*_scl*1)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_6,2,(global.sw*0.5),0+(220*_scl)+(110*_scl*1),0.25*_scl,0.25*_scl,0,_c_white,1*ctrl_fd) 
+		
+		draw_sprite_ext(spr_btn_6,5,(global.sw*0.5),0+(220*_scl)+(110*_scl*1)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_6,5,(global.sw*0.5),0+(220*_scl)+(110*_scl*1),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
 		
 		//sep line
@@ -136,10 +149,11 @@ if global.game_phase = 0 {
 	
 		draw_set_alpha(0.6*ctrl_fd)
 		draw_set_font(fnt_main)
+		draw_set_color(_c_white)
 		draw_text_transformed(global.sw/2,(220*_scl)+(110*_scl*1)+(130*_scl),"U N L I M I T E D",0.14*_tscl,0.14*_tscl,0)
 
 		draw_set_alpha(0.9*ctrl_fd)
-	
+		draw_set_color(c_white)
 		
 		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl)	,	0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
 		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl)	,		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
@@ -147,11 +161,11 @@ if global.game_phase = 0 {
 		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl),		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
 		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl)	,		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
 		
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),	0.25*_scl,0.25*_scl,0,_c_white,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,_c_white,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-0*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,_c_white,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,_c_white,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,_c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),	0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-0*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
 	
 		draw_text_transformed((global.sw*0.5)+(-160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),"3x3",0.14*_tscl,0.14*_tscl,0)
@@ -212,43 +226,405 @@ if global.game_phase = 0 {
 	
 } else if global.game_phase = 1 {
 	
-	draw_set_alpha(0.3)
+	draw_set_color(_c_white)
+	
+	draw_set_alpha(0.4)
 	draw_set_font(fnt_main_r)
-	draw_text_transformed(global.sw/2,75*_pos_scl,"drag to rearrange the letters",0.15*_tscl,0.15*_tscl,0)
+	draw_text_transformed(global.sw/2,70*_scl,"drag to rearrange the letters",0.18*_tscl,0.18*_tscl,0)
 	draw_set_font(fnt_main)
 	
 	draw_set_alpha(0.7)
 	
 	if global.game_mode = 1 {
-	draw_sprite_ext(spr_sqr512,0,global.sw*0.3,global.sh-70*_pos_scl,0.3*_tscl,0.08*_tscl,0,_c_white,0.06)
-	draw_text_transformed(global.sw*0.3,global.sh-70*_pos_scl,"NEW LETTERS",0.12*_tscl,0.12*_tscl,0)
-	
-	draw_sprite_ext(spr_sqr512,0,global.sw*0.7,global.sh-70*_pos_scl,0.3*_tscl,0.08*_tscl,0,_c_white,0.06)
-	draw_text_transformed(global.sw*0.7,global.sh-70*_pos_scl,"TYPE LETTERS",0.12*_tscl,0.12*_tscl,0)
-	}
-	
-	draw_sprite_ext(spr_sqr512,0,global.sw*0.5,global.sh-10*_pos_scl,0.4*_tscl,0.08*_tscl,0,_c_white,0.06)
-	
-	if global.game_mode = 1 {
-		draw_text_transformed(global.sw*0.5,global.sh-10*_pos_scl,"activate points mode",0.12*_tscl,0.12*_tscl,0)
-	} else {
-		draw_text_transformed(global.sw*0.5,global.sh-10*_pos_scl,"exit points mode",0.12*_tscl,0.12*_tscl,0)
-	}
-	
-	if ready_for_phase2 = 0 {
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-130*_pos_scl,0.3*_tscl,0.08*_tscl,0,_c_white,0.06)
-		draw_text_transformed(global.sw/2,global.sh-130*_pos_scl,"AUTOFILL",0.12*_tscl,0.12*_tscl,0)
-	} else {
+		
+		var _btn_alps = 1+(dragging_fd*-0.6)
+		var _btn_cols = merge_colour(global.background_col,_c_white,0.1+(global.light_mode*0.1))
+		
+		draw_set_color(_c_white)
+		
+		if dragging > 0 {
+			_btn_cols = merge_colour(global.background_col,c_dkgray,0.4)
+			draw_set_color(c_gray)
+		}
+		
+		draw_set_alpha(0.7*_btn_alps)
 		
 		
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-150*_pos_scl,0.65*_tscl,0.14*_tscl,0,_c_white,0.06)
-		
+	
+		draw_sprite_ext(spr_sqr512,0,(global.sw*0.5)+(-182*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl,0,_btn_cols,1*_btn_alps)
+		draw_text_transformed((global.sw*0.5)+(-182*_scl),global.sh-(160*_scl),"3x3",0.12*_tscl,0.12*_tscl,0)
+	
+		draw_sprite_ext(spr_sqr512,0,(global.sw*0.5)+(-91*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl,0,_btn_cols,1*_btn_alps)
+		draw_text_transformed((global.sw*0.5)+(-91*_scl),global.sh-(160*_scl),"4x4",0.12*_tscl,0.12*_tscl,0)
+	
+		draw_sprite_ext(spr_sqr512,0,(global.sw*0.5)+(-0*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl,0,_btn_cols,1*_btn_alps)
+		draw_text_transformed((global.sw*0.5)+(-0*_scl),global.sh-(160*_scl),"5x5",0.12*_tscl,0.12*_tscl,0)
+	
+		draw_sprite_ext(spr_sqr512,0,(global.sw*0.5)+(91*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl,0,_btn_cols,1*_btn_alps)
+		draw_text_transformed((global.sw*0.5)+(91*_scl),global.sh-(160*_scl),"6x6",0.12*_tscl,0.12*_tscl,0)
+	
+		draw_sprite_ext(spr_sqr512,0,(global.sw*0.5)+(182*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl,0,_btn_cols,1*_btn_alps)
+		draw_text_transformed((global.sw*0.5)+(182*_scl),global.sh-(160*_scl),"7x7",0.12*_tscl,0.12*_tscl,0)
+	
+	
+		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+				
+				var _which_sz_clicked = -1
+				
+				if				scr_mouse_over_button((global.sw*0.5)+(-182*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl) {
+					show_debug_message("3 CLICKED")
+					_which_sz_clicked = 3
+				} else if	scr_mouse_over_button((global.sw*0.5)+(-91*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl) {
+					show_debug_message("4 CLICKED")
+					_which_sz_clicked = 4
+				} else if	scr_mouse_over_button((global.sw*0.5)+(-0*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl) {
+					show_debug_message("5 CLICKED")
+					_which_sz_clicked = 5
+				} else if	scr_mouse_over_button((global.sw*0.5)+(91*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl) {
+					show_debug_message("6 CLICKED")
+					_which_sz_clicked = 6
+				} else if	scr_mouse_over_button((global.sw*0.5)+(182*_scl),global.sh-(160*_scl),0.12*_tscl,0.12*_tscl) {
+					show_debug_message("7 CLICKED")
+					_which_sz_clicked = 7
+				}
+				
+				
+				if _which_sz_clicked != -1 {
+					
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+					
+					//reset board first
+					
+					with (obj_tile_letter) {
+						instance_destroy()
+					}
+					with (obj_tile_space) {
+						instance_destroy()
+					}
 
-			draw_set_alpha(0.7+(-0.6*dragging_fd))
-			draw_text_transformed(global.sw/2,global.sh-150*_pos_scl,"CONFIRM GRID",0.2*_tscl,0.2*_tscl,0)
+					global.am_creating = 1
+				
+					global.loadSecret = ""
+					global.loadBoard = ""
+					global.current_copy_code = ""
+					global.current_copy_link = ""
+					scr_update_copy_code()
+					
+					
+					//now setup new board with new sz
+					
+					
+					global.game_grid_size = _which_sz_clicked
+					global.game_grid_size_sqr = sqr(global.game_grid_size)
+					global.am_creating = 1
+					var _event_struct = { //
+					   screen_name: "Create"+string(global.game_grid_size),
+					};
+					GoogHit("screen_view",_event_struct)
+					scr_board_init()	
+					
+					//with (obj_tile_letter) {
+					//	//instance_destroy()
+					//	image_angle = 0
+					//	born_fd = 1
+					//	spawn_slam = 0
+					//	am_set = 1
+					//	am_set_fd = 1
+					//	am_set_flash = 0
+					//	x = x_targ
+					//	y = y_targ
+					//}
+				}
+				
+			}
+		}
+	
+	
 		
+	
+		
+		draw_sprite_ext(spr_sqr512,0,(global.sw*0.5)+(-148*_scl),global.sh-(240*_scl),0.25*_tscl,0.12*_tscl,0,_btn_cols,1*_btn_alps)
+		draw_text_transformed((global.sw*0.5)+(-148*_scl),global.sh-(240*_scl),"RANDOM\nLETTERS",0.12*_tscl,0.12*_tscl,0)
+	
+		draw_sprite_ext(spr_sqr512,0,(global.sw*0.5)+(0*_scl),global.sh-(240*_scl),0.25*_tscl,0.12*_tscl,0,_btn_cols,1*_btn_alps)
+		draw_text_transformed((global.sw*0.5)+(0*_scl),global.sh-(240*_scl),"TYPE\nLETTERS",0.12*_tscl,0.12*_tscl,0)
+	
+		
+		var _swap_alp = 0.1+dragging_fd
+		var _swap_col = c_gray
+		draw_set_color(_btn_cols)
 		
 		draw_set_alpha(0.7)
+		
+		if dragging > 0 {
+			_swap_col = c_yellow
+			draw_set_color(_c_white)
+			draw_set_alpha(0.9+(0.2*obj_ctrl.pulse_2))
+			_swap_alp = 0.1+(0.8*dragging_fd)+(0.2*obj_ctrl.pulse_2)
+		}
+		
+		
+	
+		draw_sprite_ext(spr_sqr512,0,(global.sw*0.5)+(148*_scl),global.sh-(240*_scl),0.25*_tscl*(1+(0.05*-obj_ctrl.pulse_2*dragging_fd)),0.12*_tscl*(1+(0.05*obj_ctrl.pulse_2*dragging_fd)),0,_swap_col,_swap_alp*0.5)
+		
+		draw_sprite_ext(spr_sqr512_tile_dotted,0,(global.sw*0.5)+(148*_scl),global.sh-(240*_scl),0.24*_tscl*(1+(0.05*-obj_ctrl.pulse_2*dragging_fd)),0.115*_tscl*(1+(0.05*obj_ctrl.pulse_2*dragging_fd)),0,_swap_col,-0.05+_swap_alp)
+		
+		draw_text_transformed((global.sw*0.5)+(148*_scl),global.sh-(240*_scl),"HOVER HERE\nTO CHANGE\nA LETTER",(0.09+(-0.02*dragging_fd))*_tscl,0.09*_tscl,0)
+	
+		draw_set_alpha(0+(0.8*dragging_fd))
+		draw_text_transformed((global.sw*0.5)+(148*_scl),global.sh-(240*_scl),"-1                +1",0.15*_tscl*(1+(0.05*-obj_ctrl.pulse_2*dragging_fd)),0.15*_tscl,0)
+	
+	
+		draw_set_color(_c_white)
+		draw_set_alpha(0.7)
+		
+		
+		if mouse_check_button(mb_left) && global.show_any_modal <= 0 {
+			
+			obj_ctrl.hovered_over_changer_timey += 1
+			
+			var _timey_mod = 30
+			_timey_mod = floor(lerp(_timey_mod,5,(obj_ctrl.hovered_over_changer/14)))
+			
+			if dragging >= 1 && dragging_fd >= 0.5 && (obj_ctrl.hovered_over_changer_timey mod _timey_mod = 0) {
+				if	scr_mouse_over_button((global.sw*0.5)+(148*_scl),global.sh-(240*_scl),0.25*_tscl,0.12*_tscl) {
+					show_debug_message("X HELD")
+					show_debug_message(_timey_mod)
+					show_debug_message(obj_ctrl.hovered_over_changer)
+					
+					with (obj_tile_letter) {
+						if am_dragging >= 1 && am_dragging_fd > 0.9 {
+							
+							obj_ctrl.hovered_over_changer += 1
+							obj_ctrl.hovered_over_changer = clamp(obj_ctrl.hovered_over_changer,0,14)
+							obj_ctrl.hovered_over_changer_timey = 1
+							
+							if (device_mouse_x_to_gui(0)*global.pr) <= ((global.sw*0.5)+(148*obj_ctrl.gui_sz_scl)) {
+								show_debug_message("-1")
+								if my_letter_num > 1 {
+									my_letter_num -= 1	
+								} else {
+									my_letter_num = 26
+								}
+								
+
+								
+								audio_play_sound(snd_mm_click_003,0,0,0.1,0,2.2+(-0.1*obj_ctrl.hovered_over_changer))
+								
+							} else {
+								show_debug_message("+1")
+								if my_letter_num < 26 {
+									my_letter_num += 1	
+								} else {
+									my_letter_num = 1	
+								}
+								
+								audio_play_sound(snd_mm_click_003,0,0,0.1,0,0.8+(0.1*obj_ctrl.hovered_over_changer))
+							}
+							my_letter_str = global.letter_data[my_letter_num,1]
+						
+						}
+					
+					}
+					
+				} else {
+					obj_ctrl.hovered_over_changer_timey = 0
+					obj_ctrl.hovered_over_changer = 0
+				}
+			}
+		}
+		
+	
+		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+				if				scr_mouse_over_button((global.sw*0.5)+(-148*_scl),global.sh-(240*_scl),0.25*_tscl,0.12*_tscl) {
+					
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+					show_debug_message("A CLICKED")
+					
+					show_debug_message("NEW LETTERS")
+				
+					with (obj_tile_letter) {
+						instance_destroy()
+					}
+					with (obj_tile_space) {
+						instance_destroy()
+					}
+
+					global.am_creating = 1
+					var _event_struct = { //
+					   screen_name: "NewLetters"+string(global.game_grid_size),
+					};
+					GoogHit("screen_view",_event_struct)
+				
+					global.loadSecret = ""
+					global.loadBoard = ""
+					global.current_copy_code = ""
+					global.current_copy_link = ""
+					scr_update_copy_code()
+				
+					scr_board_init()
+				
+				
+				
+					with (obj_tile_letter) {
+						//instance_destroy()
+						image_angle = 0
+						born_fd = 1
+						spawn_slam = 0
+						am_set = 1
+						am_set_fd = 1
+						am_set_flash = 0
+						x = x_targ
+						y = y_targ
+					}
+					
+				} else if	scr_mouse_over_button((global.sw*0.5)+(-0*_scl),global.sh-(240*_scl),0.25*_tscl,0.12*_tscl) {
+					show_debug_message("B CLICKED")
+					
+					show_debug_message("TYPE LETTERS")
+					
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+
+					var _event_struct = { //
+					   screen_name: "LoadFromCreate",
+					};
+					GoogHit("screen_view",_event_struct)
+					
+					if 1=0 { //html5
+					
+						global.show_input_prompt = 1
+					
+					} else {
+					
+						var _current_board = string_letters(global.current_copy_code)
+						if _current_board = "" {
+							_current_board = "ABCDEFGHI"	
+						} else {
+							if string_count("_",_current_board) > 0 {
+								_current_board = string_copy(_current_board,0,string_length(_current_board)-1)
+							}
+						}
+						
+						create_typed_letters = ""
+						async_msg_letters = get_string_async("Enter the letters you want to use.\n(Length needs to be a square number: 9 | 16 | 25 | 36 | 49)\n(Excess length with be rounded down to nearest square number.)", string(_current_board)); 
+						//will set create_typed_letters in async dialog
+						
+					
+					}
+					
+				}
+			}
+		}
+	
+	
+	}
+	
+	//draw_sprite_ext(spr_sqr512,0,global.sw*0.5,global.sh-10*_scl,0.4*_tscl,0.08*_tscl,0,c_white,0.06)
+	
+	//if global.game_mode = 1 {
+	//	draw_text_transformed(global.sw*0.5,global.sh-10*_pos_scl,"activate points mode",0.12*_tscl,0.12*_tscl,0)
+	//} else {
+	//	draw_text_transformed(global.sw*0.5,global.sh-10*_pos_scl,"exit points mode",0.12*_tscl,0.12*_tscl,0)
+	//}
+	
+	if ready_for_phase2 = 0 {
+		draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl,0,_highlight_blue,1)
+		
+		draw_text_transformed(global.sw/2,global.sh-(65*_scl),"AUTOFILL",0.2*_scl,0.2*_scl,0)
+
+		
+		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+				if		scr_mouse_over_button(global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl) {
+					show_debug_message("C CLICKED")
+					
+					if _empty_tile_count >= 0 { //there are some empty spaces
+						
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+		
+						_empty_tile = array_shuffle(_empty_tile)
+	
+						_empty_tile_count = 0 //reset
+						for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+
+							if global.tile_letter[i].am_set = 0 {
+
+								//_empty_letter[i] = global.tile_space[i]
+					
+								with (global.tile_letter[i]) {
+				
+									//show_debug_message(object_get_name(_empty_tile[i].object_index))
+					
+									targ_id = _empty_tile[_empty_tile_count].id
+									_empty_tile_count += 1
+									x_targ = targ_id.x
+									y_targ = targ_id.y
+									am_set = 1
+									prev_targ_id = targ_id
+									am_set_flash = 1
+								}
+							}
+						}
+	
+					}
+					
+				}
+			}
+		}
+		
+	} else {
+		
+		draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl,0,merge_colour(_highlight_blue,c_white,0.4),1)
+		draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.819*_scl,0.17*_scl,0,_highlight_blue,1)
+		
+
+		draw_set_alpha(0.7+(-0.6*dragging_fd))
+		draw_text_transformed(global.sw/2,global.sh-(75*_scl),"CONFIRM GRID",0.2*_scl,0.2*_scl,0)
+		draw_text_transformed(global.sw/2,global.sh-(50*_scl),"proceed to set secret",0.12*_scl,0.12*_scl,0)
+		
+		draw_set_alpha(0.7)
+		
+		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+				if		scr_mouse_over_button(global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl) {
+					show_debug_message("D CLICKED")
+					
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+					
+					//confirm grid, proceed to setting secret
+					for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+						with (global.tile_letter[i]) {
+							if am_set >= 1 {
+								if instance_exists(targ_id) && targ_id != -1 {
+				
+									//show_debug_message(object_get_name(_empty_tile[i].object_index))
+					
+									tile_id = targ_id.tile_id
+								
+									global.letters_grid[tile_id] = my_letter_str
+						
+								}
+							}
+						}
+					}
+			
+				
+					global.game_phase = 2	
+					dragging = 0
+					selected_word_length = 0
+					selected_word_not_in_dictionary = 0
+					selected_word_is_valid = 0
+					selected_word_str = ""
+					selected_word_array = 0
+					selected_word_array_id = 0
+					ready_for_phase3 = 0
+					
+				}
+			}
+		}
+		
 	}
 	
 	
@@ -257,30 +633,139 @@ if global.game_phase = 0 {
 	
 	draw_set_alpha(0.3)
 	draw_set_font(fnt_main_r)
-	draw_text_transformed(global.sw/2,75*_pos_scl,"swipe to select your SECRET WORD",0.15*_tscl,0.15*_tscl,0)
+	draw_text_transformed(global.sw/2,75*_scl,"swipe to select your SECRET WORD",0.15*_tscl,0.15*_tscl,0)
 	draw_set_font(fnt_main)
 	
 	draw_set_alpha(0.7)
-	draw_sprite_ext(spr_sqr512,0,global.sw*0.18,global.sh-30*_pos_scl,0.25*_tscl,0.08*_tscl,0,_c_white,0.06)
-	draw_text_transformed(global.sw*0.18,global.sh-30*_pos_scl,"REARRANGE",0.12*_tscl,0.12*_tscl,0)
+	draw_sprite_ext(spr_sqr512,0,global.sw*0.5+(-106*_scl),global.sh-28*_scl,0.42*_tscl,0.08*_tscl,0,_c_white,0.06)
+	draw_text_transformed(global.sw*0.5+(-106*_scl),global.sh-28*_scl,"<  BACK TO REARRANGE",0.12*_tscl,0.12*_tscl,0)
+	
+	
+	if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+		if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+			if		scr_mouse_over_button(global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl) {
+				//go back
+				show_debug_message("E CLICKED")
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+				global.game_phase = 1
+				selected_word_length = 0
+				selected_word_str = ""	
+				with (obj_tile_letter) {
+					am_part_of_secret_word = 0	
+				}
+			}
+		}
+	}
 	
 	
 	
 	draw_set_color(_c_white)
 	
-	if ready_for_phase3 = 1 {
-		draw_set_alpha(1)
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(110*_scl),0.65*_tscl,0.15*_tscl,0,_c_white,0.06)
+	if 1=1 {//ready_for_phase3 = 1 {
+		draw_set_alpha(0.1+ready_for_phase3)
+		var _confirm_word_col = c_maroon
+		draw_set_color(c_gray)
+		
+		if ready_for_phase3 >= 1 {
+			draw_set_color(_c_white)
+			_confirm_word_col = _highlight_blue
+		}
+		
+		
+		
+		draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(102*_scl),0.65*_tscl,0.13*_tscl,0,merge_colour(_confirm_word_col,c_white,0.4),draw_get_alpha())
+		
+		draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(102*_scl),0.641*_tscl,0.124*_tscl,0,_confirm_word_col,draw_get_alpha())
 		
 		var _confirm_word_str = "CONFIRM SECRET WORD?"
 		if global.game_mode = 2 {
 			_confirm_word_str = "SUBMIT"
 		}
 		
-		draw_text_transformed(global.sw/2,(_panel_mid_y)+(110*_scl),_confirm_word_str,0.15*_tscl,0.15*_tscl,0)
+		
+		
+		draw_text_transformed(global.sw/2,(_panel_mid_y)+(102*_scl),_confirm_word_str,0.15*_tscl,0.15*_tscl,0)
 		draw_set_alpha(0.3)
+		
+		
+		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+				if		scr_mouse_over_button(global.sw/2,(_panel_mid_y)+(102*_scl),0.65*_tscl,0.13*_tscl) {
+					show_debug_message("F CLICKED")	
+					if global.game_mode = 1 && selected_word_is_valid >= 1 {
+						//proceed, lock in word
+						
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				
+						secret_word_length = selected_word_length
+						secret_word_str = selected_word_str
+						secret_word_array = selected_word_array
+						secret_word_array_id = selected_word_array_id
+						guesses_count = 0
+				
+						selected_word_length = 0
+						selected_word_str = ""
+						selected_word_array = 0
+				
+						with (obj_tile_letter) {
+							am_exed = 0
+							am_clued = 0	
+						}
+
+						//assign all tiles to corresponding space
+						//for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+							with (obj_tile_letter) {
+								tile_id = targ_id.tile_id
+								global.letters_grid[tile_id] = my_letter_str
+								global.tile_letter[tile_id] = id
+							}
+						//}
+				
+				
+				
+						var _letters_str = ""
+						for (var l = 0; l < secret_word_length; ++l) {
+							_letters_str += global.letters_grid[secret_word_array[l]]
+						}
+			
+			
+				
+						show_debug_message("SECRET WORD CHOSEN: "+string(_letters_str))
+				
+						scr_update_copy_code()
+				
+						var _event_struct = { //
+							screen_name: "CREATE_"+string(global.game_grid_size)+"_"+string(global.current_copy_code),
+						};
+						GoogHit("screen_view",_event_struct)
+				
+						global.show_submitting_post = 1
+						
+						create_title = ""
+						if obj_ctrlp.username != "" {
+							create_title = string(obj_ctrlp.username)
+							create_title += "'s Custom Puzzle"
+						} else {
+							create_title = "Custom Puzzle"
+						}
+						
+						async_msg_title = get_string_async("Enter a title for your puzzle and submit.\n(This will create a post as "+string(obj_ctrlp.username)+")", string(create_title)); 
+						
+						
+						
+						
+				
+						//global.game_phase = 3
+						//just_phase_changed = 1
+			
+					}
+				}
+			}
+		}
+		
 	}
 	
+	draw_set_color(_c_white)
 	draw_set_alpha(0.3)
 	draw_set_font(fnt_main_r)
 	//draw_text_transformed(global.sw/2,(global.sh*1)+(-240*_pos_scl),"your SECRET WORD is",0.12*_tscl,0.12*_tscl,0)
@@ -300,7 +785,7 @@ if global.game_phase = 0 {
 	}
 	
 	//draw_text_transformed(global.sw/2,(global.sh*1)+(-200*_pos_scl),string(_letters_str),0.3*_tscl,0.3*_tscl,0)
-	draw_text_transformed(global.sw/2,(_panel_mid_y),string(_letters_str),0.3*_tscl,0.3*_tscl,0)
+	draw_text_transformed(global.sw/2,(_panel_mid_y),string(_letters_str),0.4*_tscl,0.4*_tscl,0)
 	
 	draw_set_alpha(0.3)
 	draw_set_font(fnt_main_r)
@@ -471,9 +956,18 @@ if global.game_phase = 3 || global.game_phase = 4 {
 				_length_str = " ("+string(_letters_str_l)+"/"+string(string_length(secret_word_str))
 				
 				if _str_diff > 0 {
-					draw_set_color(make_color_hsv(36,150,250)) //yellow
+					if global.light_mode = 0 {
+						draw_set_color(make_color_hsv(36,150,250)) //yellow
+					} else {
+						draw_set_color(make_color_hsv(36,220,170)) //yellow
+					}
 				} else if _str_diff = 0 {
-					draw_set_color(c_ltgray) //_green_check_txt)
+					
+					if global.light_mode = 0 {
+						draw_set_color(c_ltgray) //_green_check_txt)
+					} else {
+						draw_set_color(c_gray) //_green_check_txt)
+					}
 				} else {
 					draw_set_color(make_color_hsv(250,190,250)) //red
 					//_length_str += "!"
@@ -611,6 +1105,8 @@ if global.game_phase = 3 || global.game_phase = 4 {
 				if scr_mouse_over_button(global.sw/2+(65*_scl),(_panel_mid_y)+(_panel_ht*0.29)+(_panel_ht*-0.07*game_finished_fd2),
 				0.31*_scl,0.0983*_scl) {
 					show_debug_message("LB CLICKED")
+					
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				
 					global.show_lb = 1
 				}
@@ -699,6 +1195,11 @@ if global.game_phase = 3 || global.game_phase = 4 {
 		
 		draw_set_color(c_black)
 		draw_set_alpha(0.15*game_finished_fd)
+		if global.light_mode = 1 {
+			draw_set_color(c_white)	
+			draw_set_alpha(0.45*game_finished_fd)
+		}
+		
 		
 		var _stat_h = 50
 		var _stat_y = 0.7+((1-game_finished_fd)*-0.2)
@@ -793,7 +1294,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 				draw_sprite_ext(spr_btn,0,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,55+200*_yest_btn_enabled),3*game_finished_fd)
 			
 				draw_sprite_ext(spr_btn,3,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
-				draw_sprite_ext(spr_btn,3,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_white,3*game_finished_fd)
+				draw_sprite_ext(spr_btn,3,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,c_white,3*game_finished_fd)
 			
 			
 			
@@ -801,6 +1302,8 @@ if global.game_phase = 3 || global.game_phase = 4 {
 					if scr_mouse_over_button(global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
 					0.39*_scl,0.12*_scl) {
 						show_debug_message("BTN 1 CLICKED")
+						
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 					
 						//play previous
 						if obj_ctrlp.daily_prev_postId != "-9999" {
@@ -819,6 +1322,8 @@ if global.game_phase = 3 || global.game_phase = 4 {
 					if scr_mouse_over_button(global.sw/2+(110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
 					0.39*_scl,0.12*_scl) {
 						show_debug_message("BTN 2 CLICKED")
+						
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 					
 						if 1 = 1 { //go to main menu
 							obj_ctrlp.already_finished = 0 //reset this so that puzzles don't auto complete moving forward	
@@ -839,7 +1344,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 				draw_sprite_ext(spr_btn,1,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,55+200*_yest_btn_enabled),3*game_finished_fd)
 			
 				draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
-				draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_white,3*game_finished_fd)
+				draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,c_white,3*game_finished_fd)
 			
 			
 			
@@ -847,6 +1352,8 @@ if global.game_phase = 3 || global.game_phase = 4 {
 					if scr_mouse_over_button(global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
 					0.39*_scl,0.12*_scl) {
 						show_debug_message("BTN 1 CLICKED")
+						
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 					
 						//play previous
 						show_debug_message("PLAY ANOTHER!")
@@ -893,6 +1400,8 @@ if global.game_phase = 3 || global.game_phase = 4 {
 					if scr_mouse_over_button(global.sw/2+(110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
 					0.39*_scl,0.12*_scl) {
 						show_debug_message("BTN 2 CLICKED")
+						
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 					
 						if 1 = 1 { //go to main menu
 							obj_ctrlp.already_finished = 0 //reset this so that puzzles don't auto complete moving forward	
@@ -1010,12 +1519,14 @@ if 1=1 {//global.game_phase >= 3 {
 		if scr_mouse_over_button((global.sw*1)+((20+5)*-_scl),_nav_mid_y,
 		0.083*_scl,0.0983*_scl) {
 			show_debug_message("HELP CLICKED")
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 			global.show_howto = 1
 		}
 			
 		if scr_mouse_over_button((global.sw*1)+((20+5+40+5)*-_scl),_nav_mid_y,
 		0.083*_scl,0.0983*_scl) {
 			show_debug_message("options CLICKED")
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 			global.show_options = 1
 			obj_ctrlp.clear_stats_confirm = 0 //reset
 		}
@@ -1077,6 +1588,7 @@ if global.game_phase >= 3 {
 			if scr_mouse_over_button((global.sw*0.5)+(_level_name_w*0.5*-_scl)+(30*-_scl),_nav_mid_y,
 			0.06*_scl,0.0983*_scl) {
 				show_debug_message("PREV CLICKED")
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				
 				if obj_ctrlp.daily_prev_postId != "-9999" {
 					
@@ -1094,6 +1606,7 @@ if global.game_phase >= 3 {
 			if scr_mouse_over_button((global.sw*0.5)+(_level_name_w*0.5*_scl)+(30*_scl),_nav_mid_y,
 			0.06*_scl,0.0983*_scl) {
 				show_debug_message("NEXT CLICKED")
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				
 				if obj_ctrlp.daily_next_postId != "-9999" {
 					
@@ -1342,6 +1855,7 @@ if global.show_lb_fd > 0 {
 		
 	
 	if mouse_check_button_pressed(mb_left) && global.show_lb_fd > 0.5 {
+		audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 		html_submit_closebtn()
 	}
 	
@@ -1351,7 +1865,7 @@ if global.show_lb_fd > 0 {
 if global.show_howto_fd > 0 {
 	
 	draw_set_alpha(0.95*global.show_howto_fd)
-	draw_rectangle_color(0,0,global.sw,global.sh,_overlay_blue,_overlay_blue,_overlay_blue,_overlay_blue,0)
+	draw_rectangle_color(0,0,global.sw,global.sh,_overlay_blue_dk,_overlay_blue_dk,_overlay_blue_dk,_overlay_blue_dk,0)
 	draw_set_alpha(1)
 	draw_set_color(_c_white)
 	
@@ -1365,6 +1879,7 @@ if global.show_howto_fd > 0 {
 		
 	
 	if mouse_check_button_pressed(mb_left) && global.show_howto_fd > 0.5 {
+		audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 		html_submit_closebtn()
 		global.show_howto = 0
 	}
@@ -1389,7 +1904,7 @@ if global.show_options_fd > 0 {
 	//X to close
 	draw_sprite_ext(spr_sqr512,4,global.sw+(-40*_scl),(40*_scl),0.05*_scl,0.05*_scl,45,_c_white,0.5*global.show_options_fd) 
 	
-	
+	draw_set_color(_c_white)
 	draw_set_valign(fa_middle)
 	draw_set_halign(fa_middle)
 	draw_set_font(fnt_main_r)
@@ -1400,7 +1915,7 @@ if global.show_options_fd > 0 {
 	//draw_text_transformed(global.sw*0.5,(global.sh*0)+(140*_scl),"in development :)",0.15*_tscl,0.15*_tscl,0)
 	
 	//sep line
-	draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(130*_scl),0.65*_scl,0.004*_scl,0,c_white,0.2*global.show_options_fd) 
+	draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(130*_scl),0.65*_scl,0.004*_scl,0,_c_white,0.2*global.show_options_fd) 
 	
 	
 	var _op_b_1_si = 0
@@ -1431,8 +1946,10 @@ if global.show_options_fd > 0 {
 		_op_b_3_col2 = c_dkgray
 	}
 	
+	
+	draw_set_color(c_white)
 	//btn1
-	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(200*_scl)+(60*_scl*0)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,2*global.show_options_fd) 
+	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(200*_scl)+(60*_scl*0)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*global.show_options_fd) 
 	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(200*_scl)+(60*_scl*0),0.25*_scl,0.25*_scl,0,c_white,2*global.show_options_fd)
 	
 	draw_set_font(fnt_main)
@@ -1441,30 +1958,38 @@ if global.show_options_fd > 0 {
 	
 	
 	//btn2
-	draw_sprite_ext(spr_btn_8,_op_b_2_si,global.sw*0.5,(200*_scl)+(60*_scl*1)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,2*global.show_options_fd) 
+	draw_sprite_ext(spr_btn_8,_op_b_2_si,global.sw*0.5,(200*_scl)+(60*_scl*1)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*global.show_options_fd) 
 	draw_sprite_ext(spr_btn_8,_op_b_2_si,global.sw*0.5,(200*_scl)+(60*_scl*1),0.25*_scl,0.25*_scl,0,c_white,2*global.show_options_fd)
 	
 	//btn3
-	draw_sprite_ext(spr_btn_8,_op_b_3_si,global.sw*0.5,(200*_scl)+(60*_scl*2)+(5*_scl),0.25*_scl,0.25*_scl,0,_op_b_3_col2,2*global.show_options_fd) 
+	draw_sprite_ext(spr_btn_8,_op_b_3_si,global.sw*0.5,(200*_scl)+(60*_scl*2)+(5*_scl),0.25*_scl,0.25*_scl,0,_op_b_3_col2,1*global.show_options_fd) 
 	draw_sprite_ext(spr_btn_8,_op_b_3_si,global.sw*0.5,(200*_scl)+(60*_scl*2),0.25*_scl,0.25*_scl,0,_op_b_3_col,2*global.show_options_fd) 
 	
 	
 	if global.show_options_fd > 0.5 && mouse_check_button_pressed(mb_left) {
 		
 		if scr_mouse_over_button(global.sw+(-40*_scl),(40*_scl),0.2*_scl,0.1*_scl) {
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 			//close
 			html_submit_closebtn()
 			global.show_options = 0
 			
 		}
 		
+		if scr_mouse_over_button(global.sw+(-40*_scl),global.sh-(40*_scl),0.2*_scl,0.1*_scl) {
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			global.show_debug = !global.show_debug
+		}
+		
 		if scr_mouse_over_button(global.sw*0.5,(200*_scl)+(60*_scl*0),0.64*_scl,0.08*_scl) {
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 			//btn1
 			
 			global.light_mode = !global.light_mode
 		}
 		
 		if scr_mouse_over_button(global.sw*0.5,(200*_scl)+(60*_scl*1),0.64*_scl,0.08*_scl) {
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 			//btn1
 			
 			if obj_ctrlp.option_show_timer = 0 {
@@ -1475,6 +2000,7 @@ if global.show_options_fd > 0 {
 		}
 		
 		if scr_mouse_over_button(global.sw*0.5,(200*_scl)+(60*_scl*2),0.64*_scl,0.08*_scl) {
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 			//btn2
 			if obj_ctrlp.clear_stats_confirm = 0 {
 				obj_ctrlp.clear_stats_confirm = 1	
@@ -1534,6 +2060,35 @@ if global.show_options_fd > 0 {
 			}
 		}
 	}
+}
+
+
+//show_submitting_post
+if global.show_submitting_post > 0 {
+	
+	draw_set_alpha(0.95*global.show_submitting_post)
+	draw_rectangle_color(0,0,global.sw,global.sh,_overlay_blue_dk,_overlay_blue_dk,_overlay_blue_dk,_overlay_blue_dk,0)
+	draw_set_alpha(1)
+	draw_set_color(_c_white)
+	
+
+
+	draw_set_alpha(0.3*ctrl_fd)
+	draw_set_font(fnt_main)
+	draw_set_color(_c_white)
+	
+	
+	if global.show_submitting_post = 1 {
+		draw_text_transformed(global.sw*0.5,global.sh*0.5,"submitting\nyour puzzle...",0.13*_tscl*ctrl_fd,0.13*_tscl*ctrl_fd,0)
+	} else if global.show_submitting_post = 2 {
+		draw_text_transformed(global.sw*0.5,global.sh*0.5,"redirecting\nto new post!",0.13*_tscl*ctrl_fd,0.13*_tscl*ctrl_fd,0)
+	}
+	
+	draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.5,global.sh*0.5,0.4*_scl*ctrl_fd,0.4*_scl*ctrl_fd,global.game_timer_meta*1,_c_white,0.06)
+	draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.5,global.sh*0.5,0.5*_scl*ctrl_fd,0.5*_scl*ctrl_fd,global.game_timer_meta*-0.88,_c_white,0.06)
+		
+
+	
 }
 
 

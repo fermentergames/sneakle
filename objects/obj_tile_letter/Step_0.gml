@@ -5,13 +5,23 @@ if (live_call()) return live_result;
 //	//my_letter_str	
 //}
 
+
+
+
+
 if am_dragging = 1 {
 	
 	//targ_id = self//instance_nearest(x,y,obj_tile_space)
 	x_targ = mouse_x
-	y_targ = mouse_y
+	y_targ = mouse_y-20+(obj_ctrl.pulse_2*3)
 	
 	
+}
+
+swipe_radius = 29//reset
+//make target area smaller on already selected letters for less accidental undos
+if am_selected >= 1 {
+	swipe_radius = 25
 }
 
 
@@ -86,7 +96,7 @@ if y != y_targ {
 
 var _dragging_or_set = clamp(am_dragging_fd+am_set_fd,0,1)
 
-scl = 0.125*(0.8+(0.2*_dragging_or_set)+(-0.2*am_dragging_flash2)+(-0.4*am_set_flash2)+(0.0*am_selected_flash2))
+scl = 0.125*(0.8+(0.2*_dragging_or_set)+(0.4*am_dragging_flash2)+(-0.6*am_set_flash2)+(0.0*am_selected_flash2))
 
 
 image_xscale = scl
@@ -151,16 +161,34 @@ if am_set = 0 || am_dragging = 1 {
 
 
 if tile_going_to_replace > 0 {
-	tile_going_to_replace -= 0.1 //reset
+	tile_going_to_replace -= 0.2 //reset
 }
 
+tile_going_to_replace_id = noone
+
 if am_dragging = 1 {
-	var _col_tile = collision_point(x,y,obj_tile_letter,true,true)
+	var _col_tile = collision_point(mouse_x,mouse_y,obj_tile_letter,true,true)
 	
 	if _col_tile != noone {
 		if _col_tile.am_set = 1 && _col_tile.am_dragging = 0 {
-			_col_tile.tile_going_to_replace = 1	
+			_col_tile.tile_going_to_replace = 1
+			tile_going_to_replace_id = _col_tile.id
 		}
 	}
 }
+
+//if am_hovered > 0 { //reset
+//	am_hovered -= 0.25
+//}
+
+//if global.is_mobile = 0 {
+//	if tile_going_to_replace <= 0 {
+//		if collision_point(mouse_x,mouse_y,self,true,0)	{
+//			am_hovered += 0.5
+//			am_hovered = clamp(am_hovered,0,1)
+//		}
+//	} else {
+//		am_hovered = 0
+//	}
+//}
 
