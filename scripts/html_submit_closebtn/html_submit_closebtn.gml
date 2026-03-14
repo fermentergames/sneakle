@@ -11,7 +11,8 @@ function html_submit_closebtn() {
 	//global.show_submitting_post = 0
 	
 
-	//removeClassElemID("puzzleMenuWrapper","show")
+	//removeClassElemID("puzzleMenuWrapper","active")
+	removeClassElemID("modalCreateTypeLetters","active")
 	//funcCloseArchiveMenu()
 	
 }

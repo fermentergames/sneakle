@@ -1,5 +1,8 @@
 if (live_call()) return live_result;
 
+//if (global.show_any_modal >= 1) {
+//   io_clear(); // Clears all input states for this specific frame/step
+//}
 
 //timey = 0
 timey += 1
@@ -235,7 +238,7 @@ if mouse_check_button_pressed(mb_left) {
 				scr_reddit_reset_post()
 			}
 		
-			if global.is_browser = 1 {
+			if global.is_browser = 1 && global.is_reddit <= 0 {
 				changeQuery("loadBoard","","loadSecret","")
 				reloadPage()
 			} else {
@@ -334,6 +337,10 @@ if mouse_check_button_pressed(mb_left) {
 					
 						global.loadBoard = "STCDWERNTOIESIDT" 
 						global.loadSecret = "1-6-3-7-12-16"
+						
+						//secret
+						global.loadBoard = "SEWCATRED" 
+						global.loadSecret = "1-2-4-7-8-6"
 					
 						scr_board_init()
 					
@@ -1383,7 +1390,7 @@ var _cam_y_pos = (-h*global.cam_zoom_fd*1)+(-_tile_sz_and_pad*global.game_grid_s
 
 
 
-var _cam_y_pos_creating = (-h*global.cam_zoom_fd*0.0)+(-_tile_sz_and_pad*global.game_grid_size*0.5)+(-110*global.cam_zoom_fd)
+var _cam_y_pos_creating = (-h*global.cam_zoom_fd*0.0)+(-_tile_sz_and_pad*global.game_grid_size*0.5)+(-100*gui_sz_scl*global.cam_zoom_fd)
 
 _cam_y_pos = lerp(_cam_y_pos,_cam_y_pos_creating,global.am_creating_fd2)
 

@@ -13,8 +13,11 @@ function CheckWordDictionary() constructor {
 		if (is_string(source)) {
 			for (var f = file_text_open_read(source); !file_text_eof(f); file_text_readln(f)) {
 				var w = file_text_read_string(f);
-				self.data[$ w] = 1;
-				++n;
+				
+				if (w != "") {
+					self.data[$ w] = 1;
+					++n;
+				}
 			}
 			file_text_close(f);
 			self.size += n;

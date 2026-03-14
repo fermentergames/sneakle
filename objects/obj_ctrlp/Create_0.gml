@@ -26,12 +26,14 @@ global.light_mode = 0
 #macro LEVEL_STATUS_Complete 3
 
 
+
+global.light_mode = 0
 global.show_debug = 0
 
 global.game_loading = 0
 
 clear_stats_confirm = 0
-
+just_submitted_score = 0
 
 load_profile_complete = 0
 username = "";
@@ -64,13 +66,30 @@ for (var i = 1; i <= 15; ++i) {
    lb_entry[i,1] = "-"//rank
 	lb_entry[i,2] = "-"//name
 	lb_entry[i,3] = "-"//score
+	
+	lb_entry_near[i,1] = "-"//rank
+	lb_entry_near[i,2] = "-"//name
+	lb_entry_near[i,3] = "-"//score
 }
+
+lbmenu_which = 1
+lbmenu_which_fd = 1
+lbmenu_which_variant = 1
+lbmenu_variant1_fd = 1
+lbmenu_variant2_fd = 0
+lb_switch_time_max = 300
+lb_switch_time = lb_switch_time_max
+lb_variant_hovered = 0
+lb_variant_hovered_fd = 0
 
 postData = undefined
 postData_str = "postData not found"
 postData_levelName = ""
 postData_levelTag = ""
 postData_levelID = -1
+postData_levelDate = -1
+postData_levelDate_formatted = -1
+postData_levelCreator = ""
 postData_gameData = ""
 postData_totalPlayers = 1
 postData_totalPlayersCompleted = 0
@@ -130,6 +149,8 @@ if 1=1 {//STATS
 	option_darkmode			= "1"
 	option_sfx					= "1"
 	option_show_timer			= "1"
+	
+	profile_joined = "0"
 
 
 	stat_d_total_finished_perc = "0"
@@ -184,10 +205,16 @@ if 1=1 {//STATS
 				option_darkmode = _profile.option_darkmode;
 				option_sfx = _profile.option_sfx;
 				option_show_timer = _profile.option_show_timer;
+				
+				profile_joined = _profile.profile_joined;
 
 				scr_profile_update_stats()
 			
 				load_profile_complete = 1
+				
+				if real(stat_d_total_started) + real(stat_u_total_started) <= 0 {
+					global.show_howto = 1 //temp tutorial	
+				}
 			}
 			catch (_ex) { //if no state data loaded, save the default values?
 			
@@ -212,10 +239,15 @@ if 1=1 {//STATS
 					created_ids,
 					option_darkmode,
 					option_sfx,
-					option_show_timer
+					option_show_timer,
+					profile_joined
 				}, function(_status, _ok, _result) {
 					//alarm[4] = 60;
 				});
+				
+				if real(stat_d_total_started) + real(stat_u_total_started) <= 0 {
+					global.show_howto = 1 //temp tutorial	
+				}
 			}
 			//alarm[4] = 60;
 		});

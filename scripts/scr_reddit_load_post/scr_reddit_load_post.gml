@@ -19,6 +19,7 @@ with (obj_ctrlp) {
 	score_time = 0
 	score_combined = 0
 	level_status = LEVEL_STATUS_NotStarted
+	level_commented = 0
 
 	already_finished = 0
 
@@ -35,6 +36,10 @@ with (obj_ctrlp) {
 	   lb_entry[i,1] = "-"//rank
 		lb_entry[i,2] = "-"//name
 		lb_entry[i,3] = "-"//score
+		
+		lb_entry_near[i,1] = "-"//rank
+		lb_entry_near[i,2] = "-"//name
+		lb_entry_near[i,3] = "-"//score
 	}
 
 	postData = undefined
@@ -42,6 +47,9 @@ with (obj_ctrlp) {
 	postData_levelName = ""
 	postData_levelTag = ""
 	postData_levelID = -1
+	postData_levelDate = -1;
+	postData_levelDate_formatted = "-"
+	postData_levelCreator = ""
 	postData_dailyID = -1
 	postData_gameData = ""
 	postData_totalPlayers = 1
@@ -59,6 +67,8 @@ with (obj_ctrlp) {
 	surrounding_res_str = ""
 	//daily_prev_postId = "-9999" //don't reset these, needed during switch
 	//daily_next_postId = "-9999" //don't reset these, needed during switch
+	
+	
 	
 }
 	
@@ -104,6 +114,10 @@ with (obj_ctrlp) {
 				show_debug_message(postData_levelTag)
 				postData_levelID = _postData.levelID;
 				show_debug_message(postData_levelID)
+				postData_levelDate = _postData.levelDate;
+				show_debug_message(postData_levelDate)
+				postData_levelCreator = _postData.levelCreator;
+				show_debug_message(postData_levelCreator)
 				postData_dailyID = _postData.dailyID;
 				show_debug_message(postData_dailyID)
 				postData_gameData = _postData.gameData;
@@ -118,6 +132,7 @@ with (obj_ctrlp) {
 				show_debug_message(postData_totalTime)
 				postData_totalScore = _postData.totalScore;
 				show_debug_message(postData_totalScore)
+				
 				
 				loading_postdata_stage = 5
 			
@@ -138,6 +153,12 @@ with (obj_ctrlp) {
 					puzzle_is_daily = 1
 				
 					alarm[6] = 1 //will try to get prev+next postIds
+					
+					if string(postData_levelDate) != "-1" && string(postData_levelDate) != "0" {
+						postData_levelDate_formatted = scr_format_levelDate(postData_levelDate)
+						show_debug_message("postData_levelDate_formatted =")
+						show_debug_message(postData_levelDate_formatted)
+					}
 				
 				} else if postData_levelTag = "special" {
 					puzzle_is_special = 1
@@ -182,20 +203,25 @@ with (obj_ctrlp) {
 				
 				//username = _state.username;
 				//level = _state.level;
-				score_guesses = _state.data.score_guesses;
-				score_hints = _state.data.score_hints;
-				score_time = _state.data.score_time;
-				score_combined = _state.data.score_combined;
-				level_status = _state.data.level_status;
-			
-				show_debug_message("api_load_state loaded most stuff")
-			
+				score_guesses = _state.score_guesses;
+				score_hints = _state.score_hints;
+				score_time = _state.score_time;
+				score_combined = _state.score_combined;
+				level_status = _state.level_status;
+				
 				if level_status >= LEVEL_STATUS_GaveUp {
 					already_finished = 1
 					show_debug_message("level_status >= LEVEL_STATUS_GaveUp, set already_finished")
 				
 					//scr_board_init will trigger game to autocomplete
 				}
+				
+				
+				level_commented = _state.level_commented;
+			
+				show_debug_message("api_load_state loaded most stuff")
+			
+				
 			
 				load_state_complete = 1
 				show_debug_message("load_state_complete")
@@ -204,9 +230,9 @@ with (obj_ctrlp) {
 				
 				show_debug_message("api_load_state failed on postId:"+string(postId)+", save over with current values")
 				show_debug_message("level_status: "+string(level_status))
-				api_save_state(postId, { score_guesses, score_hints, score_time, score_combined, level_status }, undefined);
+				api_save_state(postId, { score_guesses, score_hints, score_time, score_combined, level_status, level_commented }, undefined);
 				load_state_complete = 1
-				alarm[0] = 60;
+				alarm[0] = 1;
 			}
 			
 		});

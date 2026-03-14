@@ -1,4 +1,16 @@
 
+import { navigateTo } from '@devvit/web/client';
+
+function redditNavigateTo(url) {
+
+    console.log("redditNavigateTo");
+    
+    console.log("redditNavigateTo "+url);
+
+    navigateTo(url);
+}
+
+
 
 /*function showShare() {
 	let thebutt = document.getElementById("shareButton");
@@ -150,189 +162,189 @@ function focus_window() {
 //////////////////////////////////
 
 
-// Sample data for puzzles, each with a link, size, author, and date
-const puzzlesExample = [
+// // Sample data for puzzles, each with a link, size, author, and date
+// const puzzlesExample = [
     
-    {
-        link: "?loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3",
-        title: "#666",
-        author: "Satan",
-        date: "2024-12-02"
-    },
-    {
-        link: "?loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3",
-        title: "#4",
-        author: "Satan",
-        date: "2024-11-03"
-    },
-    {
-        link: "?loadBoard=HIDEWORDINTOGRID&loadSecret=4-7-12-16-15-10-13",
-        title: "#4",
-        author: "Satan",
-        date: "2024-11-03"
-    },
-    {
-        link: "?loadBoard=LIVELOVELAFFWORD&loadSecret=11-6-5-9-14-13",
-        title: "#4",
-        author: "Acey",
-        date: "2024-11-03"
-    },
-    {
-        link: "?loadBoard=WHATWORDISINGRID&loadSecret=3-7-11-16",
-        title: "#4",
-        author: "Acey",
-        date: "2024-11-03"
-    },
-    {
-        link: "?loadBoard=IOOWYDSCDVEPENTGAAAIIJMEU&loadSecret=13-14-9-3-4",
-        title: "#4",
-        author: "Satan",
-        date: "2024-11-02"
-    },
-    {
-        link: "?loadBoard=UWXVMPENENUDDLKHSEEAATWOR&loadSecret=23-19-20-15-9-8-7-13",
-        title: "#4",
-        author: "Satan",
-        date: "2024-11-01"
-    },
-    {
-        link: "?loadBoard=BDOEBKNSIROEERBAMDIRGGATE&loadSecret=6-7-12-13",
-        title: "#4",
-        author: "Acey",
-        date: "2024-10-31"
-    },
-    {
-        link: "?loadBoard=IYEIORAOABEANEAEPCINMALNI&loadSecret=17-23-22-18-14-10-5",
-        title: "#4",
-        author: "Acey",
-        date: "2024-10-30"
-    },
-    {
-        link: "?loadBoard=MUSIXIDMTETEEALCHDYRATDAE&loadSecret=16-17-13-18-23-24-20",
-        title: "#3",
-        author: "Acey",
-        date: "2024-10-29"
-    },
-    {
-        link: "?loadBoard=FDTSUREOSIAIOTME&loadSecret=4-3-6-7-11-15",
-        title: "#2",
-        author: "Acey",
-        date: "2024-10-28"
-    },
+//     {
+//         link: "?loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3",
+//         title: "#666",
+//         author: "Satan",
+//         date: "2024-12-02"
+//     },
+//     {
+//         link: "?loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3",
+//         title: "#4",
+//         author: "Satan",
+//         date: "2024-11-03"
+//     },
+//     {
+//         link: "?loadBoard=HIDEWORDINTOGRID&loadSecret=4-7-12-16-15-10-13",
+//         title: "#4",
+//         author: "Satan",
+//         date: "2024-11-03"
+//     },
+//     {
+//         link: "?loadBoard=LIVELOVELAFFWORD&loadSecret=11-6-5-9-14-13",
+//         title: "#4",
+//         author: "Acey",
+//         date: "2024-11-03"
+//     },
+//     {
+//         link: "?loadBoard=WHATWORDISINGRID&loadSecret=3-7-11-16",
+//         title: "#4",
+//         author: "Acey",
+//         date: "2024-11-03"
+//     },
+//     {
+//         link: "?loadBoard=IOOWYDSCDVEPENTGAAAIIJMEU&loadSecret=13-14-9-3-4",
+//         title: "#4",
+//         author: "Satan",
+//         date: "2024-11-02"
+//     },
+//     {
+//         link: "?loadBoard=UWXVMPENENUDDLKHSEEAATWOR&loadSecret=23-19-20-15-9-8-7-13",
+//         title: "#4",
+//         author: "Satan",
+//         date: "2024-11-01"
+//     },
+//     {
+//         link: "?loadBoard=BDOEBKNSIROEERBAMDIRGGATE&loadSecret=6-7-12-13",
+//         title: "#4",
+//         author: "Acey",
+//         date: "2024-10-31"
+//     },
+//     {
+//         link: "?loadBoard=IYEIORAOABEANEAEPCINMALNI&loadSecret=17-23-22-18-14-10-5",
+//         title: "#4",
+//         author: "Acey",
+//         date: "2024-10-30"
+//     },
+//     {
+//         link: "?loadBoard=MUSIXIDMTETEEALCHDYRATDAE&loadSecret=16-17-13-18-23-24-20",
+//         title: "#3",
+//         author: "Acey",
+//         date: "2024-10-29"
+//     },
+//     {
+//         link: "?loadBoard=FDTSUREOSIAIOTME&loadSecret=4-3-6-7-11-15",
+//         title: "#2",
+//         author: "Acey",
+//         date: "2024-10-28"
+//     },
     
-];
+// ];
 
 
-//load puzzles
-const puzzles = [];
+// //load puzzles
+// const puzzles = [];
 
-var jsonURL = 'https://fermentergames.github.io/sneakle/puzzles.json'+'?nocache=' + (new Date()).getTime()
+// var jsonURL = 'https://fermentergames.github.io/sneakle/puzzles.json'+'?nocache=' + (new Date()).getTime()
 
-fetch(jsonURL)
-    .then(response => {
+// fetch(jsonURL)
+//     .then(response => {
 
-        console.log("jsonURL = "+jsonURL);
+//         console.log("jsonURL = "+jsonURL);
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        puzzles.push(...data);
-        //console.log(puzzles); // Logs the array to verify
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-
-
-
-// Function to generate the puzzle list
-function generatePuzzleList() {
-
-    console.log("generatePuzzleList happening");
-    console.log(puzzles);
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return response.json();
+//     })
+//     .then(data => {
+//         puzzles.push(...data);
+//         //console.log(puzzles); // Logs the array to verify
+//     })
+//     .catch(error => {
+//         console.error('There was a problem with the fetch operation:', error);
+//     });
 
 
-    const menuContainer = document.querySelector(".puzzleMenu");
-    const today = new Date(); // Get today's date
-    let puzzleListCount = puzzles.length;
 
-    //adjust puzzleListCount for puzzles later than today
-    puzzles.forEach(puzzle => {
-        const puzzleDateQuickCheck = new Date(puzzle.date);
-        if (puzzleDateQuickCheck > today) {
-        	puzzleListCount -= 1
-        }
-    });
+// // Function to generate the puzzle list
+// function generatePuzzleList() {
+
+//     console.log("generatePuzzleList happening");
+//     console.log(puzzles);
 
 
-    if (menuContainer) {
-        menuContainer.innerHTML = "";
+//     const menuContainer = document.querySelector(".puzzleMenu");
+//     const today = new Date(); // Get today's date
+//     let puzzleListCount = puzzles.length;
 
-        puzzles.forEach(puzzle => {
+//     //adjust puzzleListCount for puzzles later than today
+//     puzzles.forEach(puzzle => {
+//         const puzzleDateQuickCheck = new Date(puzzle.date);
+//         if (puzzleDateQuickCheck > today) {
+//         	puzzleListCount -= 1
+//         }
+//     });
 
-        	// Convert puzzle date to Date object for comparison
-            const puzzleDate = new Date(puzzle.date);
 
-            // Check if the puzzle's date is on or before today's date
-            if (puzzleDate <= today) {
+//     if (menuContainer) {
+//         menuContainer.innerHTML = "";
+
+//         puzzles.forEach(puzzle => {
+
+//         	// Convert puzzle date to Date object for comparison
+//             const puzzleDate = new Date(puzzle.date);
+
+//             // Check if the puzzle's date is on or before today's date
+//             if (puzzleDate <= today) {
 
             	
-            	puzzle.title = "#"+puzzleListCount;
-            	puzzleListCount -= 1;
+//             	puzzle.title = "#"+puzzleListCount;
+//             	puzzleListCount -= 1;
 
-            	puzzle.letters = getStringBetweenChars(puzzle.link, "=", "&");
+//             	puzzle.letters = getStringBetweenChars(puzzle.link, "=", "&");
 
-            	let puzSz = Math.floor(Math.sqrt(puzzle.letters.length))
+//             	let puzSz = Math.floor(Math.sqrt(puzzle.letters.length))
 
-            	//console.log("puzSz ="+puzSz)
+//             	//console.log("puzSz ="+puzSz)
 
-            	puzzle.size = puzSz+"x"+puzSz
+//             	puzzle.size = puzSz+"x"+puzSz
 
-            	puzzle.lettersFormatted = addStringEveryNthChar(puzzle.letters, "<br>", puzSz);
+//             	puzzle.lettersFormatted = addStringEveryNthChar(puzzle.letters, "<br>", puzSz);
 
-    	    	const puzzleItem = document.createElement("a");
-    	        puzzleItem.classList.add("menu-item");
-    	        puzzleItem.href = puzzle.link
-    	        puzzleItem.target = "_self"
-    	        //puzzleItem.textContent = puzzle.date
-    	        // puzzleItem.innerHTML = `<a href="${puzzle.link}" target="_self" class="puzzle-link">${puzzle.date}</a>`;
+//     	    	const puzzleItem = document.createElement("a");
+//     	        puzzleItem.classList.add("menu-item");
+//     	        puzzleItem.href = puzzle.link
+//     	        puzzleItem.target = "_self"
+//     	        //puzzleItem.textContent = puzzle.date
+//     	        // puzzleItem.innerHTML = `<a href="${puzzle.link}" target="_self" class="puzzle-link">${puzzle.date}</a>`;
 
 
-    	        // Create details container for each puzzle
-    	        const detailsList = document.createElement("ul");
-    	        detailsList.classList.add("puzzle-details");
+//     	        // Create details container for each puzzle
+//     	        const detailsList = document.createElement("ul");
+//     	        detailsList.classList.add("puzzle-details");
 
-    	        // Add puzzle link, size, author, and date to details
-    	        detailsList.innerHTML = `
+//     	        // Add puzzle link, size, author, and date to details
+//     	        detailsList.innerHTML = `
     	        	
-    	        	<li class="puzzle-item puzzle-title">${puzzle.title}</li>
-    	        	<li class="puzzle-item puzzle-letters">${puzzle.lettersFormatted}</li>
+//     	        	<li class="puzzle-item puzzle-title">${puzzle.title}</li>
+//     	        	<li class="puzzle-item puzzle-letters">${puzzle.lettersFormatted}</li>
     	        	
-    	        	<li class="puzzle-item puzzle-date">${formatDate(puzzle.date)}</li>
-    	            <li class="puzzle-item puzzle-author">by ${puzzle.author}</li>
-    	        `;
+//     	        	<li class="puzzle-item puzzle-date">${formatDate(puzzle.date)}</li>
+//     	            <li class="puzzle-item puzzle-author">by ${puzzle.author}</li>
+//     	        `;
 
-    	        // Append details to puzzle item and puzzle item to menu
-    	        puzzleItem.appendChild(detailsList);
-    	        menuContainer.appendChild(puzzleItem);
+//     	        // Append details to puzzle item and puzzle item to menu
+//     	        puzzleItem.appendChild(detailsList);
+//     	        menuContainer.appendChild(puzzleItem);
 
-        	}
-        });
-
-
-        let thething = document.querySelector(".puzzleMenuWrapper");
-        if (thething) {
-        	//thething.style.visibility = "hidden";
-        	thething.classList.add("show");
-        }
-
-    }
+//         	}
+//         });
 
 
-}
+//         let thething = document.querySelector(".puzzleMenuWrapper");
+//         if (thething) {
+//         	//thething.style.visibility = "hidden";
+//         	thething.classList.add("show");
+//         }
+
+//     }
+
+
+// }
 
 // Utility function to format the date
 function formatDate(isoDateString) {
@@ -393,4 +405,8 @@ function funcCloseArchiveMenu() {
     	console.log("REMOVE "+"show"+" from "+"puzzleMenuWrapper");
     }
 }
+
+
+
+
 

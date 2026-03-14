@@ -35,7 +35,11 @@ function scr_submit_created_puzzle(_title) {
 				show_debug_message(_ok);
 				show_debug_message(_result);
 				
-				if (_status = 0) {
+				var _result_parsed = json_parse(_result);
+				
+				show_debug_message(_result_parsed.success);
+				
+				if (_status = 0 || _status = 200 || _ok = 1 || _result_parsed.success = true) {
 			      show_debug_message("post created!");
 					show_debug_message("result should be post to nav to??");
 					show_debug_message(_result);
@@ -44,7 +48,13 @@ function scr_submit_created_puzzle(_title) {
 					
 					global.show_submitting_post = 2
 					
-					api_navigateTo(_result,undefined)
+					//api_navigateTo(_result_parsed.success,undefined)
+					
+					show_debug_message("redditNavigateTo try");
+					
+					redditNavigateTo(string(_result_parsed.navigateTo))
+					
+					show_debug_message("redditNavigateTo happened?");
 					
 			   } else {
 			      show_debug_message("post creation FAILED: " + string(_result));

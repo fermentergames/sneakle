@@ -85,38 +85,43 @@ function api_load_state(_postId,_callback) {
 /// @param {Any} _data The data you want to save.
 /// @param {Function} _callback The callback that you want to be executed upon task completion.
 function api_save_profile(_profileData, _callback) {
-		
-	// Build request url
-    var _url = reddit_get_base_url() + "/api/profile";
-
-	// Build request headers
-    var _headers = ds_map_create();
-    ds_map_add(_headers, "Content-Type", "application/json");
-    ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
-
-	// Build request body
-    var _body = {};
-	 //if (is_real(_stat_1)) _body.stat_1 = _stat_1;
-	 //if (is_real(_stat_2)) _body.stat_2 = _stat_2;
-    if (is_struct(_profileData)) _body.profileData = _profileData;
 	
-	// Make request
-    var _json = json_stringify(_body);
+	if obj_ctrlp.load_profile_complete >= 1 {
+		// Build request url
+	    var _url = reddit_get_base_url() + "/api/profile";
+
+		// Build request headers
+	    var _headers = ds_map_create();
+	    ds_map_add(_headers, "Content-Type", "application/json");
+	    ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
+
+		// Build request body
+	    var _body = {};
+		 //if (is_real(_stat_1)) _body.stat_1 = _stat_1;
+		 //if (is_real(_stat_2)) _body.stat_2 = _stat_2;
+	    if (is_struct(_profileData)) _body.profileData = _profileData;
+	
+		// Make request
+	    var _json = json_stringify(_body);
 	 
-	 show_debug_message("api_save_profile json")
-	 show_debug_message(_json)
+		 show_debug_message("api_save_profile json")
+		 show_debug_message(_json)
 	 
-    var _req = http_request(_url, "POST", _headers, _json);
+	    var _req = http_request(_url, "POST", _headers, _json);
 	
-	// Free memory
-    ds_map_destroy(_headers);
+		// Free memory
+	    ds_map_destroy(_headers);
 	
-	// Register request callback
-	if (is_callable(_callback)) api_register_request(_req, _callback);
+		// Register request callback
+		if (is_callable(_callback)) api_register_request(_req, _callback);
 	
-	//scr_profile_update_stats()
+		//scr_profile_update_stats()
 
-	return _req; // keep to match in Async HTTP event
+		return _req; // keep to match in Async HTTP event
+	
+	} else {
+		show_debug_message("tried to api_save_profile, but load_profile_complete not ready, so bailed")	
+	}
 }
 
 /// @desc This function allows you to load the user for the current user.
@@ -211,6 +216,79 @@ function api_get_leaderboard(_postId, _limit, _callback) {
 	if (is_callable(_callback)) api_register_request(_req, _callback);
 	
     return _req;
+}
+
+
+/// @desc This function allows you to post sticky lb comment
+/// For more details check the server demo implementation under the output folder:
+/// <output>/<project_name>/src/server/index.ts
+/// @param {Real} _postId The post to save score to
+/// @param {Real} _score The score to submit.
+/// @param {Function} _callback The callback that you want to be executed upon task completion.
+function api_leaderboard_comment(_postId, _callback) {
+	
+	if _postId = "-9999" {_postId = ""}
+	
+	// Build request url
+    var _url = reddit_get_base_url() + "/api/leaderboard-comment?postId="+string(_postId);
+
+	// Build request headers
+    var _headers = ds_map_create();
+    ds_map_add(_headers, "Content-Type", "application/json");
+	ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
+
+	// Build request body
+    var _body = {};
+	//if (is_real(_score)) _body.score = _score;
+
+	// Make request
+    var _json = json_stringify(_body);
+    var _req = http_request(_url, "POST", _headers, _json);
+	
+	// Free memory
+    ds_map_destroy(_headers);
+
+	// Register request callback
+	if (is_callable(_callback)) api_register_request(_req, _callback);
+
+	return _req;
+}
+
+
+
+/// @desc This function allows you to submit a new user highscore.
+/// For more details check the server demo implementation under the output folder:
+/// <output>/<project_name>/src/server/index.ts
+/// @param {Real} _postId The post to save score to
+/// @param {Real} _score The score to submit.
+/// @param {Function} _callback The callback that you want to be executed upon task completion.
+function api_comment_score(_postId, _score, _callback) {
+	
+	if _postId = "-9999" {_postId = ""}
+	
+	// Build request url
+    var _url = reddit_get_base_url() + "/api/comment-score?postId="+string(_postId);
+
+	// Build request headers
+    var _headers = ds_map_create();
+    ds_map_add(_headers, "Content-Type", "application/json");
+	ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
+
+	// Build request body
+    var _body = {};
+	if (is_real(_score)) _body.score = _score;
+
+	// Make request
+    var _json = json_stringify(_body);
+    var _req = http_request(_url, "POST", _headers, _json);
+	
+	// Free memory
+    ds_map_destroy(_headers);
+
+	// Register request callback
+	if (is_callable(_callback)) api_register_request(_req, _callback);
+
+	return _req;
 }
 
 

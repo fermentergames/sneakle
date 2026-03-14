@@ -1,0 +1,27 @@
+[
+  {
+    "title": "4x4 - randomFilled - #1",
+    "secret_word": "PREVIEW",
+    "encoded": "loadBoard=DRPAOTEHUHVJAWEI&loadSecret=3-2-7-11-16-15-14"
+  },
+  {
+    "title": "4x4 - randomFilled - #2",
+    "secret_word": "AUTOMATED",
+    "encoded": "loadBoard=MAUTIUAODTMEENGE&loadSecret=2-3-4-8-11-7-10-13-9"
+  },
+  {
+    "title": "4x4 - randomFilled - #3",
+    "secret_word": "LONGITUDE",
+    "encoded": "loadBoard=YORLGEONSUDGTZTI&loadSecret=4-7-8-12-16-15-10-11-6"
+  },
+  {
+    "title": "4x4 - randomFilled - #4",
+    "secret_word": "ACCURACY",
+    "encoded": "loadBoard=ANKYCUAAACRCIEYA&loadSecret=1-5-10-6-11-16-12-15"
+  },
+  {
+    "title": "4x4 - randomFilled - #5",
+    "secret_word": "BOOKING",
+    "encoded": "loadBoard=OKESIOYLNOBINGFE&loadSecret=11-6-1-2-5-9-14"
+  }
+]

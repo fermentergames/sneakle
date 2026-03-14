@@ -6,6 +6,8 @@ if (live_call()) return live_result;
 		if already_finished <= 0 {
 
 			show_debug_message("scr_game_score_submit happening")
+			
+			just_submitted_score = 1
 		
 			score_guesses = obj_ctrl.guesses_count
 			score_hints = global.game_hints_used
@@ -116,6 +118,10 @@ if (live_call()) return live_result;
 			alarm[1] = 30; //will fetch lb after
 			
 		}
+		
+		//alarm[8] = 1 //test comment
 
 	}
+	
+	
 }

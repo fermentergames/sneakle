@@ -104,6 +104,9 @@ if _info_ds_map[? "mobile"] = 1 {
 }
 
 var _info_href = _info_ds_map[? "window.location.href"]
+
+
+
 show_debug_message("_info_href: "+string(_info_href))
 global.is_reddit = 0
 if string_count("devvit",_info_href) > 0 {
@@ -113,11 +116,48 @@ if string_count("devvit",_info_href) > 0 {
 	show_debug_message("Reddit NOT detected")	
 }
 
+global.is_android = 0
+global.is_ios = 0
+global.is_firefox = 0
+
+var _info_userAgentString = _info_ds_map[? "userAgentString"]
+
+if string_count("android",string_lower(_info_userAgentString)) > 0 {
+	global.is_android = 1
+	show_debug_message("Android detected")
+} else {
+	show_debug_message("Android NOT detected")	
+}
+
+if string_count("iphone",string_lower(_info_userAgentString)) > 0 {
+	global.is_ios = 1
+	show_debug_message("iOS detected iphone")
+} else if string_count("ipad",string_lower(_info_userAgentString)) > 0 {
+	global.is_ios = 1
+	show_debug_message("iOS detected ipad")
+} else {
+	show_debug_message("iOS NOT detected")	
+}
+
+if string_count("firefox",string_lower(_info_userAgentString)) > 0 {
+	global.is_firefox = 1
+	show_debug_message("firefox detected")
+} else {
+	show_debug_message("firefox NOT detected")	
+}
+
+global.do_basic_input = 0
+if global.is_android = 1 && global.is_firefox = 0 {
+	global.do_basic_input = 1
+}
+
 
 show_debug_message("--");
 var map_string = json_encode(_info_ds_map);
 show_debug_message(map_string);
 
+info_ds_map_str = map_string
+info_ds_map_str = string_replace_all(info_ds_map_str,",",",\n")
 
 ds_map_destroy(_info_ds_map) 
 

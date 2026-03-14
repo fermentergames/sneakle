@@ -2,4 +2,6 @@
 if (live_call()) return live_result;
 
 //done in html's JS
-generatePuzzleList()
+if global.is_reddit <= 0 {
+	generatePuzzleList()
+}

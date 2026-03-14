@@ -52,7 +52,7 @@ function scr_leaderboard_list_draw(xx,yy,yo,para,scl,alp,extras,single_id=-1) {
 	var lb_variant_hovered = 1
 	var lb_variant_hovered_fd = 1
 	var lbmenu_which = 1
-	var lbmenu_variant1_fd = global.show_lb_fd
+	//obj_ctrlp.lbmenu_variant1_fd = global.show_lb_fd
 	
 	var _green_check_col = make_color_hsv(100,255,210)
 	var _green_check_txt = make_color_hsv(100,215,250)
@@ -178,16 +178,16 @@ function scr_leaderboard_list_draw(xx,yy,yo,para,scl,alp,extras,single_id=-1) {
 	
 	}
     
-   if lbmenu_variant1_fd > 0 {
+   if obj_ctrlp.lbmenu_variant1_fd > 0 {
     
-      draw_set_alpha(.7*lbmenu_fd*_menu_fd)
+      draw_set_alpha(.7*lbmenu_fd*obj_ctrlp.lbmenu_variant1_fd*_menu_fd)
       draw_set_halign(fa_center)
       draw_set_colour(COL_MENU_AQUA2)
 		draw_set_font(fnt_main)
 		
 		if lb_variant_hovered = 1 {
 			draw_set_colour(c_white)
-			draw_set_alpha(.9*lbmenu_fd*_menu_fd)
+			draw_set_alpha(.9*lbmenu_fd*obj_ctrlp.lbmenu_variant1_fd*_menu_fd)
 			//draw_set_font(global.fnt_main_b)
 		}
 		
@@ -217,8 +217,8 @@ function scr_leaderboard_list_draw(xx,yy,yo,para,scl,alp,extras,single_id=-1) {
     
 		//sep vert line
       draw_set_colour(c_white)
-      draw_set_alpha(0.1*lbmenu_fd*_menu_fd) 
-      draw_rectangle((bounty_card_x)+((300+(-1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y-47)*hud_scl)+(500*hud_scl*(1-lbmenu_fd)),(bounty_card_x)+((300+(1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y-50+1540)*hud_scl)+(500*hud_scl*(1-lbmenu_fd)),0)
+      draw_set_alpha(0.1*lbmenu_fd*obj_ctrlp.lbmenu_variant1_fd*_menu_fd) 
+      draw_rectangle((bounty_card_x)+((300+(-1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y-47)*hud_scl)+(500*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),(bounty_card_x)+((300+(1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y-50+1540)*hud_scl)+(500*hud_scl*(1-lbmenu_fd)),0)
     
 	 
 		var _lb_entry_is_me = 0
@@ -239,32 +239,32 @@ function scr_leaderboard_list_draw(xx,yy,yo,para,scl,alp,extras,single_id=-1) {
 				//_lb_entry_rank = "> "+string(_lb_entry_rank)
 			}
 			
-	      draw_set_alpha(1*lbmenu_fd*_menu_fd)
+	      draw_set_alpha(1*lbmenu_fd*obj_ctrlp.lbmenu_variant1_fd*_menu_fd)
 	      draw_set_font(fnt_main)
 	      draw_set_halign(fa_left)
 	      //draw_text_transformed((bounty_card_x)+70,((bounty_card_x)-81)+(32*(ii-1))+(500*(1-lbmenu_fd)),string(ii)+". "+"ACEYPOO92",1.15,1.15,0)
 			
 			
-			//draw_sprite_ext(spr_titlebg,1,(bounty_card_x),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(-5*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),2.5*hud_scl,0.65*hud_scl,0,draw_get_color(),0.15*lbmenu_fd*_menu_fd)
+			//draw_sprite_ext(spr_titlebg,1,(bounty_card_x),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(-5*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),2.5*hud_scl,0.65*hud_scl,0,draw_get_color(),0.15*lbmenu_fd*_menu_fd)
   
 			if _lb_entry_is_me = 1 {
 				draw_set_halign(fa_right)
 				var _col_bkup = draw_get_colour()
 				draw_set_colour(merge_color(_col_bkup,c_white,0.5+(0.4*obj_ctrl.pulse_3)))
-				draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-20)+(3*obj_ctrl.pulse_1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+0)*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),string(_lb_you_indication),0.25*hud_scl,0.25*hud_scl,0)
+				draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-20)+(3*obj_ctrl.pulse_1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+0)*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),string(_lb_you_indication),0.25*hud_scl,0.25*hud_scl,0)
 				draw_set_halign(fa_left)
 				draw_set_colour(_col_bkup)
 			}
-			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-0))*hud_scl),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),_lb_entry_rank,0.45*hud_scl,0.45*hud_scl,0)
+			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-0))*hud_scl),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),_lb_entry_rank,0.45*hud_scl,0.45*hud_scl,0)
 	      
-			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+100)*hud_scl),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),string(_lb_entry_name),0.45*hud_scl,0.45*hud_scl,0)
+			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+100)*hud_scl),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),string(_lb_entry_name),0.45*hud_scl,0.45*hud_scl,0)
 	      
 	      //obj_ctrlp.steam_name_new[i]
-	      draw_set_alpha(.8*lbmenu_fd*_menu_fd)
+	      draw_set_alpha(.8*lbmenu_fd*obj_ctrlp.lbmenu_variant1_fd*_menu_fd)
 	      draw_set_font(fnt_main)
 	      draw_set_halign(fa_left)
 	      //draw_text_transformed((bounty_card_x)+95,((bounty_card_x)-80)+(32*(ii-1))+(500*(1-lbmenu_fd)),"1:33.77",.68,.68,0)
-	      draw_text_transformed((bounty_card_x)+(350*hud_scl),(bounty_card_y)+((_lb_entries_top_y-5)*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),string(obj_ctrlp.lb_entry[ii,3]),.45*hud_scl,.45*hud_scl,0)
+	      draw_text_transformed((bounty_card_x)+(350*hud_scl),(bounty_card_y)+((_lb_entries_top_y-5)*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),string(obj_ctrlp.lb_entry[ii,3]),.45*hud_scl,.45*hud_scl,0)
       }
 		
 		
@@ -286,15 +286,15 @@ function scr_leaderboard_list_draw(xx,yy,yo,para,scl,alp,extras,single_id=-1) {
 
 	      draw_set_font(fnt_main)
 	      draw_set_halign(fa_left)
-	      draw_set_alpha(.8*lbmenu_fd*_menu_fd)
+	      draw_set_alpha(.8*lbmenu_fd*obj_ctrlp.lbmenu_variant1_fd*_menu_fd)
 			
-			//draw_sprite_ext(spr_titlebg,1,(bounty_card_x),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(-3*hud_scl)+(62*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),2.5*hud_scl,0.42*hud_scl,0,draw_get_color(),_lb_bg_ban_alp*lbmenu_fd*_menu_fd)
+			//draw_sprite_ext(spr_titlebg,1,(bounty_card_x),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(-3*hud_scl)+(62*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),2.5*hud_scl,0.42*hud_scl,0,draw_get_color(),_lb_bg_ban_alp*lbmenu_fd*_menu_fd)
 
 			if _lb_entry_is_me = 1 {
 				draw_set_halign(fa_right)
 				var _col_bkup = draw_get_colour()
 				draw_set_colour(merge_color(_col_bkup,c_white,0.5+(0.4*obj_ctrl.pulse_3)))
-				draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-20)+(3*obj_ctrl.pulse_1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),string(_lb_you_indication),0.23*hud_scl,0.23*hud_scl,0)
+				draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-20)+(3*obj_ctrl.pulse_1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),string(_lb_you_indication),0.23*hud_scl,0.23*hud_scl,0)
 				draw_set_halign(fa_left)
 				draw_set_colour(_col_bkup)
 			}
@@ -307,16 +307,160 @@ function scr_leaderboard_list_draw(xx,yy,yo,para,scl,alp,extras,single_id=-1) {
 				_lb_entry_rank_scl = 340/_lb_entry_rank_w
 			}
 			
-			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-0))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),_lb_entry_rank,0.35*hud_scl*_lb_entry_rank_scl,0.35*hud_scl*_lb_entry_rank_scl,0)
+			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-0))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),_lb_entry_rank,0.35*hud_scl*_lb_entry_rank_scl,0.35*hud_scl*_lb_entry_rank_scl,0)
 	      
-			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+100)*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),string(_lb_entry_name),0.35*hud_scl,0.35*hud_scl,0)
+			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+100)*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),string(_lb_entry_name),0.35*hud_scl,0.35*hud_scl,0)
 	      
 
 
 	      draw_set_font(fnt_main)
 	      draw_set_halign(fa_left)
-	      draw_set_alpha(.6*lbmenu_fd*_menu_fd)
-	      draw_text_transformed((bounty_card_x)+(350*hud_scl),(bounty_card_y)+(((_lb_entries_top_y-4)+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-lbmenu_variant1_fd)),string(obj_ctrlp.lb_entry[ii,3]),.35*hud_scl,.35*hud_scl,0)
+	      draw_set_alpha(.6*lbmenu_fd*obj_ctrlp.lbmenu_variant1_fd*_menu_fd)
+	      draw_text_transformed((bounty_card_x)+(350*hud_scl),(bounty_card_y)+(((_lb_entries_top_y-4)+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant1_fd)),string(obj_ctrlp.lb_entry[ii,3]),.35*hud_scl,.35*hud_scl,0)
+      }
+    
+   } //end of variant 1
+    
+	 
+	if obj_ctrlp.lbmenu_variant2_fd > 0 {
+    
+      draw_set_alpha(.7*lbmenu_fd*obj_ctrlp.lbmenu_variant2_fd*_menu_fd)
+      draw_set_halign(fa_center)
+      draw_set_colour(COL_MENU_AQUA2)
+		draw_set_font(fnt_main)
+		
+		if lb_variant_hovered = 1 {
+			draw_set_colour(c_white)
+			draw_set_alpha(.9*lbmenu_fd*obj_ctrlp.lbmenu_variant2_fd*_menu_fd)
+			//draw_set_font(global.fnt_main_b)
+		}
+		
+		//draw_sprite_ext(spr_pill256,4,(bounty_card_x),(bounty_card_y)+((96)*hud_scl)+(-0*hud_scl*(1-lbmenu_fd)),1*hud_scl,1*hud_scl,0,merge_color(COL_MENU_AQUA3_DK,COL_GRAY5,0.5),1*(-20+(21*lbmenu_fd))*_menu_fd)
+		////draw_sprite_ext(spr_titlebg,0,(bounty_card_x),(bounty_card_y)+((96)*hud_scl)+(-0*hud_scl*(1-lbmenu_fd)),1*hud_scl,0.5*hud_scl,0,merge_color(COL_MENU_AQUA3_DK,COL_GRAY5,0.5),1*(-20+(21*lbmenu_fd))*_menu_fd)
+		
+		var lb_variant_title_str = ""
+
+		lb_variant_title_str = "Near You"
+		
+		
+		var lb_variant_title_str_scl = 1
+		var lb_variant_title_str_w = string_width(lb_variant_title_str)
+		
+		if lb_variant_title_str_w > 1250 {
+			lb_variant_title_str_scl = 1250/lb_variant_title_str_w
+		}
+		
+      //if lbmenu_which >= 1 {
+         draw_text_transformed((bounty_card_x),(bounty_card_y)+(98*hud_scl)+(-0*hud_scl*(1-lbmenu_fd)),lb_variant_title_str,0.25*hud_scl*_fnt_scl*lb_variant_title_str_scl,0.25*hud_scl*_fnt_scl*lb_variant_title_str_scl,0)
+      //} else {
+      //   draw_text_transformed((bounty_card_x),(bounty_card_y)+(98*hud_scl)+(-0*hud_scl*(1-lbmenu_fd)),string("TOP TIMES"),0.25*hud_scl,0.25*hud_scl,0)
+      //}
+		
+		draw_set_font(fnt_main)
+        
+    
+		//sep vert line
+      draw_set_colour(c_white)
+      draw_set_alpha(0.1*lbmenu_fd*obj_ctrlp.lbmenu_variant2_fd*_menu_fd) 
+      draw_rectangle((bounty_card_x)+((300+(-1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y-47)*hud_scl)+(500*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),(bounty_card_x)+((300+(1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y-50+1540)*hud_scl)+(500*hud_scl*(1-lbmenu_fd)),0)
+    
+	 
+		var _lb_entry_is_me = 0
+		
+
+	 
+      //for (var ii=1; ii<=3; ii+=1) {
+	   //   if ii = 1 {draw_set_color(c_yellow)}
+	   //   else if ii = 2 {draw_set_color(make_color_hsv(110,60,230))}
+	   //   else if ii = 3 {draw_set_color(c_orange)}
+			
+			
+		//	var _lb_entry_name = string(obj_ctrlp.lb_entry_near[ii,2])
+		//	var _lb_entry_rank = string(obj_ctrlp.lb_entry_near[ii,1])+"."
+		//	_lb_entry_is_me = 0 //reset
+		//	if obj_ctrlp.username = obj_ctrlp.lb_entry_near[ii,2] {
+		//		_lb_entry_is_me = 1
+		//		//_lb_entry_rank = "> "+string(_lb_entry_rank)
+		//	}
+			
+	   //   draw_set_alpha(1*lbmenu_fd*obj_ctrlp.lbmenu_variant2_fd*_menu_fd)
+	   //   draw_set_font(fnt_main)
+	   //   draw_set_halign(fa_left)
+	   //   //draw_text_transformed((bounty_card_x)+70,((bounty_card_x)-81)+(32*(ii-1))+(500*(1-lbmenu_fd)),string(ii)+". "+"ACEYPOO92",1.15,1.15,0)
+			
+			
+		//	//draw_sprite_ext(spr_titlebg,1,(bounty_card_x),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(-5*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),2.5*hud_scl,0.65*hud_scl,0,draw_get_color(),0.15*lbmenu_fd*_menu_fd)
+  
+		//	if _lb_entry_is_me = 1 {
+		//		draw_set_halign(fa_right)
+		//		var _col_bkup = draw_get_colour()
+		//		draw_set_colour(merge_color(_col_bkup,c_white,0.5+(0.4*obj_ctrl.pulse_3)))
+		//		draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-20)+(3*obj_ctrl.pulse_1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+0)*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),string(_lb_you_indication),0.25*hud_scl,0.25*hud_scl,0)
+		//		draw_set_halign(fa_left)
+		//		draw_set_colour(_col_bkup)
+		//	}
+		//	draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-0))*hud_scl),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),_lb_entry_rank,0.45*hud_scl,0.45*hud_scl,0)
+	      
+		//	draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+100)*hud_scl),(bounty_card_y)+(_lb_entries_top_y*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),string(_lb_entry_name),0.45*hud_scl,0.45*hud_scl,0)
+	      
+	   //   //obj_ctrlp.steam_name_new[i]
+	   //   draw_set_alpha(.8*lbmenu_fd*obj_ctrlp.lbmenu_variant2_fd*_menu_fd)
+	   //   draw_set_font(fnt_main)
+	   //   draw_set_halign(fa_left)
+	   //   //draw_text_transformed((bounty_card_x)+95,((bounty_card_x)-80)+(32*(ii-1))+(500*(1-lbmenu_fd)),"1:33.77",.68,.68,0)
+	   //   draw_text_transformed((bounty_card_x)+(350*hud_scl),(bounty_card_y)+((_lb_entries_top_y-5)*hud_scl)+(112*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),string(obj_ctrlp.lb_entry_near[ii,3]),.45*hud_scl,.45*hud_scl,0)
+      //}
+		
+		
+        
+      for (var ii=1; ii<=15; ii+=1) {
+			
+	      draw_set_colour(c_white)
+			
+			var _lb_bg_ban_alp = 0.05
+			var _lb_entry_name = string(obj_ctrlp.lb_entry_near[ii,2])
+			var _lb_entry_rank = string(obj_ctrlp.lb_entry_near[ii,1])+"."
+			_lb_entry_is_me = 0 //reset
+			if obj_ctrlp.username = obj_ctrlp.lb_entry_near[ii,2] {
+				_lb_entry_is_me = 1
+				//_lb_entry_rank = "> "+string(_lb_entry_rank)
+				draw_set_colour(make_color_hsv(110,60,230))
+				_lb_bg_ban_alp = 0.15
+			}
+
+	      draw_set_font(fnt_main)
+	      draw_set_halign(fa_left)
+	      draw_set_alpha(.8*lbmenu_fd*obj_ctrlp.lbmenu_variant2_fd*_menu_fd)
+			
+			//draw_sprite_ext(spr_titlebg,1,(bounty_card_x),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(-3*hud_scl)+(62*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),2.5*hud_scl,0.42*hud_scl,0,draw_get_color(),_lb_bg_ban_alp*lbmenu_fd*_menu_fd)
+
+			if _lb_entry_is_me = 1 {
+				draw_set_halign(fa_right)
+				var _col_bkup = draw_get_colour()
+				draw_set_colour(merge_color(_col_bkup,c_white,0.5+(0.4*obj_ctrl.pulse_3)))
+				draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-20)+(3*obj_ctrl.pulse_1))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),string(_lb_you_indication),0.23*hud_scl,0.23*hud_scl,0)
+				draw_set_halign(fa_left)
+				draw_set_colour(_col_bkup)
+			}
+			
+			//scale rank to fit
+			//if ii mod 2 = 0 {_lb_entry_rank = string(real(obj_ctrlp.steam_rank[ii-1])*1233)+"."}
+			var _lb_entry_rank_w = string_width(_lb_entry_rank)
+			var _lb_entry_rank_scl = 1
+			if _lb_entry_rank_w > 340 {
+				_lb_entry_rank_scl = 340/_lb_entry_rank_w
+			}
+			
+			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+(_lb_entry_is_me*-0))*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),_lb_entry_rank,0.35*hud_scl*_lb_entry_rank_scl,0.35*hud_scl*_lb_entry_rank_scl,0)
+	      
+			draw_text_transformed((bounty_card_x)+((_lb_entries_left_x+100)*hud_scl),(bounty_card_y)+((_lb_entries_top_y+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),string(_lb_entry_name),0.35*hud_scl,0.35*hud_scl,0)
+	      
+
+
+	      draw_set_font(fnt_main)
+	      draw_set_halign(fa_left)
+	      draw_set_alpha(.6*lbmenu_fd*obj_ctrlp.lbmenu_variant2_fd*_menu_fd)
+	      draw_text_transformed((bounty_card_x)+(350*hud_scl),(bounty_card_y)+(((_lb_entries_top_y-4)+80)*hud_scl)+(92*hud_scl*(ii-1))+(500*ii*hud_scl*(1-obj_ctrlp.lbmenu_variant2_fd)),string(obj_ctrlp.lb_entry_near[ii,3]),.35*hud_scl,.35*hud_scl,0)
       }
     
    } //end of variant 1

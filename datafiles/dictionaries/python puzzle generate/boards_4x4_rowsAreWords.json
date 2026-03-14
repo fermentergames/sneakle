@@ -1,0 +1,52 @@
+[
+  {
+    "title": "4x4 - rowsAreWords - #1",
+    "secret_word": "POTTERY",
+    "encoded": "loadBoard=SENTVOTEPOORRELY&loadSecret=9-6-7-4-8-12-16"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #2",
+    "secret_word": "COULD",
+    "encoded": "loadBoard=DEADPILLSOUPROCK&loadSecret=15-14-11-7-4"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #3",
+    "secret_word": "OUTLINE",
+    "encoded": "loadBoard=TURNLOOPINFOEXAM&loadSecret=7-2-1-5-9-10-13"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #4",
+    "secret_word": "CARBON",
+    "encoded": "loadBoard=ONCEABLEPARKKICK&loadSecret=15-10-11-6-1-2"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #5",
+    "secret_word": "PARTNER",
+    "encoded": "loadBoard=FEARSPOTOPENPOOR&loadSecret=6-3-4-8-12-11-16"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #6",
+    "secret_word": "ENLARGE",
+    "encoded": "loadBoard=ACNECLAYDRAGGEAR&loadSecret=4-3-6-7-10-13-14"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #7",
+    "secret_word": "ANSWERED",
+    "encoded": "loadBoard=SNAPWRAPPEERBEND&loadSecret=3-2-1-5-10-6-11-16"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #8",
+    "secret_word": "SHARK",
+    "encoded": "loadBoard=DISHWEAKPEERFARE&loadSecret=3-4-7-12-8"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #9",
+    "secret_word": "EASTERN",
+    "encoded": "loadBoard=BORNEVEREASEFEET&loadSecret=5-10-11-16-12-8-4"
+  },
+  {
+    "title": "4x4 - rowsAreWords - #10",
+    "secret_word": "GENERIC",
+    "encoded": "loadBoard=RISEEACHNEARGAME&loadSecret=13-10-9-5-1-2-7"
+  }
+]

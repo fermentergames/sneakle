@@ -1,5 +1,9 @@
 if (live_call()) return live_result;
 
+//if (global.show_any_modal >= 1) {
+//   io_clear(); // Clears all input states for this specific frame/step
+//}
+
 gpu_set_tex_filter(true)
 
 var _pos_scl = gui_pos_scl
@@ -63,7 +67,9 @@ draw_set_alpha(0.3)
 
 //draw_text_transformed(global.sw/2,_nav_mid_y,"s n e a k l e",0.22*_tscl,0.22*_tscl,0)
 
-if global.game_phase != 0 {
+//obj_ctrlp.profile_joined = 1
+
+if global.game_phase != 0 { //&& obj_ctrlp.profile_joined >= 1 {
 	
 	var _nav_logo_col = _c_white
 	var _nav_logo_alp = 0.7
@@ -72,6 +78,60 @@ if global.game_phase != 0 {
 		_nav_logo_alp = 0.9
 	}
 	draw_sprite_ext(spr_sneakle_logo,0,(global.sw*0.0)+(20*_scl),_nav_mid_y,0.08*_tscl,0.08*_tscl,0,_nav_logo_col,_nav_logo_alp) 
+
+}
+
+
+
+
+//join r/sneakle btn
+if 1=0 {
+	
+	//obj_ctrlp.profile_joined = 0
+	
+	if obj_ctrlp.profile_joined <= 0 {
+	
+		var _join_si = 0
+	
+		if game_finished_fd2 > 0 {
+			_join_si = 1
+			gpu_set_blendmode(bm_add)
+			draw_sprite_ext(spr_circ_grad512,0,(global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+(12*game_finished_fd2))*_scl),0.8*_scl*(0.5)*pulse_5*(1+(0.1*-pulse_1*game_finished_fd2)),0.4*_scl*(0.5)*pulse_5*(1+(0.1*pulse_1*game_finished_fd2)),0,_highlight_blue,1*game_finished_fd2*pulse_5)
+			//draw_sprite_ext(spr_join_sneakle,1,(global.sw*0.0)+(20*_scl)+(47*_scl),_nav_mid_y+(0*_scl),0.3*_scl*(1)*pulse_5,0.3*_scl*(1)*pulse_5,0,c_white,1*game_finished_fd2*pulse_5)
+	
+			draw_sprite_ext(spr_join_sneakle,2,(global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+(12*game_finished_fd2))*_scl),(0.22+(0.1*game_finished_fd2))*_scl*(1.1+(0.03*-pulse_1*game_finished_fd2)),(0.22+(0.1*game_finished_fd2))*_scl*(1.1+(0.03*pulse_1*game_finished_fd2)),0,make_colour_hsv(25,200,255),0.5*game_finished_fd2)
+
+	
+			gpu_set_blendmode(bm_normal)
+		}
+
+		draw_sprite_ext(spr_join_sneakle,_join_si,(global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+(12*game_finished_fd2))*_scl),(0.22+(0.1*game_finished_fd2))*_scl*(1+(0.05*pulse_1*game_finished_fd2)),(0.22+(0.1*game_finished_fd2))*_scl*(1+(0.05*-pulse_1*game_finished_fd2)),0,c_white,0.8+game_finished_fd2)
+
+		if game_finished_fd2 > 0 {
+			gpu_set_blendmode(bm_add)
+			draw_sprite_ext(spr_join_sneakle,2,(global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+(12*game_finished_fd2))*_scl),(0.22+(0.1*game_finished_fd2))*_scl*(1.1+(0.03*-pulse_1*game_finished_fd2)),(0.22+(0.1*game_finished_fd2))*_scl*(1.1+(0.03*pulse_1*game_finished_fd2)),0,make_colour_hsv(30,250,255),0.2*pulse_1*game_finished_fd2)
+			gpu_set_blendmode(bm_normal)
+		}
+	
+	
+	
+		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+			
+			if scr_mouse_over_button((global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+3+(12*game_finished_fd2))*_scl),
+			(0.22+(0.1*game_finished_fd2))*_scl,0.085*_scl) {
+				if obj_ctrlp.profile_joined <= 0 {
+					show_debug_message("JOIN CLICKED")
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				
+					with (obj_ctrlp) {
+						profile_joined = 1
+						api_save_profile({profile_joined},undefined)
+					}
+			
+				}
+			}
+		}
+	}
 
 }
 
@@ -103,7 +163,7 @@ if global.game_phase = 0 {
 	if global.game_loading = 0 {
 		
 		
-		obj_ctrlp.postData_dailyID = -1
+		//obj_ctrlp.postData_dailyID = -1
 		
 		var _daily_id = string(obj_ctrlp.postData_dailyID)
 		var _daily_btn_si = 4
@@ -111,6 +171,7 @@ if global.game_phase = 0 {
 			_daily_id = "-"
 			_daily_btn_si = 3
 		}
+		
 		
 		draw_set_alpha(0.9*ctrl_fd)
 		
@@ -131,14 +192,18 @@ if global.game_phase = 0 {
 		draw_sprite_ext(spr_btn_6,_daily_btn_si,(global.sw*0.5),0+(220*_scl)+(110*_scl*0),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
 		draw_set_font(fnt_main)
+		draw_set_alpha(0.9*ctrl_fd)
 		if _daily_id != "-" {
 			draw_set_color(c_white)
 			draw_text_transformed(global.sw/2,0+(220*_scl)+(110*_scl*0)+(15*_scl),_daily_id,0.17*_scl,0.17*_scl,0)
 		}
 		
+
+		
 		draw_set_color(c_white)
 		
 		
+		//si 2 disabled, si 5 when ready
 		draw_sprite_ext(spr_btn_6,5,(global.sw*0.5),0+(220*_scl)+(110*_scl*1)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
 		draw_sprite_ext(spr_btn_6,5,(global.sw*0.5),0+(220*_scl)+(110*_scl*1),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
@@ -230,7 +295,7 @@ if global.game_phase = 0 {
 	
 	draw_set_alpha(0.4)
 	draw_set_font(fnt_main_r)
-	draw_text_transformed(global.sw/2,70*_scl,"drag to rearrange the letters",0.18*_tscl,0.18*_tscl,0)
+	draw_text_transformed(global.sw/2,65*_scl,"drag to rearrange the letters",0.16*_tscl,0.16*_tscl,0)
 	draw_set_font(fnt_main)
 	
 	draw_set_alpha(0.7)
@@ -400,6 +465,8 @@ if global.game_phase = 0 {
 							obj_ctrl.hovered_over_changer = clamp(obj_ctrl.hovered_over_changer,0,14)
 							obj_ctrl.hovered_over_changer_timey = 1
 							
+							am_dragging_flash = 2
+							
 							if (device_mouse_x_to_gui(0)*global.pr) <= ((global.sw*0.5)+(148*obj_ctrl.gui_sz_scl)) {
 								show_debug_message("-1")
 								if my_letter_num > 1 {
@@ -508,9 +575,45 @@ if global.game_phase = 0 {
 						}
 						
 						create_typed_letters = ""
-						async_msg_letters = get_string_async("Enter the letters you want to use.\n(Length needs to be a square number: 9 | 16 | 25 | 36 | 49)\n(Excess length with be rounded down to nearest square number.)", string(_current_board)); 
-						//will set create_typed_letters in async dialog
 						
+						
+						global.show_input_prompt = 1
+						
+						if global.do_basic_input = 1 {
+							
+							global.show_input_prompt = 0
+						
+							async_msg_letters = get_string_async("Enter the letters you want to use.\n(Length needs to be a square number: 9 | 16 | 25 | 36 | 49)\n(Excess length with be rounded down to nearest square number.)", string(_current_board)); 
+							//will set create_typed_letters in async dialog
+						
+						} else if global.is_reddit = 1 {
+						
+							//global.show_input_prompt = 1
+							//if 1=1 {
+							
+							//    var data = {
+							//        "scr": "addClassElemID",
+							//        "args": ["CreateTypeLetters", "active"]
+							//    };
+
+							//    window_post_message(json_stringify(data));
+						
+							//}
+							
+							addClassElemID("modalCreateTypeLetters","active")
+							setElementProperty("CreateTypeLettersInput","value",string(_current_board))
+							
+							keyboard_string = string(_current_board)
+							//keyboard_virtual_show(kbv_type_ascii,kbv_returnkey_continue,kbv_autocapitalize_characters,false)
+						
+							
+						} else {
+							
+							keyboard_string = string(_current_board)
+							//async_msg_letters = get_string_async("Enter the letters you want to use.\n(Length needs to be a square number: 9 | 16 | 25 | 36 | 49)\n(Excess length with be rounded down to nearest square number.)", string(_current_board)); 
+							//will set create_typed_letters in async dialog
+							
+						}
 					
 					}
 					
@@ -820,10 +923,10 @@ if global.game_phase = 3 || global.game_phase = 4 {
 	draw_set_font(fnt_main)
 	
 	var _panel_ht = abs(_panel_bottom_y-_panel_top_y)
-	
+	if 1=1 {
 	if global.game_phase != 4 {
 		draw_set_font(fnt_main_r)
-		draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*-0.35),"can you guess the SECRET WORD?",0.15*_tscl,0.15*_tscl,0)
+		draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*-0.31),"can you guess the SECRET WORD?",0.15*_tscl,0.15*_tscl,0)
 		draw_set_font(fnt_main)
 	} else if global.game_phase = 4 {
 		draw_set_font(fnt_main)
@@ -840,9 +943,10 @@ if global.game_phase = 3 || global.game_phase = 4 {
 		if obj_ctrlp.already_finished >= 1 {
 			draw_set_valign(fa_middle)
 			draw_set_alpha(0.4)
-			draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*-0.44),"ALREADY PLAYED!",0.1*_tscl,0.1*_tscl,0)
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*-0.30),"ALREADY PLAYED!",0.1*_tscl,0.1*_tscl,0)
 		}
 		
+	}
 	}
 	
 	draw_set_alpha(1)
@@ -1004,6 +1108,8 @@ if global.game_phase = 3 || global.game_phase = 4 {
 	draw_set_color(_c_white)
 	
 	
+	if 1=1 {
+	
 	if global.game_phase = 3 {
 		draw_set_alpha(0.6)
 		draw_set_font(fnt_main)
@@ -1089,8 +1195,10 @@ if global.game_phase = 3 || global.game_phase = 4 {
 			if global.gave_up = 1 || global.game_score_total <= 0 {
 				draw_set_color(_c_gray)
 			}
-			draw_text_transformed((global.sw/2)+(-59*_scl),(_panel_mid_y)+(_panel_ht*0.29)+(_panel_ht*-0.07*game_finished_fd2),string(_score_total_str),0.24*_tscl,0.24*_tscl,0)
-			draw_text_transformed((global.sw/2)+(-30*_scl),(_panel_mid_y)+(_panel_ht*0.29)+(_panel_ht*-0.07*game_finished_fd2)+(-1*_scl),"pts",0.12*_tscl,0.12*_tscl,0)
+			
+			//_score_total_str = "111"
+			draw_text_transformed((global.sw/2)+(-37*_scl)+(54*_scl),(_panel_mid_y)+(_panel_ht*0.27)+(_panel_ht*-0.07*game_finished_fd2),string(_score_total_str),0.24*_tscl,0.24*_tscl,0)
+			draw_text_transformed((global.sw/2)+(-8*_scl)+(54*_scl),(_panel_mid_y)+(_panel_ht*0.27)+(_panel_ht*-0.07*game_finished_fd2)+(-1*_scl),"pts",0.12*_tscl,0.12*_tscl,0)
 	
 	
 			var _lb_btn_alp = 3
@@ -1099,10 +1207,24 @@ if global.game_phase = 3 || global.game_phase = 4 {
 				_lb_btn_alp = 0.2
 				_lb_btn_col = c_ltgray
 			}
-			draw_sprite_ext(spr_btn_2,0,global.sw/2+(65*_scl),(_panel_mid_y)+(_panel_ht*0.29)+(_panel_ht*-0.07*game_finished_fd2),(1)*(_scl*0.25),(1)*(_scl*0.25),0,_lb_btn_col,_lb_btn_alp*game_finished_fd2)
+			//lb
+			draw_sprite_ext(spr_btn_2,2,global.sw/2+(88*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2),(1)*(_scl*0.25),(1)*(_scl*0.25),0,_lb_btn_col,_lb_btn_alp*game_finished_fd2)
+		
+		
+			var _cm_btn_alp = 3
+			var _cm_btn_col = _c_white
+			//obj_ctrlp.level_commented = 0
+			if obj_ctrlp.level_commented >= 1 {
+				_cm_btn_alp = 0.2
+				_cm_btn_col = c_ltgray
+			}
+		
+			//comment
+			draw_sprite_ext(spr_btn_2,3,global.sw/2+(-88*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2),(1)*(_scl*0.25),(1)*(_scl*0.25),0,_cm_btn_col,_cm_btn_alp*game_finished_fd2)
+		
 		
 			if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
-				if scr_mouse_over_button(global.sw/2+(65*_scl),(_panel_mid_y)+(_panel_ht*0.29)+(_panel_ht*-0.07*game_finished_fd2),
+				if scr_mouse_over_button(global.sw/2+(88*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2),
 				0.31*_scl,0.0983*_scl) {
 					show_debug_message("LB CLICKED")
 					
@@ -1110,33 +1232,55 @@ if global.game_phase = 3 || global.game_phase = 4 {
 				
 					global.show_lb = 1
 				}
+				
+				if scr_mouse_over_button(global.sw/2+(-88*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2),
+				0.31*_scl,0.0983*_scl) {
+					if obj_ctrlp.level_commented <= 0 {
+						
+						show_debug_message("COMMENT CLICKED")
+					
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+					
+						with (obj_ctrlp) {
+							level_commented = 1
+							api_save_state(postId,{level_commented},undefined)
+						
+							api_comment_score(postId,score_combined,undefined)
+						
+						
+						}
+					
+					}
+				
+					//global.show_lb = 1
+				}
 			}
 		
 		}
 	
 	
-		if global.game_phase = 4 {
+		if global.game_phase = 4 && obj_ctrlp.puzzle_is_unlimited != 1 {
 	
 			draw_set_halign(fa_center)
 			draw_set_valign(fa_middle)
 			draw_set_font(fnt_main_r)
 			draw_set_color(_c_white)
-			draw_set_alpha(0.7*game_finished_fd)
+			draw_set_alpha(0.7*game_finished_fd2)
 	
 			var _rank_str = ""
 		
 			if obj_ctrlp.lb_your_rank = -1 {
-				draw_set_alpha(0.4*game_finished_fd2)
+				draw_set_alpha(0.15*game_finished_fd2)
 				_rank_str = "loading rank..."
 			} else {
-				_rank_str = $"rank {obj_ctrlp.lb_your_rank} of {obj_ctrlp.lb_total_players} - you scored higher than {obj_ctrlp.lb_your_percentile}% of players!"
+				_rank_str = $"rank {obj_ctrlp.lb_your_rank} of {obj_ctrlp.lb_total_players} - top {obj_ctrlp.lb_your_percentile}%!"
 			}
 
-			draw_text_ext_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*0.39),_rank_str,160,3600,0.1*_tscl,0.1*_tscl,0)
+			draw_text_ext_transformed(global.sw/2+(88*_scl)+(15*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2)+(7*_scl),_rank_str,160,3600,0.08*_tscl,0.08*_tscl,0)
 		
 		
 		
-		
+			draw_set_halign(fa_center)
 			draw_set_valign(fa_middle)
 			draw_set_font(fnt_main)
 			draw_set_alpha(1)
@@ -1420,6 +1564,8 @@ if global.game_phase = 3 || global.game_phase = 4 {
 	
 	}
 	
+	}
+	
 	
 	
 	
@@ -1540,28 +1686,79 @@ if global.game_phase >= 3 {
 	
 	draw_set_alpha(0.6)
 	var _sscl = 0.12
-	draw_set_font(fnt_main)
+	
 	draw_set_font(fnt_main_r)
-	draw_set_alpha(0.6)
+	draw_set_alpha(0.7)
+	draw_set_valign(fa_top)
 	
 	
+	//obj_ctrlp.postData_levelName = "Custom Puzzle Custom Puzzle Custom Puzzle Custom Puzzle"//\naaa"// Custom Puzzle Custom Puzzle"
 	var _level_name = obj_ctrlp.postData_levelName
 	//_level_name = "Daily Sneakle #32"
 	//obj_ctrlp.postData_levelTag = "daily"
 	
+	//obj_ctrlp.postData_levelDate_formatted = "Mon 2/12/2026"
+	
+	var _level_name_y_offset = 0
+	var _has_levelDate_formatted = 0
+
+	//obj_ctrlp.puzzle_is_daily = 0
+	//obj_ctrlp.puzzle_is_community = 1
+	//obj_ctrlp.postData_levelCreator = "FermenterGames"
+	
+	var _has_level_creator = 0
+	
+	
+	
 	if obj_ctrlp.puzzle_is_daily = 1 {
+		
+		draw_set_alpha(0.5)
+		
+		var _levelDate_formatted = string(obj_ctrlp.postData_levelDate_formatted)
+		if string_length(string(_levelDate_formatted)) > 2 {
+			_level_name_y_offset = -8
+			_has_levelDate_formatted = 1
+		}
+		
 		_level_name = string_digits(_level_name)
 		_level_name = "DAILY #"+_level_name
+		
+		
+		
+		if _has_levelDate_formatted {
+			draw_text_transformed(global.sw*0.5,_nav_mid_y+((-8-_level_name_y_offset+(3))*_scl),_levelDate_formatted,0.08*_tscl,0.08*_tscl,0)	
+		}
+		
 	} else if obj_ctrlp.puzzle_is_community = 1 || obj_ctrlp.puzzle_is_special = 1 {
 		//
+		
+		draw_set_alpha(0.5)
+		
+		var _level_creator = "by u/"+string(obj_ctrlp.postData_levelCreator)
+		if string_length(string(_level_creator)) > 2 {
+			_level_name_y_offset = -8
+			_has_level_creator = 1
+		}
+
+		var _level_creator_y_offset = 0
+		_level_creator_y_offset = clamp(-18+string_height_ext(_level_name,150,2000)*0.1,0,999)
+		
+		if _has_level_creator {
+			draw_text_transformed(global.sw*0.5,_nav_mid_y+((-8-_level_name_y_offset+_level_creator_y_offset+(3))*_scl),_level_creator,0.08*_tscl,0.08*_tscl,0)	
+		}
+		
 	} else if obj_ctrlp.puzzle_is_unlimited = 1 {
 		_level_name = "UNLIMITED "+string(global.game_grid_size)+"x"+string(global.game_grid_size)
 	}
 	
+	draw_set_alpha(0.7)
+	draw_set_font(fnt_main)
 	if _level_name != "" {
-		draw_text_transformed(global.sw*0.5,_nav_mid_y+(1*_scl),_level_name,0.1*_tscl,0.1*_tscl,0)
+		draw_text_ext_transformed(global.sw*0.5,_nav_mid_y+((-8+_level_name_y_offset)*_scl),_level_name,150,2000,0.1*_tscl,0.1*_tscl,0)
 	}
 	
+	
+	draw_set_valign(fa_middle)
 	
 	//prev next btns
 	
@@ -1570,17 +1767,25 @@ if global.game_phase >= 3 {
 		var _level_name_w = string_width(_level_name)*0.1
 		var _prev_btn_enabled = 0
 		var _next_btn_enabled = 0
+		var _prev_btn_si = 0
+		var _next_btn_si = 0
 	
 		if obj_ctrlp.daily_prev_postId != "-9999" {
 			_prev_btn_enabled = 1	
+			if global.game_phase >= 4 && game_finished_fd > 0.1 {
+				_prev_btn_si = 1
+			}
 		}
 		if obj_ctrlp.daily_next_postId != "-9999" {
-			_next_btn_enabled = 1	
+			_next_btn_enabled = 1
+			if global.game_phase >= 4 && game_finished_fd > 0.1 {
+				_next_btn_si = 1
+			}
 		}
 	
-		draw_sprite_ext(spr_btn_4,2,(global.sw*0.5)+(_level_name_w*0.5*-_scl)+(30*-_scl),_nav_mid_y,-0.25*_scl,0.25*_scl,0,make_colour_hsv(0,0,155+100*_prev_btn_enabled),0.4+(_prev_btn_enabled))
+		draw_sprite_ext(spr_btn_4,_prev_btn_si,(global.sw*0.5)+(_level_name_w*0.5*-_scl)+(40*-_scl),_nav_mid_y,-0.25*_scl,0.25*_scl,0,make_colour_hsv(0,0,155+100*_prev_btn_enabled),0.4+(0.5*_prev_btn_enabled))
 
-		draw_sprite_ext(spr_btn_4,2,(global.sw*0.5)+(_level_name_w*0.5*_scl)+(30*_scl),_nav_mid_y,0.25*_scl,0.25*_scl,0,make_colour_hsv(0,0,155+100*_next_btn_enabled),0.4+(_next_btn_enabled))
+		draw_sprite_ext(spr_btn_4,_next_btn_si,(global.sw*0.5)+(_level_name_w*0.5*_scl)+(40*_scl),_nav_mid_y,0.25*_scl,0.25*_scl,0,make_colour_hsv(0,0,155+100*_next_btn_enabled),0.4+(0.5*_next_btn_enabled))
 
 
 		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
@@ -1662,6 +1867,20 @@ if global.game_phase >= 3 {
 		//draw_sprite_ext(spr_sqr512,0,global.sw*0.9,gui_footer_mid_y,0.18*_tscl*0.8,0.12*_tscl*0.8,0,_c_white,0.04) 
 		
 		//draw_text_transformed(global.sw*0.1,gui_footer_mid_y,"play\nanother",0.12*_tscl,0.12*_tscl,0)
+		
+		if obj_ctrlp.puzzle_is_unlimited != 1 {
+			draw_set_font(fnt_main_r)
+			draw_set_alpha(0.6)
+			draw_set_color(_c_white)
+			
+			if global.is_landscape <= 0 {
+				draw_set_halign(fa_left)
+				draw_text_transformed((global.sw*0.0)+(10*_scl)+(-490000*(1-game_finished_fd)),gui_footer_mid_y,"upvote if you enjoyed! :)",0.1*_tscl,0.1*_tscl,0)
+			} else { //is landscape
+				draw_set_halign(fa_center)
+				draw_text_transformed((global.sw*0.5)+(0*_scl),gui_footer_mid_y+(490000*(1-game_finished_fd)),"upvote if you enjoyed! :)",0.12*_tscl,0.12*_tscl,0)
+			}
+		}
 	}
 
 }
@@ -1734,7 +1953,7 @@ if global.game_phase <= 0 {
 	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-50*_version_scl*_scl),"<3 @FermenterGames",0.1*_version_scl*_tscl,0.1*_version_scl*_tscl,0)
 	draw_set_font(fnt_main_r)
 	draw_set_alpha(0.2*_version_scl)
-	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-50*_version_scl*_scl),"\n\n\n"+date_datetime_string(GM_build_date),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
+	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-50*_version_scl*_scl),"\n\n\n"+date_datetime_string(GM_build_date)+" - "+string(global.is_ios)+" "+string(global.is_android)+" "+string(global.is_firefox)+" "+string(global.do_basic_input),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
 	
 	//draw_text_transformed(global.sw*0.5,(global.sh*1)+(-50*_version_scl*_scl),"\n\n\n"+string(global.sw)+"x"+string(global.sh),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
 }
@@ -1757,30 +1976,261 @@ draw_set_alpha(1)
 
 if global.show_input_prompt = 1 {
 	
-	draw_set_alpha(0.7*global.show_any_modal_fd)
+	draw_set_alpha(0.95*global.show_any_modal_fd)
 	draw_rectangle_color(0,0,global.sw,global.sh,_overlay_blue,_overlay_blue,_overlay_blue,_overlay_blue,0)
 	draw_set_alpha(1)
 	draw_set_color(_c_white)
 	
-	//Render a div with fancy css
-	var form_container = html_div(undefined, "form-container","Forms","form-container");
+	////Render a div with fancy css
+	//var form_container = html_div(undefined, "form-container","Forms","form-container");
 	
-	//close button
-	var closebtn = html_form(form_container, "closebtn-form");
-	html_submit(closebtn, "closebtn", "Back", !form_is_loading, form_is_loading ? "loading" : "");
-	if html_element_interaction(closebtn)
-	html_submit_closebtn()
+	////close button
+	//var closebtn = html_form(form_container, "closebtn-form");
+	//html_submit(closebtn, "closebtn", "Back", !form_is_loading, form_is_loading ? "loading" : "");
+	//if html_element_interaction(closebtn)
+	//html_submit_closebtn()
 	
-	//Render a form
-	var form = html_form(form_container, "load-code");
-	html_h3(form, "header", "Load Code")
-	html_field(form, "loadCode", "loadCode", "Enter Code Here", true, "", "");
-	html_submit(form, "submit", "Load", !form_is_loading, form_is_loading ? "loading" : "");
-	if html_element_interaction(form)
-	html_submit_code(form)
+	////Render a form
+	//var form = html_form(form_container, "load-code");
+	//html_h3(form, "header", "Load Code")
+	//html_field(form, "loadCode", "loadCode", "Enter Code Here", true, "", "");
+	//html_submit(form, "submit", "Load", !form_is_loading, form_is_loading ? "loading" : "");
+	//if html_element_interaction(form)
+	//html_submit_code(form)
+	
+	
+	
+	
+	
+	if global.do_basic_input <= 0 {
+		
+		//X to close
+		draw_sprite_ext(spr_sqr512,4,global.sw+(-40*_scl),(40*_scl),0.05*_scl,0.05*_scl,45,_c_white,0.5*global.show_any_modal_fd) 
+	
+	
+		if 1=1 {
+			draw_set_color(_c_white)
+			draw_set_valign(fa_middle)
+			draw_set_halign(fa_middle)
+			draw_set_font(fnt_main)
+			draw_set_alpha(0.7*global.show_any_modal_fd)	
+		
+			draw_text_transformed(global.sw*0.5,(global.sh*0.0)+(80*_scl),"Enter the letters you want to use",0.17*_tscl,0.17*_tscl,0)
+			draw_set_font(fnt_main_r)
+			//draw_text_transformed(global.sw*0.5,(global.sh*0.0)+(140*_scl),"Length needs to be a square number: 9 | 16 | 25 | 36 | 49\nExcess length with be rounded down to nearest square",0.11*_tscl,0.11*_tscl,0)
+		
+		
+			draw_sprite_ext(spr_btn,11,global.sw*0.5,(global.sh*0)+(212*_scl),0.25*_scl,0.25*_scl,0,c_white,0.9*global.show_any_modal_fd) 
+	
+			draw_set_alpha(0.9*global.show_any_modal_fd)	
+			draw_set_font(fnt_main)
+			draw_text_transformed(global.sw*0.5,(global.sh*0.0)+(212*_scl),"[ENTER] TO SUBMIT",0.12*_tscl,0.12*_tscl,0)
+		
+			draw_set_alpha(0.7*global.show_any_modal_fd)	
+		
+			draw_sprite_ext(spr_btn,12,(global.sw*0.5)+(160*_scl),(global.sh*0)+(212*_scl),0.21*_scl,0.21*_scl,0,c_white,0.5*global.show_any_modal_fd) 
+
+			draw_set_font(fnt_main)
+			draw_text_transformed((global.sw*0.5)+(160*_scl),(global.sh*0)+(212*_scl),"CLEAR",0.1*_tscl,0.1*_tscl,0)
+		
+		
+		}
+	
+		//var _kbstatus = keyboard_virtual_status();
+		//if (_kbstatus == false) {
+		//	keyboard_virtual_show(kbv_type_ascii,kbv_returnkey_continue,kbv_autocapitalize_characters,false)				
+		//}
+	
+		if keyboard_check_released(vk_anykey) {
+			alarm[1] = 15 //update input value with _keyboard_string
+			//keyboard_string += keyboard_lastchar
+		
+		}
+	
+	
+		var _keyboard_string = string_upper(string_letters(keyboard_string))
+	
+	
+	
+	
+		if 1=1 {
+		
+		
+			draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,c_black,0.5*global.show_any_modal_fd) 
+	
+		
+			draw_set_color(_c_white)
+			draw_set_valign(fa_middle)
+			draw_set_halign(fa_left)
+			draw_set_font(fnt_main_r)
+			draw_set_alpha(0.7*global.show_any_modal_fd)
+		
+			var _letters_str_w = 100
+			var _letters_scl = 1
+			var _max_width = 512*0.74*_scl //global.sw*0.7 // 
+		
+			_letters_str_w = string_width(string(_keyboard_string))
+			  
+			_letters_scl = min(0.25,(_max_width)/(_letters_str_w+0.01))
+		
+		
+			if pulse_1 > 0.5 {
+				_keyboard_string += "|"	
+			}
+		
+			draw_text_transformed((global.sw*0.5)+(-380*0.5*_scl),(global.sh*0)+(150*_scl),_keyboard_string,1*_letters_scl,1*_letters_scl,0)
+		
+			draw_set_halign(fa_center)
+		
+		
+			_keyboard_string = string_upper(string_letters(_keyboard_string))
+		
+			var _keyboard_string_l = string_length(_keyboard_string)
+			var sqrd_l = 1// sqr(floor(sqrt(_keyboard_string_l)))
+			if _keyboard_string_l >= 4 {
+				sqrd_l = floor(sqrt(_keyboard_string_l))
+			}
+			//_letters = string_copy(_letters, 1, sqrd_l); 
+		
+			draw_set_font(fnt_main)
+			draw_set_alpha(0.5*global.show_any_modal_fd)
+			//draw_text_transformed((global.sw*0.5)+(-380*0.5*_scl)+(40*_scl),(global.sh*0)+(210*_scl),"length: "+string(_keyboard_string_l)+"\n"+string(sqrd_l)+"x"+string(sqrd_l),0.1*_scl,0.1*_scl,0)
+		
+			draw_set_alpha(0.7*global.show_any_modal_fd)
+		
+		
+			var _keyboard_string_forgrid = string_copy(_keyboard_string,0,(sqrd_l*sqrd_l))
+		
+			scr_draw_letter_grid(_keyboard_string_forgrid,(global.sw*0.5),(global.sh*0)+(260*_scl)+(16*sqrd_l*_scl),sqrd_l,32*_scl,0.15*_scl)
+		
+		
+			draw_set_alpha(0.5*global.show_any_modal_fd)
+			draw_text_transformed((global.sw*0.5),(global.sh*0)+(260*_scl)+(16*2*sqrd_l*_scl)+(18*_scl),string(sqrd_l)+"x"+string(sqrd_l)+" - "+"length: "+string(_keyboard_string_l),0.1*_scl,0.1*_scl,0)
+		
+		
+			var _excess_l = _keyboard_string_l-sqr(sqrd_l)
+			if _excess_l > 0 {
+			
+				var _excess_next = sqr(sqrd_l+1)-_keyboard_string_l
+			
+			
+			
+				draw_set_colour(make_colour_hsv(5,160,255))
+				draw_set_font(fnt_main)
+			
+				draw_text_transformed((global.sw*0.5),(global.sh*0)+(260*_scl)+(16*2*sqrd_l*_scl)+(45*_scl),"UNUSED EXCESS: "+string_copy(_keyboard_string,(_keyboard_string_l-_excess_l)+1,_excess_l),0.1*_scl,0.1*_scl,0)
+			
+				draw_text_transformed((global.sw*0.5),(global.sh*0)+(260*_scl)+(16*2*sqrd_l*_scl)+(65*_scl),"NEXT GRID SIZE IN: "+string(_excess_next),0.1*_scl,0.1*_scl,0)
+			
+			}
+		
+			draw_set_colour(c_white)
+			draw_set_font(fnt_main)
+		
+		}
+	
+	
+	
+	
+		var _submit_letters_now = 0
+	
+		if global.show_any_modal_fd > 0.5 && keyboard_check_pressed(vk_enter) {
+		
+			_submit_letters_now = 1
+		
+		}
+	
+	
+		if global.show_any_modal_fd > 0.5 && mouse_check_button_pressed(mb_left) {
+		
+			//close
+			if scr_mouse_over_button(global.sw+(-40*_scl),(40*_scl),0.2*_scl,0.1*_scl) {
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+				//close
+				html_submit_closebtn()
+				global.show_input_prompt = 0
+		
+				//keyboard_virtual_hide()
+			
+			}
+		
+		
+			//ENTER/SUBMIT
+			if scr_mouse_over_button(global.sw*0.5,(global.sh*0.0)+(212*_scl),0.4*_scl,0.1*_scl) {
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+				//close
+				//html_submit_closebtn()
+				//global.show_input_prompt = 0
+		
+				//keyboard_virtual_hide()
+			
+				//show_debug_message("YUP")
+			
+				_submit_letters_now = 1
+			
+			}
+		
+			//CLEAR
+			if scr_mouse_over_button((global.sw*0.5)+(160*_scl),(global.sh*0)+(212*_scl),0.19*_scl,0.09*_scl) {
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+				//close
+				//html_submit_closebtn()
+				//global.show_input_prompt = 0
+		
+				//keyboard_virtual_hide()
+			
+				//show_debug_message("YUP")
+			
+				//_submit_letters_now = 1
+			
+				keyboard_string = ""
+				setElementProperty("CreateTypeLettersInput","value","")
+			
+			}
+		
+		
+		
+			//click on the input area
+			if scr_mouse_over_button(global.sw*0.5,(global.sh*0.0)+(150*_scl),0.8*_scl,0.1*_scl) {
+			
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+			
+				addClassElemID("modalCreateTypeLetters","active")
+				setElementProperty("CreateTypeLettersInput","value",string(_keyboard_string))
+			
+			}
+		
+
+		
+		}
+	
+		if _submit_letters_now = 1 {
+		
+			_keyboard_string = string_upper(string_letters(_keyboard_string))
+		
+			if string_length(_keyboard_string) >= 4 {
+			
+				show_debug_message("submit-typed-letters from gui happening");
+		
+				scr_submit_typed_letters(_keyboard_string);
+			
+			} else {
+				show_debug_message("submit-typed-letters not long enough from gui...");
+			}
+		
+			html_submit_closebtn();	
+		
+			show_debug_message("resetting keyboard_string")
+			keyboard_string = ""	
+		
+		}
+	
+	}
 	
 
 }
+
+
 
 if global.show_export_prompt = 1 {
 	
@@ -1926,7 +2376,7 @@ if global.show_options_fd > 0 {
 	var _op_b_3_col2 = _c_gray
 	
 	if global.light_mode = 0 {
-		_op_b_1_str = "LIGHT MODE"
+		_op_b_1_str = "LIGHT MODE (work in progress)"
 	}
 	
 	//obj_ctrlp.option_show_timer = 0
@@ -1941,7 +2391,7 @@ if global.show_options_fd > 0 {
 		_op_b_3_col2 = c_maroon
 		
 	} else if obj_ctrlp.clear_stats_confirm = -1 {
-		_op_b_3_si = 2
+		_op_b_3_si = 3
 		_op_b_3_col = c_dkgray
 		_op_b_3_col2 = c_dkgray
 	}
@@ -1951,6 +2401,7 @@ if global.show_options_fd > 0 {
 	//btn1
 	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(200*_scl)+(60*_scl*0)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*global.show_options_fd) 
 	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(200*_scl)+(60*_scl*0),0.25*_scl,0.25*_scl,0,c_white,2*global.show_options_fd)
+	
 	
 	draw_set_font(fnt_main)
 	draw_set_alpha(0.9*global.show_options_fd)
@@ -2038,6 +2489,8 @@ if global.show_options_fd > 0 {
 					stat_u_total_time_avg =	"0"
 					stat_u_total_guesses_avg = "0"
 					
+					profile_joined = "0"
+					
 					api_save_profile({
 						stat_d_total_started,
 						stat_d_total_finished,
@@ -2052,7 +2505,8 @@ if global.show_options_fd > 0 {
 						stat_u_total_score,
 						stat_u_total_time,
 						stat_u_total_guesses,
-						stat_u_total_hints
+						stat_u_total_hints,
+						profile_joined
 					}, function(_status, _ok, _result) {
 						//alarm[4] = 60;
 					});
@@ -2281,6 +2735,8 @@ if keyboard_check(vk_control) || global.show_debug = 1 {
 			_lb_str = $"LEADERBOARD empty"
 		}
 	}
+	
+	
 
 
 	var _postData_str = ""
@@ -2292,13 +2748,15 @@ if keyboard_check(vk_control) || global.show_debug = 1 {
 	//var _profile_str = ""
 	
 	//if 
+	
+
 
 	draw_set_halign(fa_left)
-	draw_text_ext_transformed(global.sw*0.1, global.sh*0.1, $"User: {obj_ctrlp.username}\nscore_guesses: {obj_ctrlp.score_guesses}\nscore_hints: {obj_ctrlp.score_hints}\nscore_time: {obj_ctrlp.score_time}\nscore_combined: {obj_ctrlp.score_combined}\n\n\nSTATS\nstarted: {obj_ctrlp.stat_d_total_started}\nfinished: {obj_ctrlp.stat_d_total_finished}\nguesses: {obj_ctrlp.stat_d_total_guesses}\nscore: {obj_ctrlp.stat_d_total_score}\n\n\n"+string(_postData_str), 140, 2000,0.1*_tscl,0.1*_tscl,0)
+	draw_text_ext_transformed(global.sw*0.1, global.sh*0.1, $"{info_ds_map_str}\n\n\nUser: {obj_ctrlp.username}\nscore_guesses: {obj_ctrlp.score_guesses}\nscore_hints: {obj_ctrlp.score_hints}\nscore_time: {obj_ctrlp.score_time}\nscore_combined: {obj_ctrlp.score_combined}\n\n\nSTATS\nstarted: {obj_ctrlp.stat_d_total_started}\nfinished: {obj_ctrlp.stat_d_total_finished}\nguesses: {obj_ctrlp.stat_d_total_guesses}\nscore: {obj_ctrlp.stat_d_total_score}\n\n\n"+string(_postData_str), 140, 2000,0.1*_tscl,0.05*_tscl,0)
 
 	if _lb_str != "" {
 		draw_set_halign(fa_right)
-		draw_text_ext_transformed(global.sw*0.9, global.sh*0.1,string(_lb_str), 140, 2000,0.1*_tscl,0.1*_tscl,0)
+		//draw_text_ext_transformed(global.sw*0.9, global.sh*0.1,string(_lb_str), 140, 2000,0.1*_tscl,0.1*_tscl,0)
 	}
 
 	draw_set_halign(fa_center)
