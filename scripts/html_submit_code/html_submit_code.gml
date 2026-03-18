@@ -6,7 +6,7 @@ function html_submit_code(argument0) {
 
 	loadCode = values[? "loadCode"];
 	form_is_loading = true
-	alarm[1] = 90;
+	//alarm[1] = 90;
 	
 	show_debug_message("SUBMITTED!")
 	show_debug_message(loadCode)
@@ -15,7 +15,8 @@ function html_submit_code(argument0) {
 	//	scr_board_init()
 	//}
 	
-	global.show_input_prompt = 0
+	global.show_TypeLetters_input_prompt = 0
+	global.show_PostTitle_input_prompt = 0
 	form_is_loading = false;
 	
 

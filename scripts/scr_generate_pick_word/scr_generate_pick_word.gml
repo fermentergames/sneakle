@@ -3,17 +3,26 @@ function scr_generate_pick_word(){
 if (live_call()) return live_result;
 
 	//generate a random word, picking from a chosen length-based dictionary
-	var _generated_word_length = choose(5,6,6,6,7,7,7,8,8,9,9,10,11,12)
-	
-	if global.game_grid_size = 3 {
-		//_generated_word_length = clamp(_generated_word_length,5,9)	
-		_generated_word_length = choose(5,6,6,7,7,8,8,9)
+	var _generated_word_length = 5
+
+	if (global.game_grid_size == 3) {
+	    _generated_word_length = choose(5,6,6,7,7,8,8,9);
+	} else {
+	    _generated_word_length = choose(5,6,6,6,7,7,7,8,8,9,9,10,11,12);
 	}
 	
 	
 	show_debug_message("_generated_word_length = "+string(_generated_word_length))
 	
 	global.dictionary_generate = new PickWordDictionary(working_directory + "dictionaries/simpler_MIT_by_length/"+string(_generated_word_length)+".txt");
+	
+	//var d = new PickWordDictionary(working_directory + "dictionaries/simpler_MIT_by_length/5.txt");
+	
+	//for (var i = 0; i < d.size; i++) {
+	//    if string_length(d.data[i]) > 5 {
+	//        show_debug_message("BAD WORD: " + d.data[i]);
+	//    }
+	//}
 	
 	//print entire dictionary
 	//show_debug_message(global.dictionary_generate)

@@ -89,14 +89,28 @@ function PickWordDictionary() constructor {
 	/// - If source is a struct: Load from each file in the struct's keys where the corresponding value is true.
 	static load = function(source) {
 		var n = 0;
+		
 		if (is_string(source)) {
-			for (var f = file_text_open_read(source); !file_text_eof(f); file_text_readln(f)) {
-				var w = file_text_read_string(f);
-				array_push(self.data, w);
-				++n;
-			}
-			file_text_close(f);
-			self.size += n;
+		    var f = file_text_open_read(source);
+		    while (!file_text_eof(f)) {
+		        var w = string_trim(file_text_readln(f)); // read line + trim
+		        if (w != "") {                            // skip empty lines
+		            array_push(self.data, w);
+		            ++n;
+		        }
+		    }
+		    file_text_close(f);
+		    self.size += n;
+		//}
+		
+		//if (is_string(source)) {
+		//	for (var f = file_text_open_read(source); !file_text_eof(f); file_text_readln(f)) {
+		//		var w = file_text_read_string(f);
+		//		array_push(self.data, w);
+		//		++n;
+		//	}
+		//	file_text_close(f);
+		//	self.size += n;
 		} else if (is_array(source)) {
 			var sourceSize = array_length(source);
 			for (var i = 0; i < sourceSize; ++i) {

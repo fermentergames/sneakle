@@ -6,7 +6,7 @@ function html_submit_export_link(argument0) {
 
 	exportLink = values[? "exportLink"];
 	form_is_loading = true
-	alarm[1] = 90;
+	//alarm[1] = 90;
 	
 	show_debug_message("exporting link!")
 	show_debug_message(exportLink)

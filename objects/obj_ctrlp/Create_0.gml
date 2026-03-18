@@ -10,7 +10,7 @@ show_debug_message("obj_ctrlp created!")
 global.dictionary = new CheckWordDictionary(working_directory + "dictionaries/full/full.txt");
 global.dictionary_simple = new CheckWordDictionary(working_directory + "dictionaries/simple/full.txt");
 
-global.dictionary_generate = new PickWordDictionary(working_directory + "dictionaries/simple_by_length/5.txt");
+global.dictionary_generate = new PickWordDictionary(working_directory + "dictionaries/simpler_MIT_by_length/5.txt");
 
 scr_letter_data_init()
 
@@ -36,6 +36,7 @@ clear_stats_confirm = 0
 just_submitted_score = 0
 
 load_profile_complete = 0
+load_profile_attempts = 0
 username = "";
 
 load_post_data_complete = 0
@@ -106,6 +107,7 @@ surrounding_res = -1
 surrounding_res_str = ""
 daily_prev_postId = "-9999"
 daily_next_postId = "-9999"
+daily_today_postId = "-9999"
 
 loading_postdata_stage = 0
 loading_postdata_info = ""
@@ -171,17 +173,17 @@ if 1=1 {//STATS
 
 		api_load_profile(function(_status, _ok, _result, _payload) {
 			try {
+				
+				load_profile_attempts += 1
+				show_debug_message("load_profile_attempts=")
+				show_debug_message(load_profile_attempts)
+				
 				var _profile = json_parse(_result);
 			
 				show_debug_message("api_load_profile got")
 				show_debug_message(_profile)
 			
 				username = _profile.username;
-				////level = _profile.level;
-				//stat_1 = _profile.stat_1;
-				//stat_2 = _profile.stat_2;
-				//stat_3 = _profile.profileData.stat_3;
-				//stat_4 = _profile.profileData.stat_4;
 			
 				stat_d_total_started = _profile.stat_d_total_started;
 				stat_d_total_finished = _profile.stat_d_total_finished;
@@ -218,36 +220,8 @@ if 1=1 {//STATS
 			}
 			catch (_ex) { //if no state data loaded, save the default values?
 			
-				show_debug_message("api_load_profile initial failed, set default stats")
-			
-				api_save_profile({
-					stat_d_total_started,
-					stat_d_total_finished,
-					stat_d_total_gaveup,
-					stat_d_total_score,
-					stat_d_total_time,
-					stat_d_total_guesses,
-					stat_d_total_hints,
-					stat_u_total_started,
-					stat_u_total_finished,
-					stat_u_total_gaveup,
-					stat_u_total_score,
-					stat_u_total_time,
-					stat_u_total_guesses,
-					stat_u_total_hints,
-					created_total,
-					created_ids,
-					option_darkmode,
-					option_sfx,
-					option_show_timer,
-					profile_joined
-				}, function(_status, _ok, _result) {
-					//alarm[4] = 60;
-				});
-				
-				if real(stat_d_total_started) + real(stat_u_total_started) <= 0 {
-					global.show_howto = 1 //temp tutorial	
-				}
+				show_debug_message("api_load_profile initial failed, try again")
+				alarm[9] = 1
 			}
 			//alarm[4] = 60;
 		});

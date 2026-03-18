@@ -171,7 +171,7 @@ if global.game_phase = 2 {
 
 
 
-if keyboard_check_pressed(ord("R")) {
+if keyboard_check_pressed(ord("R")) && global.is_mobile <= 0 && global.is_reddit <= 0 {
 	if global.is_browser = 1 {
 		changeQuery("loadBoard","","loadSecret","")
 	}
@@ -190,7 +190,7 @@ if keyboard_check_pressed(ord("R")) {
 
 
 
-if global.show_input_prompt >= 1 || global.show_export_prompt >= 1 || global.show_archives >= 1 || global.show_lb >= 1 || global.show_howto >= 1 || global.show_options >= 1 || global.show_submitting_post >= 1 {
+if global.show_TypeLetters_input_prompt >= 1 || global.show_PostTitle_input_prompt >= 1 || global.show_export_prompt >= 1 || global.show_archives >= 1 || global.show_lb >= 1 || global.show_howto >= 1 || global.show_options >= 1 || global.show_submitting_post >= 1 {
 	global.show_any_modal = 1
 } else {
 	global.show_any_modal = 0
@@ -318,12 +318,12 @@ if mouse_check_button_pressed(mb_left) {
 				obj_ctrlp.puzzle_is_daily = 1
 				
 				if global.is_reddit = 1 {
-					if obj_ctrlp.postId_orig != "-9999" && obj_ctrlp.postId_orig != -1 {
+					if obj_ctrlp.daily_today_postId != "-9999" { //obj_ctrlp.postId_orig != "-9999" && obj_ctrlp.postId_orig != -1 {
 						
 						scr_reddit_reset_post()
-						scr_reddit_load_post(obj_ctrlp.postId_orig)
+						scr_reddit_load_post(obj_ctrlp.daily_today_postId)
 					} else {
-						show_debug_message("obj_ctrlp.postId_orig not set??")
+						show_debug_message("obj_ctrlp.daily_today_postId not set??")
 					}
 					
 				} else {
@@ -647,7 +647,7 @@ if mouse_check_button_pressed(mb_left) {
 				   screen_name: "LoadFromCreate",
 				};
 				GoogHit("screen_view",_event_struct)
-				global.show_input_prompt = 1
+				global.show_TypeLetters_input_prompt = 1
 				
 			} else if 1=0 {// point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.5)-(256*0.3*_tscl),(global.sh+(-10*global.pr))-(256*0.08*_tscl),(global.sw*0.5)+(256*0.3*_tscl),(global.sh+(-10*global.pr))+(256*0.08*_tscl)) {
 				
@@ -930,25 +930,32 @@ if mouse_check_button_pressed(mb_left) {
 
 			if 1 = 1 {
 				
-				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				
-				global.game_hints_used += 1
-				
-				show_debug_message("HINT! "+string(global.game_hints_used))
-							
-				var _event_struct = { //
-					level: global.game_hints_used,
-				};
-				GoogHit("hint_used",_event_struct)
-				
+				var _hint_used_now = 0
 				
 				if global.game_hints_used = 1 {
 					global.game_hint_length_used = 1	
+					_hint_used_now = 1
 				} else {
 					if global.game_hint_letter_used < string_length(secret_word_str) {
 						global.game_hint_letter_used += 1
+						_hint_used_now = 1
 					}
 				}
+				
+				if _hint_used_now = 1 {
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				
+					global.game_hints_used += 1
+				
+					show_debug_message("HINT! "+string(global.game_hints_used))
+							
+					var _event_struct = { //
+						level: global.game_hints_used,
+					};
+					GoogHit("hint_used",_event_struct)	
+				}
+				
 				
 				with (obj_ctrlp) {
 					//if state of this puzzle is not started, update state AND user profile stat
@@ -1386,7 +1393,9 @@ camera_set_view_size(view_camera[0], w*global.cam_zoom_fd, h*global.cam_zoom_fd)
 
 
 
-var _cam_y_pos = (-h*global.cam_zoom_fd*1)+(-_tile_sz_and_pad*global.game_grid_size*-0.5)+((65+(global.is_landscape*50)+_cam_y_offset)*gui_sz_scl*global.cam_zoom_fd)
+var _padding_bottom = ((65+(global.is_landscape*50)+_cam_y_offset)*gui_sz_scl*global.cam_zoom_fd)
+
+var _cam_y_pos = (-h*global.cam_zoom_fd*1)+(-_tile_sz_and_pad*global.game_grid_size*-0.5)+_padding_bottom
 
 
 
@@ -1400,8 +1409,32 @@ _cam_y_pos = lerp(_cam_y_pos,_cam_y_pos_creating,global.am_creating_fd2)
 //_cam_y_pos = lerp(_cam_y_pos,_cam_y_pos_finished,game_finished_fd)
 
 
+//global.cam_ang = 0
+//if keyboard_check_direct(vk_shift) {
+//	global.cam_ang = 90	
+//}
+
+//global.cam_ang_fd += angle_difference(global.cam_ang_fd,global.cam_ang)*-0.1
+
+
+
+
+//camera_set_view_angle(view_camera[0],global.cam_ang_fd)
+
+//var _ang_m = dsin(global.cam_ang_fd)//clamp(global.cam_ang_fd / 90, -1, 1);
+//var _ang_m2 = dsin(global.cam_ang_fd * 0.5);
+
+var _cam_x_offset = 0//_tile_sz_and_pad*global.game_grid_size*0.5*_ang_m
+var _cam_y_offset = 0//lengthdir_y(_tile_sz_and_pad*global.game_grid_size*0.5*_ang_m,-global.cam_ang_fd)
+
+
+//_cam_y_offset += ((_tile_sz_and_pad*global.game_grid_size*0.5)+(_padding_bottom))*_ang_m2
+
+
 //board on bottom
-camera_set_view_pos(view_camera[0],-(w*global.cam_zoom_fd/2),_cam_y_pos)   
+camera_set_view_pos(view_camera[0],-(w*global.cam_zoom_fd/2)+_cam_x_offset,_cam_y_pos+_cam_y_offset)   
+
+
 
 
 

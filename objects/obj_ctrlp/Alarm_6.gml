@@ -1,5 +1,5 @@
 
-if puzzle_is_daily = 1 {
+if 1=1 {//puzzle_is_daily = 1 {
 	
 	api_get_surrounding_daily_ids(postId, function(_status, _ok, _result) {
 		try {
@@ -13,11 +13,14 @@ if puzzle_is_daily = 1 {
 			
 			daily_prev_postId = "-9999"//reset
 			daily_next_postId = "-9999"//reset
+			daily_today_postId = "-9999"//reset
 		
 			daily_prev_postId = _surrounding_res.daily_prev_postId;
 			show_debug_message(daily_prev_postId)
 			daily_next_postId = _surrounding_res.daily_next_postId;
-			show_debug_message(daily_next_postId)	
+			show_debug_message(daily_next_postId)
+			daily_today_postId = _surrounding_res.daily_today_postId;
+			show_debug_message(daily_today_postId)
 		
 		}
 		catch (_ex) {

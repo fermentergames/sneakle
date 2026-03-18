@@ -142,9 +142,9 @@ with (obj_ctrl) {
 	var _grid_pad = 50
 	
 	//global.grid_x_origin = (room_width/2) 
-	global.grid_x_origin = 0
+	global.grid_x_origin = 0//global.sw/2
 	//global.grid_y_origin = (room_height/2)-170 
-	global.grid_y_origin = 0
+	global.grid_y_origin = 0//global.sh/2
 	var _grid_x = global.grid_x_origin
 	var _grid_y = global.grid_y_origin
 				

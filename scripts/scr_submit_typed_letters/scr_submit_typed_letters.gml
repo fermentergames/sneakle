@@ -16,7 +16,7 @@ function scr_submit_typed_letters(_letters) {
 	//	scr_board_init()
 	//}
 	
-	global.show_input_prompt = 0
+	global.show_TypeLetters_input_prompt = 0
 	form_is_loading = false;
 	
 	if string_length(_letters) > 0 {

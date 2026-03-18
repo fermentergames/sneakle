@@ -1,5 +1,7 @@
 if (live_call()) return live_result;
 
+//for get_string_async stuff
+
 var _id = ds_map_find_value(async_load, "id");
 if (_id == async_msg_letters)
 {

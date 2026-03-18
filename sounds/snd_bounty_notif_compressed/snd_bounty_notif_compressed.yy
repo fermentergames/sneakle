@@ -21,6 +21,6 @@
   "resourceType":"GMSound",
   "resourceVersion":"2.0",
   "sampleRate":44100,
-  "soundFile":"snd_bounty_notif_compressed.wav",
+  "soundFile":"snd_bounty_notif_compressed.mp3",
   "volume":1.0,
 }

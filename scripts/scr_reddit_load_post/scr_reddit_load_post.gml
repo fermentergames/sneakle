@@ -151,8 +151,6 @@ with (obj_ctrlp) {
 			
 				if postData_levelTag = "daily" {
 					puzzle_is_daily = 1
-				
-					alarm[6] = 1 //will try to get prev+next postIds
 					
 					if string(postData_levelDate) != "-1" && string(postData_levelDate) != "0" {
 						postData_levelDate_formatted = scr_format_levelDate(postData_levelDate)
@@ -165,6 +163,8 @@ with (obj_ctrlp) {
 				} else if postData_levelTag = "community" {
 					puzzle_is_community = 1
 				}
+				
+				alarm[6] = 1 //will try to get prev+next postIds
 
 				//show_debug_message("postData_levelName = "+string(postData_levelName))
 				//show_debug_message("postData_levelTag = "+string(postData_levelTag))

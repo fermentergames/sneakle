@@ -1,7 +1,8 @@
 ///
 function html_submit_closebtn() {
 	
-	global.show_input_prompt = 0
+	global.show_TypeLetters_input_prompt = 0
+	global.show_PostTitle_input_prompt = 0
 	global.show_export_prompt = 0
 	global.show_archives = 0
 	global.show_lb = 0
@@ -13,6 +14,7 @@ function html_submit_closebtn() {
 
 	//removeClassElemID("puzzleMenuWrapper","active")
 	removeClassElemID("modalCreateTypeLetters","active")
+	removeClassElemID("modalCreatePostTitle","active")
 	//funcCloseArchiveMenu()
 	
 }

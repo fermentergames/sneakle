@@ -14,10 +14,12 @@ if (live_call()) return live_result;
 	}
 	
 	
+	//global.generated_word = "AMAZING"
+	
 	
 	var _generated_word_length = string_length(global.generated_word)
 
-	var _generated_arr_pattern_3_1 = [ 1,2,3,5,6,9,8,4,7]
+	var _generated_arr_pattern_3_1 = [ 1,2,3,5,6,9,8,4,7 ]
 	var _generated_arr_pattern_3_2 = [ 6,9,5,3,2,1,4,8,7 ]
 	var _generated_arr_pattern_3_3 = [ 4,1,2,5,7,8,9,6,3 ]
 	
@@ -54,16 +56,29 @@ if (live_call()) return live_result;
 		//_generated_arr_pattern = choose(_generated_arr_pattern_5_1,_generated_arr_pattern_5_2)
 	}
 	
-	var _generated_arr_pattern_offset = irandom(array_length(_generated_arr_pattern)-_generated_word_length)
-	var _generated_arr = [0]
+	var _pattern_len = array_length(_generated_arr_pattern);
+	var _max_offset = max(0, _pattern_len - _generated_word_length);
+	var _generated_arr_pattern_offset = irandom(_max_offset);
+	
+	
+	show_debug_message("_generated_word_length: " + string(_generated_word_length));
+	show_debug_message("_generated_arr_pattern: " + string(_generated_arr_pattern));
+	show_debug_message("pattern_len: " + string(array_length(_generated_arr_pattern)));
+	show_debug_message("word_len: " + string(_generated_word_length));
+	show_debug_message("offset: " + string(_generated_arr_pattern_offset));
 	
 	
 	
-	//var _generated_arr = 
+	//var _generated_arr = [0] 
+	var _generated_arr = array_create(_generated_word_length);
+
 	
-	for (var i = 0; i < _generated_word_length; ++i) { //_generated_word_length
-		_generated_arr[i] = _generated_arr_pattern[i+_generated_arr_pattern_offset]
+	for (var i = 0; i < _generated_word_length; ++i) {
+	   //_generated_arr[i] = _generated_arr_pattern[i + _generated_arr_pattern_offset];
+		var _idx = min(i + _generated_arr_pattern_offset, _pattern_len - 1);
+		_generated_arr[i] = _generated_arr_pattern[_idx];
 	}
+	
 	
 	//global.generated_word = "ABCDEFGHIJKLMNOPQRSTUVWXY"
 	
@@ -71,7 +86,7 @@ if (live_call()) return live_result;
 	
 	//var _generated_arr = [ 1,6,11,16,21,22,23]
 	
-	show_debug_message(_generated_arr)
+	show_debug_message("_generated_arr: " + string(_generated_arr));
 	show_debug_message(array_length(_generated_arr))
 	
 	
@@ -246,6 +261,7 @@ if (live_call()) return live_result;
 	show_debug_message(obj_ctrl.secret_word_array)
 
 	
+	
 	//replace "-"s with random letters
 	with (obj_tile_letter) {
 		if my_letter_str = "-" { //replace only "-"s
@@ -269,6 +285,8 @@ if (live_call()) return live_result;
 							
 				am_set = 1
 				
+				show_debug_message("CHECK tile "+string(tile_id))
+				
 				for (var l = 1; l <= array_length(global.letter_data); ++l) {
 					if my_letter_str = global.letter_data[l,1] {
 						my_letter_num = l
@@ -281,6 +299,8 @@ if (live_call()) return live_result;
 			instance_destroy()
 		}
 	}
+	
+	show_debug_message("CHECK 2")
 				
 	//assign all tiles to corresponding space
 	with (obj_tile_letter) {	
@@ -303,6 +323,7 @@ if (live_call()) return live_result;
 	
 	
 	
+	show_debug_message("CHECK 3")
 	
 	
 	var _letters_str = ""
@@ -311,8 +332,19 @@ if (live_call()) return live_result;
 	secret_word_length = array_length(secret_word_array)
 	
 	for (var l = 0; l < secret_word_length; ++l) {
-		_letters_str += global.letters_grid[secret_word_array[l]]
-		secret_word_str += global.letters_grid[secret_word_array[l]]
+		
+		var idx = secret_word_array[l];
+	   var letter = global.letters_grid[idx];
+    
+	   if (is_undefined(letter)) {
+	      show_debug_message("BAD LETTER INDEX: " + string(idx));
+	      letter = "?";
+	   }
+		 
+		show_debug_message("CHECK l "+string(l))
+		
+		_letters_str += letter
+		secret_word_str += letter
 	}
 			
 			

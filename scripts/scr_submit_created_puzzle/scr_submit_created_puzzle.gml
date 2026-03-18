@@ -9,6 +9,9 @@ function scr_submit_created_puzzle(_title) {
 	//form_is_loading = true
 	//alarm[1] = 90;
 	
+	//remove the "|" if it exists from draw gui
+	_title = string_replace_all(_title,"|","")
+	
 	show_debug_message("SUBMITTED TITLE!")
 	show_debug_message(_title)
 	

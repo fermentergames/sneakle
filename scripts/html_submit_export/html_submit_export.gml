@@ -6,7 +6,7 @@ function html_submit_export(argument0) {
 
 	exportCode = values[? "exportCode"];
 	form_is_loading = true
-	alarm[1] = 90;
+	//alarm[1] = 90;
 	
 	show_debug_message("exporting!")
 	show_debug_message(exportCode)
