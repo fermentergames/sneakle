@@ -2,7 +2,15 @@
 function scr_profile_update_stats(){
 	if (live_call()) return live_result;
 	
-	with (obj_ctrlp) {	
+	with (obj_ctrlp) {
+		
+		
+		if option_darkmode = "0" {
+			global.light_mode = 1
+		} else if option_darkmode = "1" {
+			global.light_mode = 0
+		}
+		
 		
 		if stat_d_total_finished > 0 && stat_d_total_started > 0 {
 			
@@ -18,6 +26,22 @@ function scr_profile_update_stats(){
 			stat_d_total_guesses_avg = string(round(real(stat_d_total_guesses)/real(stat_d_total_finished)))
 			stat_d_total_time_avg =	round(real(stat_d_total_time)/real(stat_d_total_finished))
 			stat_d_total_time_avg = string(scr_format_time(stat_d_total_time_avg,0))
+		}
+		
+		if stat_c_total_finished > 0 && stat_c_total_started > 0 {
+			
+			//if stat_c_total_finished > stat_c_total_started {
+			//	stat_c_total_finished = stat_c_total_started	
+			//}
+			if stat_c_total_started < stat_c_total_finished {
+				stat_c_total_started = stat_c_total_finished
+			}
+			
+			stat_c_total_finished_perc = string(round(100*(real(stat_c_total_finished)/real(stat_c_total_started))))+"%"
+			stat_c_total_score_avg = string(round(real(stat_c_total_score)/real(stat_c_total_finished)))
+			stat_c_total_guesses_avg = string(round(real(stat_c_total_guesses)/real(stat_c_total_finished)))
+			stat_c_total_time_avg =	round(real(stat_c_total_time)/real(stat_c_total_finished))
+			stat_c_total_time_avg = string(scr_format_time(stat_c_total_time_avg,0))
 		}
 
 		

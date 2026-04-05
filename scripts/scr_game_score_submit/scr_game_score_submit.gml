@@ -49,6 +49,17 @@ if (live_call()) return live_result;
 				stat_d_total_time = string(real(stat_d_total_time)+global.game_timer)
 				stat_d_total_guesses = string(real(stat_d_total_guesses)+obj_ctrl.guesses_count)
 				stat_d_total_hints = string(real(stat_d_total_hints)+global.game_hints_used)
+			} else if puzzle_is_community = 1 {
+				//stat_c_total_started = string(real(stat_c_total_started)+1)
+				if global.gave_up <= 0 {
+					stat_c_total_finished = string(real(stat_c_total_finished)+1)
+				} else {
+					stat_c_total_gaveup = string(real(stat_c_total_gaveup)+1)
+				}
+				stat_c_total_score = string(real(stat_c_total_score)+global.game_score_total)
+				stat_c_total_time = string(real(stat_c_total_time)+global.game_timer)
+				stat_c_total_guesses = string(real(stat_c_total_guesses)+obj_ctrl.guesses_count)
+				stat_c_total_hints = string(real(stat_c_total_hints)+global.game_hints_used)
 			} else { //non daily
 				//stat_u_total_started = string(real(stat_u_total_started)+1)
 				if global.gave_up <= 0 {
@@ -96,6 +107,18 @@ if (live_call()) return live_result;
 					}, function(_status, _ok, _result) {
 						//alarm[4] = 60;
 					});
+				} else if puzzle_is_community = 1 && postId != -1 && postId != "-9999" {
+					api_save_profile({
+						stat_c_total_started,
+						stat_c_total_finished,
+						stat_c_total_gaveup,
+						stat_c_total_score,
+						stat_c_total_time,
+						stat_c_total_guesses,
+						stat_c_total_hints,
+					}, function(_status, _ok, _result) {
+						//alarm[4] = 60;
+					});
 				} else {
 					api_save_profile({
 						stat_u_total_started,
@@ -115,6 +138,7 @@ if (live_call()) return live_result;
 		} else {
 			show_debug_message("scr_game_score_submit skipping because already finished")
 			
+			//obj_ctrlp
 			alarm[1] = 30; //will fetch lb after
 			
 		}

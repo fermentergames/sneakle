@@ -12,9 +12,8 @@ global.dictionary_simple = new CheckWordDictionary(working_directory + "dictiona
 
 global.dictionary_generate = new PickWordDictionary(working_directory + "dictionaries/simpler_MIT_by_length/5.txt");
 
-scr_letter_data_init()
 
-global.light_mode = 0
+global.game_timer_meta = 0
 
 #macro COL_RED_EXED make_color_hsv(245,220,20)
 #macro COL_RED_EXED_BORD make_color_hsv(250,255,205)
@@ -24,7 +23,26 @@ global.light_mode = 0
 #macro LEVEL_STATUS_Started 1
 #macro LEVEL_STATUS_GaveUp 2
 #macro LEVEL_STATUS_Complete 3
+#macro LEVEL_STATUS_IsAuthor 4
 
+#macro STATS_UNLIMITED 0
+#macro STATS_DAILY 1
+#macro STATS_COMMUNITY 2
+
+
+//archive browser stuff
+global.browser_cursor = 0;
+global.browser_page = 0;
+global.browser_limit = 8;
+global.browser_tag = "daily"; // or "" for all
+
+global.browser_puzzles = []; // array of structs
+global.browser_loading = false;
+global.browser_hasMore = true;
+global.browser_total = 0;
+global.browser_pending_last = false;
+
+//
 
 
 global.light_mode = 0
@@ -97,6 +115,7 @@ postData_totalPlayersCompleted = 0
 postData_totalGuesses = 0
 postData_totalTime = 0
 postData_totalScore = 0
+postData_nonStandard = 0
 
 puzzle_is_daily = 0
 puzzle_is_special = 0
@@ -111,6 +130,10 @@ daily_today_postId = "-9999"
 
 loading_postdata_stage = 0
 loading_postdata_info = ""
+
+
+get_query()//check for "launch into create" first
+
 
 scr_reddit_reset_post()
 
@@ -136,6 +159,14 @@ if 1=1 {//STATS
 	stat_d_total_time			= "0"
 	stat_d_total_guesses		= "0"
 	stat_d_total_hints		= "0"
+	
+	stat_c_total_started		= "0"
+	stat_c_total_finished	= "0"
+	stat_c_total_gaveup		= "0"
+	stat_c_total_score		= "0"
+	stat_c_total_time			= "0"
+	stat_c_total_guesses		= "0"
+	stat_c_total_hints		= "0"
 
 	stat_u_total_started		= "0"
 	stat_u_total_finished	= "0"
@@ -159,6 +190,11 @@ if 1=1 {//STATS
 	stat_d_total_score_avg = "0"
 	stat_d_total_time_avg =	"0"
 	stat_d_total_guesses_avg = "0"
+	
+	stat_c_total_finished_perc = "0"
+	stat_c_total_score_avg = "0"
+	stat_c_total_time_avg =	"0"
+	stat_c_total_guesses_avg = "0"
 
 	stat_u_total_finished_perc = "0%"
 	stat_u_total_score_avg = "0"
@@ -192,6 +228,14 @@ if 1=1 {//STATS
 				stat_d_total_time = _profile.stat_d_total_time;
 				stat_d_total_guesses = _profile.stat_d_total_guesses;
 				stat_d_total_hints = _profile.stat_d_total_hints;
+				
+				stat_c_total_started = _profile.stat_c_total_started;
+				stat_c_total_finished = _profile.stat_c_total_finished;
+				stat_c_total_gaveup = _profile.stat_c_total_gaveup;
+				stat_c_total_score = _profile.stat_c_total_score;
+				stat_c_total_time = _profile.stat_c_total_time;
+				stat_c_total_guesses = _profile.stat_c_total_guesses;
+				stat_c_total_hints = _profile.stat_c_total_hints;
 
 				stat_u_total_started = _profile.stat_u_total_started;
 				stat_u_total_finished = _profile.stat_u_total_finished;
@@ -209,12 +253,13 @@ if 1=1 {//STATS
 				option_show_timer = _profile.option_show_timer;
 				
 				profile_joined = _profile.profile_joined;
+				
 
 				scr_profile_update_stats()
 			
 				load_profile_complete = 1
 				
-				if real(stat_d_total_started) + real(stat_u_total_started) <= 0 {
+				if real(stat_d_total_started) + real(stat_u_total_started) + real(stat_c_total_started) <= 0 {
 					global.show_howto = 1 //temp tutorial	
 				}
 			}

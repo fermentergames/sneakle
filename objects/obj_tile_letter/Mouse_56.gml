@@ -4,7 +4,7 @@ if (live_call()) return live_result;
 
 
 
-if am_dragging >= 1 {
+if am_dragging >= 1 && global.show_any_modal_fd < 0.1 {
 	
 	var _swapped_letter = 0
 	var _rearranged = 0

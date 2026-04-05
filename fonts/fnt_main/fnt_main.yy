@@ -135,8 +135,8 @@
   "size":100.0,
   "styleName":"Black",
   "textureGroupId":{
-    "name":"Default",
-    "path":"texturegroups/Default",
+    "name":"tg_fonts",
+    "path":"texturegroups/tg_fonts",
   },
   "TTFName":"",
   "usesSDF":true,

@@ -315,10 +315,21 @@ if 1=1 {
 
 
 	if am_part_of_secret_word_fd > 0 && global.game_phase = 2 {
+		
+		
+		var highlight_secret_col = c_white
+		var highlight_secret_alp = 1
+		if global.light_mode = 1 {
+			var col_light_green = make_colour_hsv(90,190,180)
+			highlight_secret_col	= col_light_green
+			highlight_secret_alp = 4
+		}
 
-		gpu_set_blendmode(bm_add)
+		if global.light_mode = 0 {
+			gpu_set_blendmode(bm_add)
+		}
 		//secret glow
-		draw_sprite_ext(spr_sqr512,_tile_shape,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*(1+(0.0*am_selected_fd)),image_yscale*_tile_scl*(1+(0.0*am_selected_fd)),image_angle+_tile_rot,c_white,image_alpha*(am_part_of_secret_word_fd*(0.12+(0.03*(sin(obj_ctrl.timey*0.1))))))
+		draw_sprite_ext(spr_sqr512,_tile_shape,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*(1+(0.0*am_selected_fd)),image_yscale*_tile_scl*(1+(0.0*am_selected_fd)),image_angle+_tile_rot,highlight_secret_col,image_alpha*highlight_secret_alp*(am_part_of_secret_word_fd*(0.12+(0.03*(sin(obj_ctrl.timey*0.1))))))
 	
 	}
 	

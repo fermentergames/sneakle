@@ -151,6 +151,51 @@ function api_load_profile(_callback) {
    return _req;
 }
 
+
+/// @desc This function joins the current user to the subreddit
+/// For more details check the server demo implementation under the output folder:
+/// <output>/<project_name>/src/server/index.ts
+/// @param {Function} _callback The callback that you want to be executed upon task completion.
+function api_join_subreddit(_callback) {
+	
+	if obj_ctrlp.load_profile_complete >= 1 {
+		// Build request url
+	    var _url = reddit_get_base_url() + "/api/join-subreddit";
+
+		// Build request headers
+	    var _headers = ds_map_create();
+	    ds_map_add(_headers, "Content-Type", "application/json");
+	    ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
+
+		// Build request body
+	    var _body = {};
+		 //if (is_real(_stat_1)) _body.stat_1 = _stat_1;
+		 //if (is_real(_stat_2)) _body.stat_2 = _stat_2;
+	    //if (is_struct(_profileData)) _body.profileData = _profileData;
+	
+		// Make request
+	    var _json = json_stringify(_body);
+	 
+		 show_debug_message("api_save_profile json")
+		 show_debug_message(_json)
+	 
+	    var _req = http_request(_url, "POST", _headers, _json);
+	
+		// Free memory
+	    ds_map_destroy(_headers);
+	
+		// Register request callback
+		if (is_callable(_callback)) api_register_request(_req, _callback);
+	
+		//scr_profile_update_stats()
+
+		return _req; // keep to match in Async HTTP event
+	
+	} else {
+		show_debug_message("tried to api_join_subreddit, but load_profile_complete not ready, so bailed")	
+	}
+}
+
 //end of user
 
 /// @desc This function allows you to submit a new user highscore.
@@ -387,6 +432,38 @@ function api_get_surrounding_daily_ids(_postId,_callback) {
 
 
 
+/// @desc This function allows you to load all posts for archive
+/// For more details check the server demo implementation under the output folder:
+/// <output>/<project_name>/src/server/index.ts
+/// @param {Real} _cursor 
+/// @param {Real} _limit
+/// @param {Real} _tag
+/// @param {Function} _callback The callback that you want to be executed upon task completion.
+function api_list_levels(_cursor, _limit, _tag, _callback) {
+		
+	// Build request url
+    if (!is_real(_limit)) _limit = 10;
+	var _url = reddit_get_base_url() + "/api/list-levels?cursor="+string(_cursor)+"&limit="+string(_limit)+"&tag="+string(_tag);
+
+
+	// Build request headers
+    var _headers = ds_map_create();
+	ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
+	
+	// Make request
+    var _req = http_request(_url, "GET", _headers, "");
+    
+	// Free memory
+	ds_map_destroy(_headers);
+	
+	// Register request callback
+	if (is_callable(_callback)) api_register_request(_req, _callback);
+	
+    return _req;
+}
+
+
+
 //create post
 
 /// @desc This function allows you ---------------
@@ -394,7 +471,7 @@ function api_get_surrounding_daily_ids(_postId,_callback) {
 /// <output>/<project_name>/src/server/index.ts
 /// @param {Any} _data The data you want to save.
 /// @param {Function} _callback The callback that you want to be executed upon task completion.
-function api_create_user_post(_username, _title, _puzzle_data, _callback) {
+function api_create_user_post(_username, _title, _puzzle_data, _nonstandard, _callback) {
 		
 	// Build request url
     var _url = reddit_get_base_url() + "/api/create-user-post";
@@ -405,10 +482,11 @@ function api_create_user_post(_username, _title, _puzzle_data, _callback) {
     ds_map_add(_headers, "Authorization", $"Bearer {reddit_get_token()}");
 
 	// Build request body
-    var _body = {};
-	 if (is_string(_username)) _body.username = _username;
-	 if (is_string(_title)) _body.title = _title;
-	 if (is_string(_puzzle_data)) _body.puzzleData = _puzzle_data;
+   var _body = {};
+	if (is_string(_username)) _body.username = _username;
+	if (is_string(_title)) _body.title = _title;
+	if (is_string(_puzzle_data)) _body.puzzleData = _puzzle_data;
+	if (is_string(_nonstandard)) _body.nonStandard = _nonstandard;
 	
 	// Make request
     var _json = json_stringify(_body);

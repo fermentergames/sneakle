@@ -57,6 +57,7 @@ with (obj_ctrlp) {
 	postData_totalGuesses = 0
 	postData_totalTime = 0
 	postData_totalScore = 0
+	postData_nonStandard = 0
 
 	puzzle_is_daily = 0
 	puzzle_is_special = 0
@@ -132,6 +133,9 @@ with (obj_ctrlp) {
 				show_debug_message(postData_totalTime)
 				postData_totalScore = _postData.totalScore;
 				show_debug_message(postData_totalScore)
+				postData_nonStandard = _postData.nonStandard;
+				show_debug_message(postData_nonStandard)
+				
 				
 				
 				loading_postdata_stage = 5
@@ -201,7 +205,7 @@ with (obj_ctrlp) {
 				var _state_str = json_stringify(_state,true)
 				show_debug_message(_state_str)
 				
-				//username = _state.username;
+				username = _state.username;
 				//level = _state.level;
 				score_guesses = _state.score_guesses;
 				score_hints = _state.score_hints;
@@ -211,6 +215,11 @@ with (obj_ctrlp) {
 				
 				if level_status >= LEVEL_STATUS_GaveUp {
 					already_finished = 1
+					
+					if level_status = LEVEL_STATUS_IsAuthor {
+						already_finished = 3	
+					}
+					
 					show_debug_message("level_status >= LEVEL_STATUS_GaveUp, set already_finished")
 				
 					//scr_board_init will trigger game to autocomplete
@@ -244,16 +253,39 @@ with (obj_ctrlp) {
 			show_debug_message("load_post_data_complete = "+string(load_post_data_complete))
 			show_debug_message("load_state_complete = "+string(load_state_complete))
 			
+			//this part happens again in alarm[5]
 			if load_post_data_complete = 1 && load_state_complete = 1 {
 				
-				global.loadBoard = ""
-				global.game_phase = 0
-				scr_board_reset_defs()
+				if global.launch_into_create_mode != "true" { //skip this part if launching into create mode
+			
+					show_debug_message("setting game_phase = 0 from reddit_load_post")
+					global.loadBoard = ""
+					global.game_phase = 0
+					scr_board_reset_defs()
+	
+				}
+				
+				show_debug_message("postData_levelTag = "+string(postData_levelTag))
+				show_debug_message("postData_levelCreator = "+string(postData_levelCreator))
+				show_debug_message("username = "+string(username))
+				
+				if already_finished < 3 {
+					if postData_levelTag = "community" {
+						if postData_levelCreator != "" && username != "" {
+							if postData_levelCreator = username {
+								show_debug_message("postData_levelCreator = username, set already_finished = 3 to disable scoring on own puzz")
+								already_finished = 3
+								level_status = LEVEL_STATUS_IsAuthor
+								api_save_state(postId,{level_status},undefined)
+							}
+						}
+					}
+				}
 	
 				show_debug_message("trying to load board via get_query_reddit() with postData_gameData")
 				get_query_reddit()
 				global.game_loading = 0	
-		
+				
 	
 			} else {
 				

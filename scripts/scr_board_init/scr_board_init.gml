@@ -243,6 +243,7 @@ with (obj_ctrl) {
 			
 			//keep defaults
 			scr_update_copy_code()
+			global.game_phase = 1
 			
 		} else {
 			if global.loadSecret = "" {
@@ -316,6 +317,18 @@ with (obj_ctrl) {
 			
 				with (obj_ctrlp) {
 					if load_state_complete >= 1 {
+						
+						if level_status = LEVEL_STATUS_Started {
+							//set game vars from api_load_state
+							obj_ctrl.guesses_count = real(score_guesses)
+							for (var i = 1; i <= obj_ctrl.guesses_count; ++i) {
+							   obj_ctrl.guesses_list[i] = ""
+							}
+							
+							global.game_hints_used = real(score_hints)
+							global.game_timer = real(score_time)
+						}
+						
 						//if state of this puzzle is not started, update state AND user profile stat
 						if level_status <= LEVEL_STATUS_NotStarted {
 							level_status = LEVEL_STATUS_Started
@@ -323,13 +336,19 @@ with (obj_ctrl) {
 							if puzzle_is_daily = 1 {
 								stat_d_total_started = string(real(stat_d_total_started)+1)
 								api_save_profile({stat_d_total_started},undefined)
+							} else if puzzle_is_community = 1 {
+								stat_c_total_started = string(real(stat_c_total_started)+1)
+								api_save_profile({stat_c_total_started},undefined)
 							} else {
 								stat_u_total_started = string(real(stat_u_total_started)+1)
 								api_save_profile({stat_u_total_started},undefined)
 							}
 						}
+						
+						
+						
 					} else {
-						show_debug_message("load_state_complete but board init'd, uh oh!")	
+						show_debug_message("load_state_complete = 0, but board init'd, uh oh!")	
 					}
 				}
 				
@@ -345,13 +364,22 @@ with (obj_ctrl) {
 			
 			if already_finished >= 1 {
 			
-				show_debug_message("already_finished = 1, auto complete board")
+				show_debug_message("already_finished = "+string(already_finished)+", auto complete board")
+				
+				if already_finished < 2 {
+					already_finished = 2 //only set to 2 if loaded in with already 1, now show "already played" message
+				}
 				
 				//now complete game from obj_ctrl
 				with (obj_ctrl) {
 					
 					//set game vars from api_load_state
 					guesses_count = obj_ctrlp.score_guesses
+					
+					for (var i = 1; i <= guesses_count; ++i) {
+					   guesses_list[i] = ""
+					}
+					
 					global.game_hints_used = obj_ctrlp.score_hints
 					global.game_timer = obj_ctrlp.score_time
 					global.game_score_total = obj_ctrlp.score_combined //gets recalc'd anyway

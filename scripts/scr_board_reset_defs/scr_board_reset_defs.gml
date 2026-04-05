@@ -35,6 +35,9 @@ with (obj_ctrl) {
 	selected_word_not_in_dictionary = 0
 	selected_word_is_valid = 0
 	selected_word_base_points = 0
+	
+	nonstandard_allowed = 0
+	nonstandard_used = 0
 
 	secret_word_length = 0
 	secret_word_str = ""

@@ -33,6 +33,7 @@ global.letters_bag = ""
 global.am_creating_fd = 1
 global.am_creating_fd2 = 1
 
+global.launch_into_create_mode = "false"
 global.am_creating = 0
 global.skip_create = 0
 
@@ -74,6 +75,8 @@ global.current_copy_code = "ABCD_1-2-3-4"
 global.current_copy_url = "https://fermentergames.github.io/Sneakle/?loadBoard=ABCD&loadSecret=1-2-3-4"
 
 global.generated_word = "HARMONY"
+
+scr_letter_data_init()
 
 
 
@@ -127,6 +130,7 @@ var _info_userAgentString = _info_ds_map[? "userAgentString"]
 
 if string_count("android",string_lower(_info_userAgentString)) > 0 {
 	global.is_android = 1
+	global.is_mobile = 1
 	show_debug_message("Android detected")
 } else {
 	show_debug_message("Android NOT detected")	
@@ -134,9 +138,11 @@ if string_count("android",string_lower(_info_userAgentString)) > 0 {
 
 if string_count("iphone",string_lower(_info_userAgentString)) > 0 {
 	global.is_ios = 1
+	global.is_mobile = 1
 	show_debug_message("iOS detected iphone")
 } else if string_count("ipad",string_lower(_info_userAgentString)) > 0 {
 	global.is_ios = 1
+	global.is_mobile = 1
 	show_debug_message("iOS detected ipad")
 } else {
 	show_debug_message("iOS NOT detected")	
@@ -164,7 +170,8 @@ info_ds_map_str = string_replace_all(info_ds_map_str,",",",\n")
 
 ds_map_destroy(_info_ds_map) 
 
-
+global.tile_letter[1] = -1
+global.tile_space[1] = -1
 
 global.game_grid_size = 4
 
@@ -179,11 +186,16 @@ gui_nav_mid_y		 = 1
 gui_footer_top_y =	1
 gui_footer_mid_y =	1
 
+nonstandard_allowed = 0
+nonstandard_used = 0
 
 curr_width = browser_width
 curr_height = browser_height
 //if global.is_browser = 1 {
 event_user(0);
+
+global.game_phase = 0
+global.game_timer = 0
 
 if global.is_browser = 1 {
 	//
@@ -205,9 +217,8 @@ pulse_3 = sin(timey*0.6)
 pulse_4 = sin(timey*0.02)
 pulse_5 = 0
 
-global.game_phase = 0
-global.game_timer = 0
-global.game_timer_meta = 0
+
+
 
 global.game_hints_used = 0
 global.game_hint_length_used = 0
@@ -249,7 +260,11 @@ guesses_count = 0
 guesses_list = 0
 guesses_list[1] = ""
 
-global.tile_letter[1] = -1
+//for (var i = 0; i < 12; ++i) {
+//   guesses_list[i] = ""
+//}
+
+
 
 glow_trail_fd = 0
 glow_trail_letter = 1
@@ -275,6 +290,8 @@ swipe_allowed_distance = 110
 hovered_over_changer = 0
 hovered_over_changer_timey = 0
 
+archive_loading_fd = 0
+
 
 randomize()
 
@@ -283,8 +300,11 @@ p_string = 0 //reset
 if global.is_reddit = 1 {
 	//get_query_reddit() //handled in obj_ctrlp create with http response
 } else {
-	get_query()
+	//get_query()
 }
+
+
+
 //if global.loadBoard = "" && global.loadSecret = "" {
 	
 //	show_debug_message("no query loaded, try to load from parent")

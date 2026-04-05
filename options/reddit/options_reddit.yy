@@ -8,7 +8,7 @@
   "option_reddit_game_name":"Sneakle",
   "option_reddit_interpolate_pixels":true,
   "option_reddit_scale":1,
-  "option_reddit_texture_page":"8192x8192",
+  "option_reddit_texture_page":"2048x2048",
   "option_reddit_transparent_background":false,
   "resourceType":"GMRedditOptions",
   "resourceVersion":"2.0",

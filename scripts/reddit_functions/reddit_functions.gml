@@ -60,13 +60,13 @@ function reddit_get_token() {
 			_token = string_delete(_param, 1, 6);
             break;
 		}
-        // Behavior differs on Android.
-        // To cover potential issues on other platforms, we always run this check
-        // instead of gating it behind a platform condition.
-        else if (string_starts_with(_param, "webbit_token=")) {
-            _token = string_delete(_param, 1, 13);
-            break;
-        }
+      // Behavior differs on Android.
+      // To cover potential issues on other platforms, we always run this check
+      // instead of gating it behind a platform condition.
+      else if (string_starts_with(_param, "webbit_token=")) {
+         _token = string_delete(_param, 1, 13);
+         break;
+      }
 	}
 	
 	return _token;

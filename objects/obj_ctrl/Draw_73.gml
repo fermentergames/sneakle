@@ -6,6 +6,7 @@ draw_set_alpha(1)
 draw_set_color(c_black)
 //gpu_set_blendmode(bm_add)
 
+var col_light_green = make_colour_hsv(90,180,210)
 
 
 
@@ -26,6 +27,10 @@ if selected_word_length >= 0 && (selecting = 1 || global.game_phase = 2 || globa
 	var _line_sat = color_get_saturation(_swa0_col)
 	var _line_col = merge_color(_swa0_col,make_color_hsv(_line_hue,lerp(_line_sat,255,0.5),255*(selected_word_array_id[0].am_selected_fd)),clamp(0.0+(selected_word_array_id[0].am_selected_fd*0.6)+(selected_word_array_id[0].am_selected_flash2*0.3)+_line_darken,0,1))
 
+	if global.light_mode = 1 && (global.game_phase = 2 && ready_for_phase3 >= 1) {
+		_line_col = col_light_green //merge_color(_swa0_col,make_color_hsv(_line_hue,lerp(_line_sat,255,1),255*(selected_word_array_id[0].am_selected_fd)),clamp(0.0+(selected_word_array_id[0].am_selected_fd*0.6)+(selected_word_array_id[0].am_selected_flash2*0.3)+_line_darken,0,1))
+	}
+
 	draw_set_color(_line_col)
 
 	var _lx1 = selected_word_array_id[0].x
@@ -45,6 +50,11 @@ if selected_word_length >= 0 && (selecting = 1 || global.game_phase = 2 || globa
 		var	_line_hue = color_get_hue(selected_word_array_id[l].image_blend)
 		var	_line_sat = color_get_saturation(selected_word_array_id[l].image_blend)
 		var	_line_col2 = merge_color(selected_word_array_id[l].image_blend,	make_color_hsv(_line_hue,lerp(_line_sat,255,0.5),255*max(1,selected_word_array_id[l].am_selected_fd)),clamp(0.0+(selected_word_array_id[l].am_selected_fd*0.6)+(selected_word_array_id[l].am_selected_flash2*0.3)+_line_darken,0,1))
+
+		if global.light_mode = 1 && (global.game_phase = 2 && ready_for_phase3 >= 1) {
+			_line_col = col_light_green //merge_color(_swa0_col,make_color_hsv(_line_hue,lerp(_line_sat,255,1),255*(selected_word_array_id[0].am_selected_fd)),clamp(0.0+(selected_word_array_id[0].am_selected_fd*0.6)+(selected_word_array_id[0].am_selected_flash2*0.3)+_line_darken,0,1))
+			_line_col2 = _line_col
+		}
 
 
 		draw_set_color(_line_col)

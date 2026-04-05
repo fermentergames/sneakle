@@ -119,7 +119,18 @@ var _nav_mid_y = gui_nav_mid_y
 
 
 
-scr_letter_data_init()
+//if (!is_real(global.game_timer)) global.game_timer = 0;
+//if (!is_real(global.game_hints_used)) global.game_hints_used = 0;
+//if (!is_real(global.game_hint_letter_used)) global.game_hint_letter_used = 0;
+
+//with (obj_ctrlp) {
+//if (!is_real(guesses_count)) guesses_count = 0;
+//if (!is_real(score_guesses)) score_guesses = 0;
+//}
+
+
+
+
 
 
 if global.game_phase > 0 {
@@ -128,13 +139,13 @@ if global.game_phase > 0 {
 	if 1=1 {
 		var _unplaced_tile_count = -1
 		var _empty_tile_count = -1
-		var _empty_tile = 0
+		var _empty_tile = []
 		ready_for_phase2 = 0
 
 		for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
 			
 			
-			if instance_exists(global.tile_letter[i]) {
+			if instance_exists(global.tile_letter[i]) && global.tile_letter[i] != -1 {
 				if global.tile_letter[i].am_set = 0 {
 					_unplaced_tile_count += 1
 				}
@@ -143,9 +154,11 @@ if global.game_phase > 0 {
 				show_debug_message("global.tile_letter["+string(i)+"] missing")
 			}
 			
-			if global.tile_space[i].tile_filled = 0 {
-				_empty_tile_count += 1
-				_empty_tile[_empty_tile_count] = global.tile_space[i].id
+			if instance_exists(global.tile_space[i]) && global.tile_space[i] != -1 {
+				if global.tile_space[i].tile_filled = 0 {
+					_empty_tile_count += 1
+					_empty_tile[_empty_tile_count] = global.tile_space[i].id
+				}
 			}
 			
 		}
@@ -227,11 +240,18 @@ if keyboard_check_pressed(ord("K")) {
 if mouse_check_button_pressed(mb_left) {
 	
 	
-	if scr_mouse_over_button(global.sw*0.1,_nav_mid_y,0.18*_tscl,0.1*_tscl) { //MENU
+	if scr_mouse_over_button(global.sw*0.0,_nav_mid_y,0.38*_tscl,0.08*_tscl) { //MENU
 		
 		if global.show_any_modal_fd < 0.1 && global.game_phase >= 1 {
 			
 			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+			
+			//show_debug_message("global.launch_into_create_mode reset to 'false'")
+		
+			if global.launch_into_create_mode = "true" {
+				global.launch_into_create_mode = "false"
+				show_debug_message("global.launch_into_create_mode reset to 'false'")
+			}
 		
 			if 1=1 {//global.is_reddit = 1 {
 				obj_ctrlp.already_finished = 0 //reset this so that puzzles don't auto complete moving forward	
@@ -294,7 +314,7 @@ if mouse_check_button_pressed(mb_left) {
 		if global.show_any_modal = 0 && global.game_loading = 0 {
 	
 			
-			if scr_mouse_over_button((global.sw*0.5),0+(220*_scl)+(110*_scl*0),0.64*_tscl,0.16*_tscl) { // device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.3 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.5 {
+			if scr_mouse_over_button((global.sw*0.5),0+(210*_scl)+(80*_scl*0),0.64*_tscl,0.12*_tscl) { // device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.3 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.5 {
 
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				//load daily
@@ -341,6 +361,10 @@ if mouse_check_button_pressed(mb_left) {
 						//secret
 						global.loadBoard = "SEWCATRED" 
 						global.loadSecret = "1-2-4-7-8-6"
+						
+						//global.loadBoard = "TASOMGYFTODOMOBF" 
+						//global.loadSecret = "1-2-3-4-7"
+						//obj_ctrlp.postData_nonStandard = "1"
 					
 						scr_board_init()
 					
@@ -353,13 +377,95 @@ if mouse_check_button_pressed(mb_left) {
 
 					
 					
-			} else if scr_mouse_over_button((global.sw*0.5),0+(220*_scl)+(110*_scl*1),0.64*_tscl,0.16*_tscl) {
+			} else if scr_mouse_over_button((global.sw*0.5),0+(210*_scl)+(80*_scl*1),0.64*_tscl,0.12*_tscl) {
+				
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				
+				var _event_struct = { //
+				   screen_name: "Archives",
+				};
+				GoogHit("screen_view",_event_struct)
+				
+				global.show_archives = 1
+				global.browser_tag = "daily"
+				global.browser_cursor = 0;
+				global.browser_puzzles = [];
+				global.browser_hasMore = true;
+
+				if global.is_reddit = 1 {
+					
+					scr_browser_load_next_page()
+					
+				} else if global.is_reddit = 0 {
+					
+					show_debug_message("api_list_levels");
+					global.browser_loading = false;
+					show_debug_message("global.is_reddit = 0");
+					//var _ok = true
+					// Instead of parsing _result, assign dummy data
+				   var _dummy_data = {
+				      puzzles: [
+				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"community", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30 very incredibly long name wow", levelTag:"community", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #29 longer name", levelTag:"community", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #29", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #29", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				      ],
+				      nextCursor: 8,
+				      hasMore: true,
+				      total: 67
+					}
+
+				
+					var data = _dummy_data;
+				
+	            show_debug_message("LIST LEVELS OK");
+	            show_debug_message(json_stringify(data));
+
+	            var puzzles = data.puzzles;
+
+	            // Append results
+	            for (var i = 0; i < array_length(puzzles); i++) {
+						array_push(global.browser_puzzles, puzzles[i]);
+						
+						var _ldate = scr_format_levelDate(global.browser_puzzles[i].levelDate,false)
+						_ldate = string_copy(_ldate,0,string_length(_ldate)-5)
+						global.browser_puzzles[i].date_mmdd = _ldate
+						
+						var _ldaywk = scr_format_levelDate(global.browser_puzzles[i].levelDate,2)
+						global.browser_puzzles[i].date_wkday = _ldaywk
+						
+	            }
+
+	            // Update pagination
+					global.browser_page = 0;
+	            global.browser_cursor = data.nextCursor;
+	            global.browser_hasMore = data.hasMore;
+				}
+				
+			} else if scr_mouse_over_button((global.sw*0.5),0+(210*_scl)+(80*_scl*2),0.64*_tscl,0.12*_tscl) {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				
 				global.game_grid_size = 4
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
 				global.am_creating = 1
+				global.am_generate_random = 0
 				var _event_struct = { //
 				   screen_name: "Create"+string(global.game_grid_size),
 				};
@@ -444,7 +550,7 @@ if mouse_check_button_pressed(mb_left) {
 			
 				////////////////////////////////////////
 			
-			} else if scr_mouse_over_button((global.sw*0.5)+(-160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
+			} else if scr_mouse_over_button((global.sw*0.5)+(-160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				global.game_grid_size = 3
@@ -459,7 +565,7 @@ if mouse_check_button_pressed(mb_left) {
 				GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
-			} else if scr_mouse_over_button((global.sw*0.5)+(-80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
+			} else if scr_mouse_over_button((global.sw*0.5)+(-80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				global.game_grid_size = 4
@@ -474,7 +580,7 @@ if mouse_check_button_pressed(mb_left) {
 				GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
-			} else if scr_mouse_over_button((global.sw*0.5)+(-0*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
+			} else if scr_mouse_over_button((global.sw*0.5)+(-0*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				global.game_grid_size = 5
@@ -490,7 +596,7 @@ if mouse_check_button_pressed(mb_left) {
 				scr_board_init()
 				
 				
-			} else if scr_mouse_over_button((global.sw*0.5)+(80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),0.12*_tscl,0.12*_tscl) {
+			} else if scr_mouse_over_button((global.sw*0.5)+(80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				global.game_grid_size = 6
@@ -505,7 +611,7 @@ if mouse_check_button_pressed(mb_left) {
 				GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
-			} else if scr_mouse_over_button((global.sw*0.5)+(160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),0.12*_tscl,0.12*_tscl) {
+			} else if scr_mouse_over_button((global.sw*0.5)+(160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				global.game_grid_size = 7
@@ -533,303 +639,295 @@ if mouse_check_button_pressed(mb_left) {
 	}
 	
 	
-	if global.game_phase = 1 && 1=0 {
+	//if global.game_phase = 1 && 1=0 {
 		
-		if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+	//	if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
 			
-			//CONFIRM GRID
-			if scr_mouse_over_button((global.sw*0.5)+(160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),0.12*_scl,0.12*_scl) { //point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw/2)-(256*0.65*_tscl),(global.sh+(-150*global.pr))-(256*0.14*_tscl),(global.sw/2)+(256*0.65*_tscl),(global.sh+(-150*global.pr))+(256*0.14*_tscl)) {
+	//		//CONFIRM GRID
+	//		if scr_mouse_over_button((global.sw*0.5)+(160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_scl,0.12*_scl) { //point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw/2)-(256*0.65*_tscl),(global.sh+(-150*global.pr))-(256*0.14*_tscl),(global.sw/2)+(256*0.65*_tscl),(global.sh+(-150*global.pr))+(256*0.14*_tscl)) {
 
-				//auto fill
+	//			//auto fill
 
-				if _empty_tile_count >= 0 { //there are some empty spaces
-					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+	//			if _empty_tile_count >= 0 { //there are some empty spaces
+	//				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 		
-					_empty_tile = array_shuffle(_empty_tile)
+	//				_empty_tile = array_shuffle(_empty_tile)
 	
-					_empty_tile_count = 0 //reset
-					for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+	//				_empty_tile_count = 0 //reset
+	//				for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
 
-						if global.tile_letter[i].am_set = 0 {
+	//					if global.tile_letter[i].am_set = 0 {
 
-							//_empty_letter[i] = global.tile_space[i]
+	//						//_empty_letter[i] = global.tile_space[i]
 					
-							with (global.tile_letter[i]) {
+	//						with (global.tile_letter[i]) {
 				
-								//show_debug_message(object_get_name(_empty_tile[i].object_index))
+	//							//show_debug_message(object_get_name(_empty_tile[i].object_index))
 					
-								targ_id = _empty_tile[_empty_tile_count].id
-								_empty_tile_count += 1
-								x_targ = targ_id.x
-								y_targ = targ_id.y
-								am_set = 1
-								prev_targ_id = targ_id
-								am_set_flash = 1
-							}
-						}
-					}
+	//							targ_id = _empty_tile[_empty_tile_count].id
+	//							_empty_tile_count += 1
+	//							x_targ = targ_id.x
+	//							y_targ = targ_id.y
+	//							am_set = 1
+	//							prev_targ_id = targ_id
+	//							am_set_flash = 1
+	//						}
+	//					}
+	//				}
 	
-				} else {
+	//			} else {
 				
-					//confirm grid, proceed to setting secret
-					for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
-						with (global.tile_letter[i]) {
-							if am_set >= 1 {
-								if instance_exists(targ_id) && targ_id != -1 {
+	//				//confirm grid, proceed to setting secret
+	//				for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+	//					with (global.tile_letter[i]) {
+	//						if am_set >= 1 {
+	//							if instance_exists(targ_id) && targ_id != -1 {
 				
-									//show_debug_message(object_get_name(_empty_tile[i].object_index))
+	//								//show_debug_message(object_get_name(_empty_tile[i].object_index))
 					
-									tile_id = targ_id.tile_id
+	//								tile_id = targ_id.tile_id
 								
-									global.letters_grid[tile_id] = my_letter_str
+	//								global.letters_grid[tile_id] = my_letter_str
 						
-								}
-							}
-						}
-					}
+	//							}
+	//						}
+	//					}
+	//				}
 			
 				
-					global.game_phase = 2	
-					dragging = 0
-					selected_word_length = 0
-					selected_word_not_in_dictionary = 0
-					selected_word_is_valid = 0
-					selected_word_str = ""
-					selected_word_array = 0
-					selected_word_array_id = 0
-					ready_for_phase3 = 0
+	//				global.game_phase = 2	
+	//				dragging = 0
+	//				selected_word_length = 0
+	//				selected_word_not_in_dictionary = 0
+	//				selected_word_is_valid = 0
+	//				selected_word_str = ""
+	//				selected_word_array = 0
+	//				selected_word_array_id = 0
+	//				ready_for_phase3 = 0
 					
 			
-				}
-			} else if global.game_mode = 1 && point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.3)-(256*0.3*_tscl),(global.sh+(-70*global.pr))-(256*0.08*_tscl),(global.sw*0.3)+(256*0.3*_tscl),(global.sh+(-70*global.pr))+(256*0.08*_tscl)) {
+	//			}
+	//		} else if global.game_mode = 1 && point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.3)-(256*0.3*_tscl),(global.sh+(-70*global.pr))-(256*0.08*_tscl),(global.sw*0.3)+(256*0.3*_tscl),(global.sh+(-70*global.pr))+(256*0.08*_tscl)) {
 				
-				show_debug_message("NEW LETTERS")
-				
-				with (obj_tile_letter) {
-					instance_destroy()
-				}
-				with (obj_tile_space) {
-					instance_destroy()
-				}
+	//			show_debug_message("NEW LETTERS")
 
-				global.am_creating = 1
-				var _event_struct = { //
-				   screen_name: "NewLetters"+string(global.game_grid_size),
-				};
-				GoogHit("screen_view",_event_struct)
 				
-				global.loadSecret = ""
-				global.loadBoard = ""
-				global.current_copy_code = ""
-				global.current_copy_link = ""
-				scr_update_copy_code()
+	//			var _event_struct = { //
+	//			   screen_name: "NewLetters"+string(global.game_grid_size),
+	//			};
+	//			GoogHit("screen_view",_event_struct)
 				
-				scr_board_init()
+	//			scr_board_reset_defs()
+				
+	//			global.am_creating = 1
+				
+	//			scr_board_init()
 				
 				
+	//			with (obj_tile_letter) {
+	//				//instance_destroy()
+	//				image_angle = 0
+	//				born_fd = 1
+	//				spawn_slam = 0
+	//				am_set = 1
+	//				am_set_fd = 1
+	//				am_set_flash = 0
+	//				x = x_targ
+	//				y = y_targ
+	//			}
 				
-				with (obj_tile_letter) {
-					//instance_destroy()
-					image_angle = 0
-					born_fd = 1
-					spawn_slam = 0
-					am_set = 1
-					am_set_fd = 1
-					am_set_flash = 0
-					x = x_targ
-					y = y_targ
-				}
+	//		} else if global.game_mode = 1 && point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.7)-(256*0.3*_tscl),(global.sh+(-70*global.pr))-(256*0.08*_tscl),(global.sw*0.7)+(256*0.3*_tscl),(global.sh+(-70*global.pr))+(256*0.08*_tscl)) {
+	//			show_debug_message("TYPE LETTERS")
 				
-			} else if global.game_mode = 1 && point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.7)-(256*0.3*_tscl),(global.sh+(-70*global.pr))-(256*0.08*_tscl),(global.sw*0.7)+(256*0.3*_tscl),(global.sh+(-70*global.pr))+(256*0.08*_tscl)) {
-				show_debug_message("TYPE LETTERS")
+	//			var _event_struct = { //
+	//			   screen_name: "LoadFromCreate",
+	//			};
+	//			GoogHit("screen_view",_event_struct)
+	//			global.show_TypeLetters_input_prompt = 1
 				
-				var _event_struct = { //
-				   screen_name: "LoadFromCreate",
-				};
-				GoogHit("screen_view",_event_struct)
-				global.show_TypeLetters_input_prompt = 1
-				
-			} else if 1=0 {// point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.5)-(256*0.3*_tscl),(global.sh+(-10*global.pr))-(256*0.08*_tscl),(global.sw*0.5)+(256*0.3*_tscl),(global.sh+(-10*global.pr))+(256*0.08*_tscl)) {
+	//		} else if 1=0 {// point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.5)-(256*0.3*_tscl),(global.sh+(-10*global.pr))-(256*0.08*_tscl),(global.sw*0.5)+(256*0.3*_tscl),(global.sh+(-10*global.pr))+(256*0.08*_tscl)) {
 				
 				
 				
-				if global.game_mode = 1 {
+	//			if global.game_mode = 1 {
 					
-					global.game_mode = 2	
+	//				global.game_mode = 2	
 					
-					//reset
-					global.points_total = 0
-					global.words_made = 0
-					global.rearranges_used = 0
-					global.discards_used = 0
+	//				//reset
+	//				global.points_total = 0
+	//				global.words_made = 0
+	//				global.rearranges_used = 0
+	//				global.discards_used = 0
 					
-				} else {
-					global.game_mode = 1
-				}
+	//			} else {
+	//				global.game_mode = 1
+	//			}
 				
 				
 				
-			}
+	//		}
 			
 			
-		}
+	//	}
 		
-	} else if global.game_phase = 2 && 1=0 { //
+	//} else if global.game_phase = 2 && 1=0 { //
 		
-		//proceed
-		if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.5)-(256*0.65*_tscl),((_panel_mid_y)+(110*_scl))-(256*0.15*_tscl),(global.sw*0.5)+(256*0.65*_tscl),((_panel_mid_y)+(110*_scl))+(256*0.15*_tscl)) {
+	//	//proceed
+	//	if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.5)-(256*0.65*_tscl),((_panel_mid_y)+(110*_scl))-(256*0.15*_tscl),(global.sw*0.5)+(256*0.65*_tscl),((_panel_mid_y)+(110*_scl))+(256*0.15*_tscl)) {
 			
 			
-			if global.game_mode = 1 && selected_word_is_valid >= 1 {
-				//proceed, lock in word
+	//		if global.game_mode = 1 && selected_word_is_valid >= 1 {
+	//			//proceed, lock in word
 				
-				secret_word_length = selected_word_length
-				secret_word_str = selected_word_str
-				secret_word_array = selected_word_array
-				secret_word_array_id = selected_word_array_id
-				guesses_count = 0
+	//			secret_word_length = selected_word_length
+	//			secret_word_str = selected_word_str
+	//			secret_word_array = selected_word_array
+	//			secret_word_array_id = selected_word_array_id
+	//			guesses_count = 0
 				
-				selected_word_length = 0
-				selected_word_str = ""
-				selected_word_array = 0
+	//			selected_word_length = 0
+	//			selected_word_str = ""
+	//			selected_word_array = 0
 				
-				with (obj_tile_letter) {
-					am_exed = 0
-					am_clued = 0	
-				}
-				
-				
-				
-				//assign all tiles to corresponding space
-				//for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
-					with (obj_tile_letter) {
-						tile_id = targ_id.tile_id
-						global.letters_grid[tile_id] = my_letter_str
-						global.tile_letter[tile_id] = id
-					}
-				//}
+	//			with (obj_tile_letter) {
+	//				am_exed = 0
+	//				am_clued = 0	
+	//			}
 				
 				
 				
-				var _letters_str = ""
-				for (var l = 0; l < secret_word_length; ++l) {
-					_letters_str += global.letters_grid[secret_word_array[l]]
-				}
+	//			//assign all tiles to corresponding space
+	//			//for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+	//				with (obj_tile_letter) {
+	//					tile_id = targ_id.tile_id
+	//					global.letters_grid[tile_id] = my_letter_str
+	//					global.tile_letter[tile_id] = id
+	//				}
+	//			//}
+				
+				
+				
+	//			var _letters_str = ""
+	//			for (var l = 0; l < secret_word_length; ++l) {
+	//				_letters_str += global.letters_grid[secret_word_array[l]]
+	//			}
 			
 			
 				
-				show_debug_message("SECRET WORD CHOSEN: "+string(_letters_str))
+	//			show_debug_message("SECRET WORD CHOSEN: "+string(_letters_str))
 				
-				scr_update_copy_code()
+	//			scr_update_copy_code()
 				
-				var _event_struct = { //
-					screen_name: "CREATE_"+string(global.game_grid_size)+"_"+string(global.current_copy_code),
-				};
-				GoogHit("screen_view",_event_struct)
+	//			var _event_struct = { //
+	//				screen_name: "CREATE_"+string(global.game_grid_size)+"_"+string(global.current_copy_code),
+	//			};
+	//			GoogHit("screen_view",_event_struct)
 				
-				global.show_export_prompt = 1
+	//			global.show_export_prompt = 1
 				
-				global.game_phase = 3
-				just_phase_changed = 1
+	//			global.game_phase = 3
+	//			just_phase_changed = 1
 			
-			}
+	//		}
 			
-			if global.game_mode = 2 && selected_word_is_valid >= 1 {
+	//		if global.game_mode = 2 && selected_word_is_valid >= 1 {
 				
-				//secret_word_length = selected_word_length
-				//secret_word_str = selected_word_str
-				//secret_word_array = selected_word_array
-				//secret_word_array_id = selected_word_array_id
-				//guesses_count = 0
+	//			//secret_word_length = selected_word_length
+	//			//secret_word_str = selected_word_str
+	//			//secret_word_array = selected_word_array
+	//			//secret_word_array_id = selected_word_array_id
+	//			//guesses_count = 0
 				
-				var _letters_str = ""
-				for (var l = 0; l < selected_word_length; ++l) {
-					_letters_str += global.letters_grid[selected_word_array[l]]
-				}
+	//			var _letters_str = ""
+	//			for (var l = 0; l < selected_word_length; ++l) {
+	//				_letters_str += global.letters_grid[selected_word_array[l]]
+	//			}
 				
-				show_debug_message("SCORING WORD CHOSEN: "+string(_letters_str))
-				//global.points_total = 0
-				global.points_total += obj_ctrl.selected_word_base_points*obj_ctrl.selected_word_length
-				show_debug_message("ADD SCORE "+string(obj_ctrl.selected_word_base_points*obj_ctrl.selected_word_length))
-				show_debug_message("TOTAL SCORE NOW: "+string(global.points_total))
+	//			show_debug_message("SCORING WORD CHOSEN: "+string(_letters_str))
+	//			//global.points_total = 0
+	//			global.points_total += obj_ctrl.selected_word_base_points*obj_ctrl.selected_word_length
+	//			show_debug_message("ADD SCORE "+string(obj_ctrl.selected_word_base_points*obj_ctrl.selected_word_length))
+	//			show_debug_message("TOTAL SCORE NOW: "+string(global.points_total))
 				
-				global.words_made += 1
-				show_debug_message("words_made: "+string(global.words_made))
+	//			global.words_made += 1
+	//			show_debug_message("words_made: "+string(global.words_made))
 				
-				selected_word_length = 0
-				selected_word_str = ""
-				selected_word_array = 0
-				selected_word_array_id = 0
-				
-				
+	//			selected_word_length = 0
+	//			selected_word_str = ""
+	//			selected_word_array = 0
+	//			selected_word_array_id = 0
 				
 				
 				
 				
 				
-				with (obj_tile_letter) {
-					if am_part_of_secret_word = 1 { //replace only selected word
+				
+				
+	//			with (obj_tile_letter) {
+	//				if am_part_of_secret_word = 1 { //replace only selected word
 						
-						with (instance_create_depth(x,y,depth,obj_tile_letter)) {
-							tile_id = other.tile_id
-							tile_col = other.tile_col
-							tile_row = other.tile_row
-							targ_id = other.targ_id
-							global.tile_letter[tile_id] = id
+	//					with (instance_create_depth(x,y,depth,obj_tile_letter)) {
+	//						tile_id = other.tile_id
+	//						tile_col = other.tile_col
+	//						tile_row = other.tile_row
+	//						targ_id = other.targ_id
+	//						global.tile_letter[tile_id] = id
 							
 
-							spawn_slam = 2+(-0.5*tile_col*(1/global.game_grid_size))+(-0.5*tile_row*(1/global.game_grid_size))
+	//						spawn_slam = 2+(-0.5*tile_col*(1/global.game_grid_size))+(-0.5*tile_row*(1/global.game_grid_size))
 				
-							image_angle = (-20+random(40))		
-							//my_letter_str = string_upper(global.letters_bag[tile_id])
-							//take first array entry
-							my_letter_str = array_shift(global.letters_bag)
-							//replace letters array end
-							array_push(global.letters_bag,my_letter_str)
+	//						image_angle = (-20+random(40))		
+	//						//my_letter_str = string_upper(global.letters_bag[tile_id])
+	//						//take first array entry
+	//						my_letter_str = array_shift(global.letters_bag)
+	//						//replace letters array end
+	//						array_push(global.letters_bag,my_letter_str)
 							
-							am_set = 1
+	//						am_set = 1
 				
-							for (var l = 1; l <= array_length(global.letter_data); ++l) {
-							   if my_letter_str = global.letter_data[l,1] {
-									my_letter_num = l
-									l = array_length(global.letter_data)
-								}
-							}
-						}
+	//						for (var l = 1; l <= array_length(global.letter_data); ++l) {
+	//						   if my_letter_str = global.letter_data[l,1] {
+	//								my_letter_num = l
+	//								l = array_length(global.letter_data)
+	//							}
+	//						}
+	//					}
 						
-						//now destroy the original one
-						instance_destroy()
-					}
-				}
+	//					//now destroy the original one
+	//					instance_destroy()
+	//				}
+	//			}
 				
-				//assign all tiles to corresponding space
-				with (obj_tile_letter) {	
-					tile_id = targ_id.tile_id
-					global.letters_grid[tile_id] = my_letter_str
-					global.tile_letter[tile_id] = id
-				}
+	//			//assign all tiles to corresponding space
+	//			with (obj_tile_letter) {	
+	//				tile_id = targ_id.tile_id
+	//				global.letters_grid[tile_id] = my_letter_str
+	//				global.tile_letter[tile_id] = id
+	//			}
 
-				scr_update_copy_code()
+	//			scr_update_copy_code()
 				
-				selected_word_is_valid = 0//reset
+	//			selected_word_is_valid = 0//reset
 				
 			
-			}
-		}
+	//		}
+	//	}
 		
-		//back
-		if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.15)-(256*0.2*_tscl),(global.sh+(-30*global.pr))-(256*0.08*_tscl),(global.sw*0.15)+(256*0.2*_tscl),(global.sh+(-30*global.pr))+(256*0.08*_tscl)) {
-			global.game_phase = 1
-			selected_word_length = 0
-			selected_word_str = ""	
-			with (obj_tile_letter) {
-				am_part_of_secret_word = 0	
-			}
-		}
+	//	//back
+	//	if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.15)-(256*0.2*_tscl),(global.sh+(-30*global.pr))-(256*0.08*_tscl),(global.sw*0.15)+(256*0.2*_tscl),(global.sh+(-30*global.pr))+(256*0.08*_tscl)) {
+	//		global.game_phase = 1
+	//		selected_word_length = 0
+	//		selected_word_str = ""	
+	//		with (obj_tile_letter) {
+	//			am_part_of_secret_word = 0	
+	//		}
+	//	}
 		
 
 		
-	} else if global.game_phase = 3 && global.show_any_modal_fd < 0.5 { //
+	//} else 
+	
+	if global.game_phase = 3 && global.show_any_modal_fd < 0.5 { //
 		
 		//back to rearrange
 		/*if point_in_rectangle(device_mouse_x_to_gui(0)*global.pr,device_mouse_y_to_gui(0)*global.pr,(global.sw*0.15)-(256*0.2*_tscl),(global.sh+(-30*global.pr))-(256*0.08*_tscl),(global.sw*0.15)+(256*0.2*_tscl),(global.sh+(-30*global.pr))+(256*0.08*_tscl)) {
@@ -873,6 +971,8 @@ if mouse_check_button_pressed(mb_left) {
 						level_status = LEVEL_STATUS_Started
 						if puzzle_is_daily = 1 {
 							stat_d_total_started = string(real(stat_d_total_started)+1)
+						} else if puzzle_is_community = 1 {
+							stat_c_total_started = string(real(stat_c_total_started)+1)	
 						} else {
 							stat_u_total_started = string(real(stat_u_total_started)+1)	
 						}
@@ -933,12 +1033,15 @@ if mouse_check_button_pressed(mb_left) {
 				
 				var _hint_used_now = 0
 				
-				if global.game_hints_used = 1 {
-					global.game_hint_length_used = 1	
+				
+				if global.game_hints_used = 0 {
+					global.game_hint_length_used = 1
+					global.game_hints_used += 1
 					_hint_used_now = 1
 				} else {
 					if global.game_hint_letter_used < string_length(secret_word_str) {
 						global.game_hint_letter_used += 1
+						global.game_hints_used += 1
 						_hint_used_now = 1
 					}
 				}
@@ -946,7 +1049,7 @@ if mouse_check_button_pressed(mb_left) {
 				if _hint_used_now = 1 {
 					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				
-					global.game_hints_used += 1
+					
 				
 					show_debug_message("HINT! "+string(global.game_hints_used))
 							
@@ -954,22 +1057,34 @@ if mouse_check_button_pressed(mb_left) {
 						level: global.game_hints_used,
 					};
 					GoogHit("hint_used",_event_struct)	
+					
 				}
 				
 				
 				with (obj_ctrlp) {
+					
 					//if state of this puzzle is not started, update state AND user profile stat
 					if level_status <= LEVEL_STATUS_NotStarted {
 						level_status = LEVEL_STATUS_Started
-						api_save_state(postId,{level_status},undefined)
+						//api_save_state(postId,{level_status},undefined)
+						
 						if puzzle_is_daily = 1 {
 							stat_d_total_started = string(real(stat_d_total_started)+1)
 							api_save_profile({stat_d_total_started},undefined)
+						} else if puzzle_is_community = 1 {
+							stat_c_total_started = string(real(stat_c_total_started)+1)
+							api_save_profile({stat_c_total_started},undefined)
 						} else {
 							stat_u_total_started = string(real(stat_u_total_started)+1)
 							api_save_profile({stat_u_total_started},undefined)
 						}
 					}
+					
+					
+					score_time = string(global.game_timer)
+					score_hints = string(global.game_hints_used)
+					
+					api_save_state(postId,{score_hints,score_time,level_status},undefined)
 				}
 				
 			}
@@ -1109,7 +1224,7 @@ if selecting >= 1 {
 					am_selected_start = 0
 					am_selected_end = 0
 					am_selected_num = 0
-					if global.game_phase = 2 && _valid_guess = 1 {
+					if global.game_phase = 2 { //&& _valid_guess = 1 {
 						am_part_of_secret_word = 1
 					}
 				}	
@@ -1211,15 +1326,22 @@ if mouse_check_button_released(mb_left) {//|| _too_far_trigger_release = 1 {
 								//if state of this puzzle is not started, update state AND user profile stat
 								if level_status <= LEVEL_STATUS_NotStarted {
 									level_status = LEVEL_STATUS_Started
-									api_save_state(postId,{level_status},undefined)
+									//api_save_state(postId,{level_status},undefined)
 									if puzzle_is_daily = 1 {
 										stat_d_total_started = string(real(stat_d_total_started)+1)
 										api_save_profile({stat_d_total_started},undefined)
+									} else if puzzle_is_community = 1 {
+										stat_c_total_started = string(real(stat_c_total_started)+1)
+										api_save_profile({stat_c_total_started},undefined)
 									} else {
 										stat_u_total_started = string(real(stat_u_total_started)+1)
 										api_save_profile({stat_u_total_started},undefined)
 									}
 								}
+								
+								score_time = string(global.game_timer)
+								score_guesses = string(real(score_guesses)+1)
+								api_save_state(postId,{score_guesses,score_time,level_status},undefined)
 							}
 							
 							with (obj_tile_letter) {
@@ -1306,14 +1428,14 @@ dragging_fd = lerp(dragging_fd,dragging,0.2)
 
 
 
-if keyboard_check_pressed(vk_space) {
-	game_finished = !game_finished
+//if keyboard_check_pressed(vk_space) {
+//	game_finished = !game_finished
 	
-	if game_finished = 1 {
-		game_finished_delay = game_finished_delay_max
-		game_finished_flash = 1
-	}
-}
+//	if game_finished = 1 {
+//		game_finished_delay = game_finished_delay_max
+//		game_finished_flash = 1
+//	}
+//}
 
 if game_finished = 1 {
 	if game_finished_delay > 0 {
@@ -1338,6 +1460,14 @@ if mouse_check_button_released(mb_left) {
 	hovered_over_changer = 0
 	hovered_over_changer_timey = 0
 }
+
+
+if global.browser_loading || global.browser_pending_last {
+	archive_loading_fd = lerp(archive_loading_fd,1,0.4)	
+} else {
+	archive_loading_fd = lerp(archive_loading_fd,0,0.4)	
+}
+
 
 
 

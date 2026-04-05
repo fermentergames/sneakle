@@ -22,6 +22,14 @@ if global.is_reddit = 1 {
 			stat_d_total_time = _profile.stat_d_total_time;
 			stat_d_total_guesses = _profile.stat_d_total_guesses;
 			stat_d_total_hints = _profile.stat_d_total_hints;
+			
+			stat_c_total_started = _profile.stat_d_total_started;
+			stat_c_total_finished = _profile.stat_d_total_finished;
+			stat_c_total_gaveup = _profile.stat_d_total_gaveup;
+			stat_c_total_score = _profile.stat_d_total_score;
+			stat_c_total_time = _profile.stat_d_total_time;
+			stat_c_total_guesses = _profile.stat_d_total_guesses;
+			stat_c_total_hints = _profile.stat_d_total_hints;
 
 			stat_u_total_started = _profile.stat_u_total_started;
 			stat_u_total_finished = _profile.stat_u_total_finished;
@@ -44,7 +52,7 @@ if global.is_reddit = 1 {
 			
 			load_profile_complete = 1
 				
-			if real(stat_d_total_started) + real(stat_u_total_started) <= 0 {
+			if real(stat_d_total_started) + real(stat_u_total_started) + real(stat_c_total_started) <= 0 {
 				global.show_howto = 1 //temp tutorial	
 			}
 		}
@@ -65,6 +73,13 @@ if global.is_reddit = 1 {
 					stat_d_total_time,
 					stat_d_total_guesses,
 					stat_d_total_hints,
+					stat_c_total_started,
+					stat_c_total_finished,
+					stat_c_total_gaveup,
+					stat_c_total_score,
+					stat_c_total_time,
+					stat_c_total_guesses,
+					stat_c_total_hints,
 					stat_u_total_started,
 					stat_u_total_finished,
 					stat_u_total_gaveup,

@@ -13,9 +13,30 @@ if (live_call()) return live_result;
 		show_debug_message("query string array created")
 		show_debug_message(p_string)
 		
-		if global.loadBoard != "" {//&& global.loadSecret != "" {
-			global.game_loading = 0
-			scr_board_init()
+		if global.is_reddit = 1 {
+			show_debug_message("do something in reddit now")
+			if global.launch_into_create_mode = "true" {
+				global.game_loading = 0
+				global.am_creating = 1
+				show_debug_message("launch create mode")
+				
+				global.game_grid_size = 4
+				global.game_grid_size_sqr = sqr(global.game_grid_size)
+				//global.am_creating = 1
+				var _event_struct = { //
+				   screen_name: "Create from reddit launch"+string(global.game_grid_size),
+				};
+				GoogHit("screen_view",_event_struct)
+				
+				randomize()
+				scr_board_init()
+				
+			}
+		} else {
+			if global.loadBoard != "" {//&& global.loadSecret != "" {
+				global.game_loading = 0
+				scr_board_init()
+			}
 		}
 		
 
@@ -53,10 +74,37 @@ if (live_call()) return live_result;
 		
 		show_debug_message("Reddit query string array created")
 		
-		if global.loadBoard != "" {//&& global.loadSecret != "" {
-			global.game_loading = 0
+		if global.game_loading >= 1 { //check if already done loading some other way
+			if global.loadBoard != "" {//&& global.loadSecret != "" {
+				global.game_loading = 0
+				
+				if global.loadBoard = "THISISCREATEPOST" {
+					show_debug_message("global.loadBoard = 'THISISCREATEPOST', so launch_into_create_mode!")
+					global.launch_into_create_mode = "true"
+				}
+				
+				if global.launch_into_create_mode = "true" {
+					global.game_loading = 0
+					global.am_creating = 1
+					show_debug_message("launch create mode from THISISCREATEPOST post")
+				
+					global.game_grid_size = 4
+					global.game_grid_size_sqr = sqr(global.game_grid_size)
+					//global.am_creating = 1
+					var _event_struct = { //
+					   screen_name: "Create from reddit launch"+string(global.game_grid_size),
+					};
+					GoogHit("screen_view",_event_struct)
+				
+					randomize()
+					scr_board_init()
+				
+				}
 			
-			scr_board_init()
+				if string(global.launch_into_create_mode) != "true" {
+					scr_board_init()
+				}
+			}
 		}
 		
 
@@ -91,6 +139,9 @@ if (live_call(argument0)) return live_result;
 		}
 		if returnStr[0] = "loadSecret" {
 			global.loadSecret = returnStr[2]
+		}
+		if returnStr[0] = "launchCreate" {
+			global.launch_into_create_mode = returnStr[2]
 		}
 		
 		

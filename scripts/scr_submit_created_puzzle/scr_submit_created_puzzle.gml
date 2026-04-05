@@ -21,15 +21,19 @@ function scr_submit_created_puzzle(_title) {
 	with (obj_ctrlp) {
 		if 1=1 {//global.is_reddit = 1 {
 			
+			global.show_submitting_post = 1
+			
 			var _username = string(obj_ctrlp.username)
 			var _puzzle_data = string(global.current_copy_url)
+			var _nonstandard = string(obj_ctrl.nonstandard_used)
 			
 			show_debug_message(_username)
 			show_debug_message(_puzzle_data)
+			show_debug_message(_nonstandard)
 			
 			//
 			
-			api_create_user_post(_username, _title, _puzzle_data, function(_status, _ok, _result) {
+			api_create_user_post(_username, _title, _puzzle_data, _nonstandard, function(_status, _ok, _result) {
 				
 				
 				show_debug_message("api_create_user_post callback happening")

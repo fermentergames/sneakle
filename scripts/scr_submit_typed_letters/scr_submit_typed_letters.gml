@@ -41,12 +41,24 @@ function scr_submit_typed_letters(_letters) {
 			screen_name: "NewLetters"+string(global.game_grid_size),
 		};
 		GoogHit("screen_view",_event_struct)
-				
+		
+		global.am_generate_random = 0
 		global.loadSecret = ""
 		global.loadBoard = _letters
 		global.current_copy_code = ""
 		global.current_copy_link = ""
 		scr_update_copy_code()
+		
+		//var sqrd_l = 1
+		//var _keyboard_string_l = string_length(_letters)
+		//if _keyboard_string_l >= 4 {
+		//	sqrd_l = floor(sqrt(_keyboard_string_l))
+		//}
+		
+		//if sqrd_l >= 2 {
+		//global.game_grid_size = sqrd_l
+		//global.game_grid_size_sqr = sqr(global.game_grid_size)
+		//}
 				
 		scr_board_init()
 

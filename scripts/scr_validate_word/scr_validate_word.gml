@@ -15,6 +15,8 @@ function scr_validate_word() {
 	}
 	
 	
+	
+	
 	//show_debug_message(selected_word_array)
 	
 	
@@ -57,6 +59,12 @@ function scr_validate_word() {
 			var word = string_lower(selected_word_str)
 			if (global.dictionary.check(word)) {
 				//show_debug_message("\"" + word + "\" is a valid English word.");
+				if global.am_creating >= 1 {
+					if (global.dictionary_simple.check(word)) {
+						selected_word_is_valid = 2 //extra valid if checked with simple dictionary
+					}
+				}
+				
 			} else {
 				//show_debug_message("\"" + word + "\" is not a valid English word.");
 				_valid_guess = 0
@@ -69,10 +77,41 @@ function scr_validate_word() {
 				
 	}
 	
-	//if _valid_guess = 1 {
-		//
+	nonstandard_used = 0 //reset
+	
+	if _valid_guess = 0 {
+		if nonstandard_allowed = 1 {
+			if selected_word_length >= 2 {
+				_valid_guess = 1
+				nonstandard_used = 1
+				selected_word_is_valid = 3 //
+			}
+		}
+	}
+	
+	if _valid_guess = 0 {
+		if selected_word_length >= 2 {
+			if real(obj_ctrlp.postData_nonStandard) >= 1 {
+				_valid_guess = 1
+				selected_word_is_valid = 3
+			}
+		}
+	}
+	
+	//make sure nonstandard_used tag gets added even if allowed is off
+	if nonstandard_used <= 0 {
 		
-	//}
+		if selected_word_is_valid = 1 { //only 1 not in simple dict
+			nonstandard_used = 1
+		}
+		if selected_word_length <= 4 { //needs to be >= 5
+			nonstandard_used = 1
+		}
+		//if string_ends_with(string(selected_word_str),"S") {
+		//	nonstandard_used = 1
+		//}
+	}
+
 	
 	return _valid_guess;
 }

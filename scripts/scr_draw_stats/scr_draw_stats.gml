@@ -1,5 +1,5 @@
 ///
-function scr_draw_stats(_is_daily,_panel_mid_y,_scl,_alp){
+function scr_draw_stats(_which_stats,_panel_mid_y,_scl,_alp){
 	if (live_call(argument0,argument1,argument2,argument3)) return live_result;
 	
 	var _panel_bottom_y = gui_panel_bottom_y
@@ -11,6 +11,10 @@ function scr_draw_stats(_is_daily,_panel_mid_y,_scl,_alp){
 	var _tscl = _scl
 	
 	var _c_white = c_white
+	if global.light_mode = 1 {
+		_c_white = c_black
+		_alp *= 1.2
+	}
 	
 	draw_set_halign(fa_center)
 	draw_set_valign(fa_middle)
@@ -24,7 +28,7 @@ function scr_draw_stats(_is_daily,_panel_mid_y,_scl,_alp){
 		
 		
 	var _stat_h = 50
-	var _stat_y = 0.7+((1-game_finished_fd)*-0.2)
+	var _stat_y = 0.7//+((1-game_finished_fd)*-0.2)
 		
 	var _stat_sw = 225
 	var _stat_sw_1 = 225
@@ -45,8 +49,10 @@ function scr_draw_stats(_is_daily,_panel_mid_y,_scl,_alp){
 	draw_set_alpha(0.5*_alp)
 	draw_set_font(fnt_main)
 	var _stats_title_str = "- Your Daily Stats -"
-	if _is_daily != 1 {
+	if _which_stats = STATS_UNLIMITED {
 		_stats_title_str = "- Your Unlimited Stats -"
+	} else if _which_stats = STATS_COMMUNITY {
+		_stats_title_str = "- Your Community Stats -"
 	}
 		
 		
@@ -60,18 +66,24 @@ function scr_draw_stats(_is_daily,_panel_mid_y,_scl,_alp){
 	_stat_str[5][1] = "avg score"
 
 
-	if _is_daily != 1 {
+	if _which_stats = STATS_UNLIMITED {
 		_stat_str[1][2] = obj_ctrlp.stat_u_total_started //"25"
 		_stat_str[2][2] = obj_ctrlp.stat_u_total_finished_perc //"95%"
 		_stat_str[3][2] = obj_ctrlp.stat_u_total_guesses_avg //"3.2"
 		_stat_str[4][2] = obj_ctrlp.stat_u_total_time_avg //"1:24"
 		_stat_str[5][2] = obj_ctrlp.stat_u_total_score_avg //"652"
-	} else {
+	} else if _which_stats = STATS_DAILY {
 		_stat_str[1][2] = obj_ctrlp.stat_d_total_started //"25"
 		_stat_str[2][2] = obj_ctrlp.stat_d_total_finished_perc //"95%"
 		_stat_str[3][2] = obj_ctrlp.stat_d_total_guesses_avg //"3.2"
 		_stat_str[4][2] = obj_ctrlp.stat_d_total_time_avg //"1:24"
 		_stat_str[5][2] = obj_ctrlp.stat_d_total_score_avg //"652"
+	} else if _which_stats = STATS_COMMUNITY {
+		_stat_str[1][2] = obj_ctrlp.stat_c_total_started //"25"
+		_stat_str[2][2] = obj_ctrlp.stat_c_total_finished_perc //"95%"
+		_stat_str[3][2] = obj_ctrlp.stat_c_total_guesses_avg //"3.2"
+		_stat_str[4][2] = obj_ctrlp.stat_c_total_time_avg //"1:24"
+		_stat_str[5][2] = obj_ctrlp.stat_c_total_score_avg //"652"
 	}
 			
 		

@@ -31,31 +31,34 @@ function scr_update_copy_code(){
 	global.current_copy_code += "_"
 	global.current_copy_url += "&loadSecret="
 	
-	for (var l = 0; l < obj_ctrl.secret_word_length; ++l) {
-		global.current_copy_code += string(obj_ctrl.secret_word_array[l])
-		global.current_copy_url += string(obj_ctrl.secret_word_array[l])
-		queryStr[1] += string(obj_ctrl.secret_word_array[l])
+	if global.game_timer_meta > 10 {
+	
+		for (var l = 0; l < obj_ctrl.secret_word_length; ++l) {
+			global.current_copy_code += string(obj_ctrl.secret_word_array[l])
+			global.current_copy_url += string(obj_ctrl.secret_word_array[l])
+			queryStr[1] += string(obj_ctrl.secret_word_array[l])
 		
-		if l < obj_ctrl.secret_word_length-1 {
-			global.current_copy_code += "-"
-			global.current_copy_url += "-"
-			queryStr[1] += "-"
+			if l < obj_ctrl.secret_word_length-1 {
+				global.current_copy_code += "-"
+				global.current_copy_url += "-"
+				queryStr[1] += "-"
+			}
+		
+		
 		}
-		
-		
+	
+
+		show_debug_message("global.current_copy_code:")
+		show_debug_message(global.current_copy_code)
+	
+		show_debug_message("global.current_copy_url:")
+		show_debug_message(global.current_copy_url)
+	
+
+		//js
+		changeQuery("loadBoard",string(queryStr[0]),"loadSecret",queryStr[1])
+	
 	}
-	
-
-	
-	show_debug_message("global.current_copy_code:")
-	show_debug_message(global.current_copy_code)
-	
-	show_debug_message("global.current_copy_url:")
-	show_debug_message(global.current_copy_url)
-	
-
-	//js
-	changeQuery("loadBoard",string(queryStr[0]),"loadSecret",queryStr[1])
 	
 
 	

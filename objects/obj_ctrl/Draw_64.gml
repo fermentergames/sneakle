@@ -79,7 +79,11 @@ if global.game_phase != 0 { //&& obj_ctrlp.profile_joined >= 1 {
 		_nav_logo_col = _highlight_blue
 		_nav_logo_alp = 0.9
 	}
-	draw_sprite_ext(spr_sneakle_logo,0,(global.sw*0.0)+(20*_scl),_nav_mid_y,0.08*_tscl,0.08*_tscl,0,_nav_logo_col,_nav_logo_alp) 
+	//draw_sprite_ext(spr_sneakle_logo,0,(global.sw*0.0)+(20*_scl),_nav_mid_y,0.08*_tscl,0.08*_tscl,0,_nav_logo_col,_nav_logo_alp*0.2) 
+
+	draw_sprite_ext(spr_sneakle_logo,0,(global.sw*0.0)+(32*_scl),_nav_mid_y,0.07*_tscl,0.07*_tscl,0,_nav_logo_col,_nav_logo_alp) 
+
+	draw_sprite_ext(spr_btn_ham,0,(global.sw*0)+((0)*-_scl),_nav_mid_y,0.25*_scl,0.25*_scl,0,_c_white,1)
 
 }
 
@@ -87,47 +91,150 @@ if global.game_phase != 0 { //&& obj_ctrlp.profile_joined >= 1 {
 
 
 //join r/sneakle btn
-if 1=0 {
+if 1=1 {
 	
 	//obj_ctrlp.profile_joined = 0
 	
-	if obj_ctrlp.profile_joined <= 0 {
+	if real(obj_ctrlp.profile_joined) <= 0 && global.am_creating = 0 && global.game_loading <= 0 {
+		
+		//1
+		
+		join_btn_on[1] = 0
+		if game_finished_fd2 <= 0.1 {
+			join_btn_on[1] = 1
+		}
+		join_btn_pos[1,0] = (global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl)
+		join_btn_pos[1,1] = _nav_mid_y+((38+(12*game_finished_fd2))*_scl)
+		join_btn_scl[1] = 1
+		
+		if global.game_phase = 0 {
+			join_btn_pos[1,0] = (global.sw*0)+(10*_scl)+((55)*_scl)
+			join_btn_pos[1,1] = _nav_mid_y+((2)*_scl)
+			join_btn_scl[1] = 1.5
+		}
 	
 		var _join_si = 0
+		var _join_alp = 1
+		
+		var _glow_amt = 0//game_finished_fd2
+		if global.game_phase = 0 {
+			_glow_amt = 1	
+		}
+		
+		if obj_ctrlp.profile_joined = "-0.1" {
+			_join_alp *= 0.4
+			_glow_amt *= 0.1
+		}
 	
-		if game_finished_fd2 > 0 {
+		if _glow_amt > 0 {
 			_join_si = 1
 			gpu_set_blendmode(bm_add)
-			draw_sprite_ext(spr_circ_grad512,0,(global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+(12*game_finished_fd2))*_scl),0.8*_scl*(0.5)*pulse_5*(1+(0.1*-pulse_1*game_finished_fd2)),0.4*_scl*(0.5)*pulse_5*(1+(0.1*pulse_1*game_finished_fd2)),0,_highlight_blue,1*game_finished_fd2*pulse_5)
+			draw_sprite_ext(spr_circ_grad512,0,join_btn_pos[1,0],join_btn_pos[1,1],0.8*_scl*(0.5)*pulse_5*(1+(0.1*-pulse_1*_glow_amt)),0.4*_scl*(0.5)*pulse_5*(1+(0.1*pulse_1*_glow_amt)),0,_highlight_blue,1*_glow_amt*pulse_5)
 			//draw_sprite_ext(spr_join_sneakle,1,(global.sw*0.0)+(20*_scl)+(47*_scl),_nav_mid_y+(0*_scl),0.3*_scl*(1)*pulse_5,0.3*_scl*(1)*pulse_5,0,c_white,1*game_finished_fd2*pulse_5)
 	
-			draw_sprite_ext(spr_join_sneakle,2,(global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+(12*game_finished_fd2))*_scl),(0.22+(0.1*game_finished_fd2))*_scl*(1.1+(0.03*-pulse_1*game_finished_fd2)),(0.22+(0.1*game_finished_fd2))*_scl*(1.1+(0.03*pulse_1*game_finished_fd2)),0,make_colour_hsv(25,200,255),0.5*game_finished_fd2)
+			draw_sprite_ext(spr_join_sneakle,2,join_btn_pos[1,0],join_btn_pos[1,1],(0.22+(0.1*_glow_amt))*_scl*(1.1+(0.03*-pulse_1*_glow_amt)),(0.22+(0.1*_glow_amt))*_scl*(1.1+(0.03*pulse_1*_glow_amt)),0,make_colour_hsv(25,200,255),0.5*_glow_amt)
 
 	
 			gpu_set_blendmode(bm_normal)
 		}
 
-		draw_sprite_ext(spr_join_sneakle,_join_si,(global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+(12*game_finished_fd2))*_scl),(0.22+(0.1*game_finished_fd2))*_scl*(1+(0.05*pulse_1*game_finished_fd2)),(0.22+(0.1*game_finished_fd2))*_scl*(1+(0.05*-pulse_1*game_finished_fd2)),0,c_white,0.8+game_finished_fd2)
+		draw_sprite_ext(spr_join_sneakle,_join_si,join_btn_pos[1,0],join_btn_pos[1,1],(0.22+(0.1*game_finished_fd2))*_scl*(1+(0.05*pulse_1*game_finished_fd2))*join_btn_scl[1],(0.22+(0.1*game_finished_fd2))*_scl*(1+(0.05*-pulse_1*game_finished_fd2))*join_btn_scl[1],0,c_white,(0.8*_join_alp)-(2*game_finished_fd2))
 
-		if game_finished_fd2 > 0 {
+		if _glow_amt > 0 {
 			gpu_set_blendmode(bm_add)
-			draw_sprite_ext(spr_join_sneakle,2,(global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+(12*game_finished_fd2))*_scl),(0.22+(0.1*game_finished_fd2))*_scl*(1.1+(0.03*-pulse_1*game_finished_fd2)),(0.22+(0.1*game_finished_fd2))*_scl*(1.1+(0.03*pulse_1*game_finished_fd2)),0,make_colour_hsv(30,250,255),0.2*pulse_1*game_finished_fd2)
+			draw_sprite_ext(spr_join_sneakle,2,join_btn_pos[1,0],join_btn_pos[1,1],(0.22+(0.1*_glow_amt))*_scl*(1.1+(0.03*-pulse_1*_glow_amt)),(0.22+(0.1*_glow_amt))*_scl*(1.1+(0.03*pulse_1*_glow_amt)),0,make_colour_hsv(30,250,255),0.2*pulse_1*_glow_amt)
+			gpu_set_blendmode(bm_normal)
+		}
+		
+		
+		//2
+		
+		join_btn_on[2] = 0
+		if game_finished_fd > 0.1 {
+			join_btn_on[2] = 1
+		}
+		join_btn_pos[2,0] = (global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd))*_scl)
+		join_btn_pos[2,1] = gui_footer_mid_y+((0+(-12*game_finished_fd))*_scl)
+		
+		var _join_si = 0
+		_glow_amt = 1
+		_join_alp = 1
+		
+		if obj_ctrlp.profile_joined = "-0.1" {
+			_join_alp *= 0.4
+			_glow_amt *= 0.1
+		}
+	
+		if game_finished_fd > 0 {
+			_join_si = 1
+			gpu_set_blendmode(bm_add)
+			draw_sprite_ext(spr_circ_grad512,0,join_btn_pos[2,0],join_btn_pos[2,1],0.8*_scl*(0.5)*pulse_5*(1+(0.1*-pulse_1*game_finished_fd)),0.4*_scl*(0.5)*pulse_5*(1+(0.1*pulse_1*game_finished_fd)),0,_highlight_blue,_glow_amt*game_finished_fd*pulse_5)
+			//draw_sprite_ext(spr_join_sneakle,1,(global.sw*0.0)+(20*_scl)+(47*_scl),_nav_mid_y+(0*_scl),0.3*_scl*(1)*pulse_5,0.3*_scl*(1)*pulse_5,0,c_white,1*game_finished_fd*pulse_5)
+	
+			draw_sprite_ext(spr_join_sneakle,2,join_btn_pos[2,0],join_btn_pos[2,1],(0.22+(0.1*game_finished_fd))*_scl*(1.1+(0.03*-pulse_1*game_finished_fd)),(0.22+(0.1*game_finished_fd))*_scl*(1.1+(0.03*pulse_1*game_finished_fd)),0,make_colour_hsv(25,200,255),0.5*_glow_amt*game_finished_fd)
+
+	
+			gpu_set_blendmode(bm_normal)
+		}
+
+		draw_sprite_ext(spr_join_sneakle,_join_si,join_btn_pos[2,0],join_btn_pos[2,1],(0.22+(0.1*game_finished_fd))*_scl*(1+(0.05*pulse_1*game_finished_fd)),(0.22+(0.1*game_finished_fd))*_scl*(1+(0.05*-pulse_1*game_finished_fd)),0,c_white,-0.5+(2*game_finished_fd*_join_alp))
+
+		if game_finished_fd > 0 {
+			gpu_set_blendmode(bm_add)
+			draw_sprite_ext(spr_join_sneakle,2,join_btn_pos[2,0],join_btn_pos[2,1],(0.22+(0.1*game_finished_fd))*_scl*(1.1+(0.03*-pulse_1*game_finished_fd)),(0.22+(0.1*game_finished_fd))*_scl*(1.1+(0.03*pulse_1*game_finished_fd)),0,make_colour_hsv(30,250,255),0.2*_glow_amt*pulse_1*game_finished_fd)
 			gpu_set_blendmode(bm_normal)
 		}
 	
 	
+		//
 	
-		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+	
+		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 && global.game_timer > 10 {
 			
-			if scr_mouse_over_button((global.sw*1)+(-10*_scl)+((-37+(-15*game_finished_fd2))*_scl),_nav_mid_y+((38+3+(12*game_finished_fd2))*_scl),
-			(0.22+(0.1*game_finished_fd2))*_scl,0.085*_scl) {
-				if obj_ctrlp.profile_joined <= 0 {
+			var _join_clicked = 0
+			
+			for (var i = 1; i <= 2; ++i) {
+				if join_btn_on[i] >= 1 {
+					if scr_mouse_over_button(
+					join_btn_pos[i,0],
+					join_btn_pos[i,1],
+					(0.22+(0.1*game_finished_fd2))*_scl,0.085*_scl
+					) {
+						_join_clicked = 1
+					}
+				}
+			}
+			
+			
+			if _join_clicked = 1 {
+				
+				if real(obj_ctrlp.profile_joined) <= 0 {
 					show_debug_message("JOIN CLICKED")
 					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				
 					with (obj_ctrlp) {
-						profile_joined = 1
-						api_save_profile({profile_joined},undefined)
+						
+						profile_joined = "-0.1"
+						
+						api_join_subreddit(function(_status, _ok, _result) {
+							try {
+								show_debug_message("api_join_subreddit SUCCESS!")
+								
+								//now update profile_joined for user
+								profile_joined = "1"
+								api_save_profile({profile_joined},undefined)
+								
+							}
+							catch (_ex) {
+								profile_joined = "0"
+								show_debug_message("api_join_subreddit FAILED!")
+								show_debug_message(_ex)
+								//alarm[1] = 120; //try again
+							}
+	
+						});
+						
+						
 					}
 			
 				}
@@ -168,11 +275,11 @@ if global.game_phase = 0 {
 		//obj_ctrlp.postData_dailyID = -1
 		
 		var _daily_id = string(obj_ctrlp.postData_dailyID)
-		var _daily_btn_si = 4
-		if _daily_id = "-1" {
-			_daily_id = "-"
-			_daily_btn_si = 3
-		}
+		var _daily_btn_si = 0
+		//if _daily_id = "-1" {
+		//	_daily_id = "-"
+		//	_daily_btn_si = 3
+		//}
 		
 		
 		draw_set_alpha(0.9*ctrl_fd)
@@ -190,56 +297,61 @@ if global.game_phase = 0 {
 
 		//gpu_set_blendmode(bm_normal)
 		
-		draw_sprite_ext(spr_btn_6,_daily_btn_si,(global.sw*0.5),0+(220*_scl)+(110*_scl*0)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_6,_daily_btn_si,(global.sw*0.5),0+(220*_scl)+(110*_scl*0),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_6,_daily_btn_si,(global.sw*0.5),0+(210*_scl)+(110*_scl*0)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_6,_daily_btn_si,(global.sw*0.5),0+(210*_scl)+(110*_scl*0),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
-		draw_set_font(fnt_main)
-		draw_set_alpha(0.9*ctrl_fd)
-		if _daily_id != "-" {
-			draw_set_color(c_white)
-			draw_text_transformed(global.sw/2,0+(220*_scl)+(110*_scl*0)+(15*_scl),_daily_id,0.17*_scl,0.17*_scl,0)
-		}
+		//draw_set_font(fnt_main)
+		//draw_set_alpha(0.9*ctrl_fd)
+		//if _daily_id != "-" {
+		//	draw_set_color(c_white)
+		//	draw_text_transformed(global.sw/2,0+(210*_scl)+(110*_scl*0)+(15*_scl),_daily_id,0.17*_scl,0.17*_scl,0)
+		//}
 		
 
 		
 		draw_set_color(c_white)
 		
+		//archive
+		draw_sprite_ext(spr_btn_6,1,(global.sw*0.5),0+(210*_scl)+(80*_scl*1)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_6,1,(global.sw*0.5),0+(210*_scl)+(80*_scl*1),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
-		//si 2 disabled, si 5 when ready
-		draw_sprite_ext(spr_btn_6,5,(global.sw*0.5),0+(220*_scl)+(110*_scl*1)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_6,5,(global.sw*0.5),0+(220*_scl)+(110*_scl*1),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		
+		
+		//create
+		draw_sprite_ext(spr_btn_6,2,(global.sw*0.5),0+(210*_scl)+(80*_scl*2)+(6*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_6,2,(global.sw*0.5),0+(210*_scl)+(80*_scl*2),0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
 		
 		//sep line
-		draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(220*_scl)+(110*_scl*1)+(80*_scl),0.65*_scl,0.004*_scl,0,_c_white,0.2*ctrl_fd) 
+		draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(210*_scl)+(80*_scl*2)+(70*_scl),0.65*_scl,0.004*_scl,0,_c_white,0.2*ctrl_fd) 
 	
 	
 		draw_set_alpha(0.6*ctrl_fd)
 		draw_set_font(fnt_main)
 		draw_set_color(_c_white)
-		draw_text_transformed(global.sw/2,(220*_scl)+(110*_scl*1)+(130*_scl),"U N L I M I T E D",0.14*_tscl,0.14*_tscl,0)
+		draw_text_transformed(global.sw/2,(210*_scl)+(80*_scl*2)+(110*_scl),"U N L I M I T E D",0.14*_tscl,0.14*_tscl,0)
 
 		draw_set_alpha(0.9*ctrl_fd)
 		draw_set_color(c_white)
 		
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl)	,	0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl)	,		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-0*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl),		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl),		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl)+(6*_scl)	,		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl)+(6*_scl)	,	0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl)+(6*_scl)	,		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-0*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl)+(6*_scl),		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl)+(6*_scl),		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl)+(6*_scl)	,		0.25*_scl,0.25*_scl,0,_c_gray,1*ctrl_fd) 
 		
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),	0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-0*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
-		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),	0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(-0*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
+		draw_sprite_ext(spr_btn_7,0,(global.sw*0.5)+(160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),		0.25*_scl,0.25*_scl,0,c_white,1*ctrl_fd) 
 		
 	
-		draw_text_transformed((global.sw*0.5)+(-160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),"3x3",0.14*_tscl,0.14*_tscl,0)
-		draw_text_transformed((global.sw*0.5)+(-80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),	"4x4",0.14*_tscl,0.14*_tscl,0)
-		draw_text_transformed((global.sw*0.5)+(-0*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),	"5x5",0.14*_tscl,0.14*_tscl,0)
-		draw_text_transformed((global.sw*0.5)+(80*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),	"6x6",0.14*_tscl,0.14*_tscl,0)
-		draw_text_transformed((global.sw*0.5)+(160*_scl),0+(220*_scl)+(130*_scl*1)+(180*_scl),	"7x7",0.14*_tscl,0.14*_tscl,0)
+		draw_text_transformed((global.sw*0.5)+(-160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),"3x3",0.14*_tscl,0.14*_tscl,0)
+		draw_text_transformed((global.sw*0.5)+(-80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),	"4x4",0.14*_tscl,0.14*_tscl,0)
+		draw_text_transformed((global.sw*0.5)+(-0*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),	"5x5",0.14*_tscl,0.14*_tscl,0)
+		draw_text_transformed((global.sw*0.5)+(80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),	"6x6",0.14*_tscl,0.14*_tscl,0)
+		draw_text_transformed((global.sw*0.5)+(160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),	"7x7",0.14*_tscl,0.14*_tscl,0)
 
 		
 		/*
@@ -295,14 +407,25 @@ if global.game_phase = 0 {
 	
 	draw_set_color(_c_white)
 	
-	draw_set_alpha(0.4)
+	draw_set_alpha(0.5)
 	draw_set_font(fnt_main_r)
 	draw_text_transformed(global.sw/2,65*_scl,"drag to rearrange the letters",0.16*_tscl,0.16*_tscl,0)
 	draw_set_font(fnt_main)
 	
 	draw_set_alpha(0.7)
 	
+	
+	
+	
 	if global.game_mode = 1 {
+		
+		draw_set_alpha(0.6)
+	
+		draw_set_font(fnt_main)
+	
+
+		draw_set_color(_c_white)
+		draw_set_valign(fa_middle)
 		
 		var _btn_alps = 1+(dragging_fd*-0.6)
 		var _btn_cols = merge_colour(global.background_col,_c_white,0.1+(global.light_mode*0.1))
@@ -602,7 +725,9 @@ if global.game_phase = 0 {
 						
 							//}
 							
-							addClassElemID("modalCreateTypeLetters","active")
+							if global.is_mobile >= 1 {
+								addClassElemID("modalCreateTypeLetters","active")
+							}
 							setElementProperty("CreateTypeLettersInput","value",string(_current_board))
 							
 							keyboard_string = string(_current_board)
@@ -687,7 +812,7 @@ if global.game_phase = 0 {
 
 		draw_set_alpha(0.7+(-0.6*dragging_fd))
 		draw_text_transformed(global.sw/2,global.sh-(75*_scl),"CONFIRM GRID",0.2*_scl,0.2*_scl,0)
-		draw_text_transformed(global.sw/2,global.sh-(50*_scl),"proceed to set secret",0.12*_scl,0.12*_scl,0)
+		draw_text_transformed(global.sw/2,global.sh-(50*_scl),"proceed to set SECRET",0.12*_scl,0.12*_scl,0)
 		
 		draw_set_alpha(0.7)
 		
@@ -736,19 +861,35 @@ if global.game_phase = 0 {
 	
 } else if global.game_phase = 2 {
 	
-	draw_set_alpha(0.3)
+	draw_set_alpha(0.5)
 	draw_set_font(fnt_main_r)
-	draw_text_transformed(global.sw/2,75*_scl,"swipe to select your SECRET WORD",0.15*_tscl,0.15*_tscl,0)
+	draw_text_transformed(global.sw/2,75*_scl,"swipe to set your SECRET WORD",0.15*_tscl,0.15*_tscl,0)
 	draw_set_font(fnt_main)
 	
 	draw_set_alpha(0.7)
-	draw_sprite_ext(spr_sqr512,0,global.sw*0.5+(-106*_scl),global.sh-28*_scl,0.42*_tscl,0.08*_tscl,0,_c_white,0.06)
-	draw_text_transformed(global.sw*0.5+(-106*_scl),global.sh-28*_scl,"<  BACK TO REARRANGE",0.12*_tscl,0.12*_tscl,0)
+	draw_sprite_ext(spr_sqr512,0,global.sw*0.5+(-120*_scl),global.sh-28*_scl,0.38*_tscl,0.08*_tscl,0,_highlight_blue,1)
+	draw_text_transformed(global.sw*0.5+(-120*_scl),global.sh-28*_scl,"<  BACK TO REARRANGE",0.11*_tscl,0.11*_tscl,0)
 	
+	
+	draw_set_alpha(0.7)
+	
+	
+	
+	if nonstandard_allowed = 0 {
+	
+		draw_sprite_ext(spr_sqr512,0,global.sw*0.5+(120*_scl),global.sh-28*_scl,0.38*_tscl,0.08*_tscl,0,_c_white,0.1)
+		draw_text_transformed(global.sw*0.5+(120*_scl),global.sh-28*_scl,"allow any secret: OFF\n(recommended)",0.09*_tscl,0.09*_tscl,0)
+	
+	} else {
+	
+		draw_sprite_ext(spr_sqr512,0,global.sw*0.5+(120*_scl),global.sh-28*_scl,0.38*_tscl,0.08*_tscl,0,make_colour_hsv(10,230,200),1)
+		draw_text_transformed(global.sw*0.5+(120*_scl),global.sh-28*_scl,"allow any secret: ON\n(NOT recommended!)",0.09*_tscl,0.09*_tscl,0)
+	
+	}
 	
 	if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
 		if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
-			if		scr_mouse_over_button(global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl) {
+			if		scr_mouse_over_button(global.sw*0.5+(-120*_scl),global.sh-(28*_scl),0.38*_scl,0.18*_scl) {
 				//go back
 				show_debug_message("E CLICKED")
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
@@ -758,6 +899,30 @@ if global.game_phase = 0 {
 				with (obj_tile_letter) {
 					am_part_of_secret_word = 0	
 				}
+			}
+			
+			if		scr_mouse_over_button(global.sw*0.5+(120*_scl),global.sh-(28*_scl),0.38*_scl,0.18*_scl) {
+				
+				show_debug_message("F CLICKED")
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+
+				nonstandard_allowed = !nonstandard_allowed
+				
+				//reset stuff
+				selecting = 0
+				selected_word_latest_tile = -1
+				selected_word_latest_tile_id = noone
+	
+				selected_word_length = 0
+				selected_word_str = ""	
+				with (obj_tile_letter) {
+					am_part_of_secret_word = 0	
+				}
+				
+				with (obj_ctrl) {
+					scr_validate_word()	
+				}
+
 			}
 		}
 	}
@@ -776,12 +941,6 @@ if global.game_phase = 0 {
 			_confirm_word_col = _highlight_blue
 		}
 		
-		
-		
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(102*_scl),0.65*_tscl,0.13*_tscl,0,merge_colour(_confirm_word_col,c_white,0.4),draw_get_alpha())
-		
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(102*_scl),0.641*_tscl,0.124*_tscl,0,_confirm_word_col,draw_get_alpha())
-		
 		var _confirm_word_str = "CONFIRM SECRET WORD?"
 		if global.game_mode = 2 {
 			_confirm_word_str = "SUBMIT"
@@ -789,15 +948,89 @@ if global.game_phase = 0 {
 		
 		
 		
-		draw_text_transformed(global.sw/2,(_panel_mid_y)+(102*_scl),_confirm_word_str,0.15*_tscl,0.15*_tscl,0)
+		var _confirm_warning = 0
+		var _confirm_warning_str = ""
+		
+		
+		if ready_for_phase3 >= 1 && nonstandard_allowed = 0 {
+			
+			
+			_confirm_warning_str = ""
+			
+			if selected_word_length <= 4 {
+				_confirm_warning = 1
+				_confirm_warning_str += "SECRET should be longer! (5+)"
+			}
+			
+			if selected_word_is_valid < 2 {
+				if _confirm_warning = 1 {
+					_confirm_warning_str += "\n+ "	
+				}
+				_confirm_warning = 1
+				_confirm_warning_str += "SECRET is not a standard dictionary word!"
+			}
+			
+			if selected_word_length >= 4 {
+				if string_ends_with(string(selected_word_str),"S") {
+					if _confirm_warning = 1 {
+						_confirm_warning_str += "\n+ "	
+					}
+					_confirm_warning = 1
+					_confirm_warning_str += "SECRET ends in 'S', avoid plurals!"	
+				}
+			}
+			
+			if _confirm_warning = 1 {
+				_confirm_word_str = "*** CONFIRM SECRET WORD? ***\nwith issues below"	
+			}
+			
+			
+			
+			
+		}
+		
+		
+		if _confirm_warning = 1 {
+			_confirm_word_col = make_colour_hsv(10,230,200)
+		}
+		
+		
+		draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(80*_scl),0.65*_tscl*(1+(0.03*pulse_1*_confirm_warning)),0.13*_tscl,0,merge_colour(_confirm_word_col,c_white,0.4),draw_get_alpha())
+		
+		draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(80*_scl),0.641*_tscl*(1+(0.03*pulse_1*_confirm_warning)),0.124*_tscl,0,_confirm_word_col,draw_get_alpha())
+		
+		
+		
+		
+		
+		
+		if _confirm_warning = 1 {
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(80*_scl)+(-4*_confirm_warning*_scl),_confirm_word_str,0.12*_tscl,0.12*_tscl,0)
+		} else {
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(80*_scl),_confirm_word_str,0.15*_tscl,0.15*_tscl,0)
+		}
+		
+		if _confirm_warning_str != "" {
+			draw_set_valign(fa_top)
+			
+			draw_sprite_ext(spr_sqr512,0,global.sw/2,(_panel_mid_y)+(92*_scl)+(21*_confirm_warning*_scl)+(string_height(_confirm_warning_str)*0.11*_tscl*0.5),0.73*_tscl*(1+(0.03*-pulse_1)),0.005*((50+string_height(_confirm_warning_str))*0.11*_tscl*0.5),0,make_colour_hsv(2,230,100),1)
+			
+			draw_set_colour(make_colour_hsv(35,100,255))
+		
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(92*_scl)+(21*_confirm_warning*_scl),_confirm_warning_str,0.11*_tscl,0.11*_tscl,0)
+		}
+		
+		draw_set_valign(fa_middle)
+		
 		draw_set_alpha(0.3)
+		draw_set_colour(_c_white)
 		
 		
 		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
 			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
-				if		scr_mouse_over_button(global.sw/2,(_panel_mid_y)+(102*_scl),0.65*_tscl,0.13*_tscl) {
-					show_debug_message("F CLICKED")	
-					if global.game_mode = 1 && selected_word_is_valid >= 1 {
+				if		scr_mouse_over_button(global.sw/2,(_panel_mid_y)+(80*_scl),0.65*_tscl,0.13*_tscl) {
+					show_debug_message("G CLICKED")	
+					if global.game_mode = 1 && selected_word_length >= 2 && (selected_word_is_valid >= 1 || nonstandard_allowed = 1) {
 						//proceed, lock in word
 						
 						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
@@ -808,14 +1041,14 @@ if global.game_phase = 0 {
 						secret_word_array_id = selected_word_array_id
 						guesses_count = 0
 				
-						selected_word_length = 0
-						selected_word_str = ""
-						selected_word_array = 0
+						//selected_word_length = 0
+						//selected_word_str = ""
+						//selected_word_array = 0
 				
-						with (obj_tile_letter) {
-							am_exed = 0
-							am_clued = 0	
-						}
+						//with (obj_tile_letter) {
+						//	am_exed = 0
+						//	am_clued = 0	
+						//}
 
 						//assign all tiles to corresponding space
 						//for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
@@ -848,11 +1081,20 @@ if global.game_phase = 0 {
 						//global.show_submitting_post = 1
 						
 						create_title = ""
+						
+						//obj_ctrlp.username = "Acey"
+						//obj_ctrlp.created_total = "2"
 						if obj_ctrlp.username != "" {
 							create_title = string(obj_ctrlp.username)
-							create_title += "'s Custom Puzzle"
+							create_title += "'s "
+							
+							if obj_ctrlp.created_total != "" {
+								create_title += string(ordinal_string(real(obj_ctrlp.created_total)+1))+" "
+							}
+							
+							create_title += "Custom Sneakle"
 						} else {
-							create_title = "Custom Puzzle"
+							create_title = "My Custom Sneakle"
 						}
 
 						
@@ -863,7 +1105,7 @@ if global.game_phase = 0 {
 							global.show_PostTitle_input_prompt = 0
 							global.show_submitting_post = 1
 						
-							async_msg_title = get_string_async("Enter a title for your puzzle and submit.\n(This will create a post as "+string(obj_ctrlp.username)+")", string(create_title)); 
+							async_msg_title = get_string_async("Enter a title for your puzzle and submit. \n(*This will create a post as "+string(obj_ctrlp.username)+")", string(create_title)); 
 							//will set create_typed_letters in async dialog
 							
 						
@@ -883,7 +1125,9 @@ if global.game_phase = 0 {
 						
 							//}
 							
-							addClassElemID("modalCreatePostTitle","active")
+							if global.is_mobile >= 1 {
+								addClassElemID("modalCreatePostTitle","active")
+							}
 							setElementProperty("CreatePostTitleInput","value",string(create_title))
 							
 							keyboard_string = string(create_title)
@@ -919,7 +1163,7 @@ if global.game_phase = 0 {
 	draw_set_alpha(0.3)
 	draw_set_font(fnt_main_r)
 	//draw_text_transformed(global.sw/2,(global.sh*1)+(-240*_pos_scl),"your SECRET WORD is",0.12*_tscl,0.12*_tscl,0)
-	draw_text_transformed(global.sw/2,(_panel_mid_y)+(-55*_scl),"your SECRET WORD is",0.12*_tscl,0.12*_tscl,0)
+	draw_text_transformed(global.sw/2,(_panel_mid_y)+(-68*_scl),"your SECRET WORD is",0.12*_tscl,0.12*_tscl,0)
 	draw_set_font(fnt_main)
 
 	
@@ -934,18 +1178,25 @@ if global.game_phase = 0 {
 		draw_set_alpha(0.7)
 	}
 	
+	draw_set_font(fnt_main)
+	var _max_width = 350//290
+	var _letters_str_w = string_width(string(_letters_str)+"?")*_scl
+			  
+	var _letters_scl = min(0.4,(_max_width*_scl)/(_letters_str_w+0.1))
+	//_letters_str_w *= _letters_scl
+	
 	//draw_text_transformed(global.sw/2,(global.sh*1)+(-200*_pos_scl),string(_letters_str),0.3*_tscl,0.3*_tscl,0)
-	draw_text_transformed(global.sw/2,(_panel_mid_y),string(_letters_str),0.4*_tscl,0.4*_tscl,0)
+	draw_text_transformed(global.sw/2,(_panel_mid_y)+(-20*_scl),string(_letters_str),_letters_scl*_tscl,_letters_scl*_tscl,0)
 	
 	draw_set_alpha(0.3)
 	draw_set_font(fnt_main_r)
 	if selected_word_length > 0 {
-		if selected_word_length <= 3 {
-			draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
+		if selected_word_length <= 4 {
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(25*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
 		} else if selected_word_not_in_dictionary >= 1 {
-			draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"not a valid word",0.15*_tscl,0.15*_tscl,0)
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(25*_scl),"not a valid word",0.15*_tscl,0.15*_tscl,0)
 		} else if selected_word_already_guessed >= 1 {
-			draw_text_transformed(global.sw/2,(_panel_mid_y)+(45*_scl),"already guessed",0.15*_tscl,0.15*_tscl,0)
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(25*_scl),"already guessed",0.15*_tscl,0.15*_tscl,0)
 		}
 	}
 
@@ -987,10 +1238,14 @@ if global.game_phase = 3 || global.game_phase = 4 {
 			draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*-0.37),"gave up :(",0.15*_tscl,0.15*_tscl,0) //(0+(3*(sin(obj_ctrl.timey*0.06)))))
 		}
 		
-		if obj_ctrlp.already_finished >= 1 {
+		if obj_ctrlp.already_finished >= 2 {
 			draw_set_valign(fa_middle)
 			draw_set_alpha(0.4)
-			draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*-0.30),"ALREADY PLAYED!",0.1*_tscl,0.1*_tscl,0)
+			var _already_played_str = "ALREADY PLAYED!"
+			if obj_ctrlp.already_finished = 3 {
+				_already_played_str = "THIS IS YOUR PUZZLE!"
+			}
+			draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*-0.295),_already_played_str,0.09*_tscl,0.09*_tscl,0)
 		}
 		
 	}
@@ -1059,9 +1314,9 @@ if global.game_phase = 3 || global.game_phase = 4 {
 		
 			
 		draw_set_font(fnt_main)
-		_letters_str_w = string_width(string(_letters_str)+"?")*_tscl
+		_letters_str_w = string_width(string(_letters_str)+"?")*_scl
 			  
-		_letters_scl = min(0.4,(_max_width*_pos_scl)/(_letters_str_w+0.1))
+		_letters_scl = min(0.4,(_max_width*_scl)/(_letters_str_w+0.1))
 		
 		var _letters_scl_2 = _letters_scl
 		
@@ -1171,7 +1426,9 @@ if global.game_phase = 3 || global.game_phase = 4 {
 		draw_set_color(_c_white)
 		
 		if selected_word_length > 0 {
-			if selected_word_length <= 3 {
+			if selected_word_is_valid = 3 {
+				draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*0.16),"non-standard guesses allowed",0.15*_tscl,0.15*_tscl,0)
+			} else if selected_word_length <= 3 {
 				draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*0.16),"too short",0.15*_tscl,0.15*_tscl,0)
 			} else if selected_word_not_in_dictionary >= 1 {
 				draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*0.16),"not a valid word",0.15*_tscl,0.15*_tscl,0)
@@ -1250,7 +1507,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 	
 			var _lb_btn_alp = 3
 			var _lb_btn_col = _c_white
-			if obj_ctrlp.lb_your_rank = -1 {
+			if obj_ctrlp.lb_your_rank = -1 && obj_ctrlp.already_finished != 3 {
 				_lb_btn_alp = 0.2
 				_lb_btn_col = c_ltgray
 			}
@@ -1259,15 +1516,24 @@ if global.game_phase = 3 || global.game_phase = 4 {
 		
 		
 			var _cm_btn_alp = 3
-			var _cm_btn_col = _c_white
+			var _cm_btn_col = c_white
 			//obj_ctrlp.level_commented = 0
-			if obj_ctrlp.level_commented >= 1 {
+			if obj_ctrlp.level_commented >= 1 || obj_ctrlp.already_finished = 3 {
 				_cm_btn_alp = 0.2
 				_cm_btn_col = c_ltgray
 			}
+			
+			//if obj_ctrlp.lb_your_rank = -1 {
+			//	_cm_btn_alp = 0.2
+			//	_cm_btn_col = c_ltgray
+			//}
 		
 			//comment
 			draw_sprite_ext(spr_btn_2,3,global.sw/2+(-88*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2),(1)*(_scl*0.25),(1)*(_scl*0.25),0,_cm_btn_col,_cm_btn_alp*game_finished_fd2)
+		
+			if obj_ctrlp.level_commented >= 1 {
+				draw_sprite_ext(spr_checkmark,3,global.sw/2+(-88*_scl)+(-59*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2),(1)*(_scl*0.18),(1)*(_scl*0.18),0,_cm_btn_col,0.7*game_finished_fd2)
+			}
 		
 		
 			if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
@@ -1282,7 +1548,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 				
 				if scr_mouse_over_button(global.sw/2+(-88*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2),
 				0.31*_scl,0.0983*_scl) {
-					if obj_ctrlp.level_commented <= 0 {
+					if obj_ctrlp.level_commented <= 0 && obj_ctrlp.already_finished < 3 {
 						
 						show_debug_message("COMMENT CLICKED")
 					
@@ -1315,15 +1581,19 @@ if global.game_phase = 3 || global.game_phase = 4 {
 			draw_set_alpha(0.7*game_finished_fd2)
 	
 			var _rank_str = ""
+			var _rank_str_scl = 1
 		
-			if obj_ctrlp.lb_your_rank = -1 {
+			if obj_ctrlp.already_finished = 3 {
+				_rank_str = "can't rank on your own puzzle :)"
+				_rank_str_scl = 0.75
+			} else if obj_ctrlp.lb_your_rank = -1 {
 				draw_set_alpha(0.15*game_finished_fd2)
 				_rank_str = "loading rank..."
 			} else {
 				_rank_str = $"rank {obj_ctrlp.lb_your_rank} of {obj_ctrlp.lb_total_players} - top {obj_ctrlp.lb_your_percentile}%!"
 			}
 
-			draw_text_ext_transformed(global.sw/2+(88*_scl)+(15*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2)+(7*_scl),_rank_str,160,3600,0.08*_tscl,0.08*_tscl,0)
+			draw_text_ext_transformed(global.sw/2+(88*_scl)+(15*_scl),(_panel_mid_y)+(_panel_ht*0.46)+(_panel_ht*-0.07*game_finished_fd2)+(7*_scl),_rank_str,160,3600,0.08*_tscl*_rank_str_scl,0.08*_tscl*_rank_str_scl,0)
 		
 		
 		
@@ -1364,9 +1634,13 @@ if global.game_phase = 3 || global.game_phase = 4 {
 	}
 	
 	for (var i = 1; i < array_length(guesses_list); ++i) {
-		_guess_list_str += guesses_list[i]
-		if i < array_length(guesses_list)-1 {
-			_guess_list_str += ", "
+		if !is_undefined(guesses_list[i]) && is_string(guesses_list[i]) {
+			if guesses_list[i] != "" {	
+				_guess_list_str += guesses_list[i]
+				if i < array_length(guesses_list)-1 {
+					_guess_list_str += ", "
+				}
+			}
 		}
 	}
 	
@@ -1381,15 +1655,17 @@ if global.game_phase = 3 || global.game_phase = 4 {
 	
 	if global.game_phase = 4 { //stats
 		
-		var _is_daily = true
-		if obj_ctrlp.puzzle_is_daily != 1 {
-			_is_daily = false
+		var _which_stats = STATS_UNLIMITED
+		if obj_ctrlp.puzzle_is_daily = 1 {
+			_which_stats = STATS_DAILY
+		} else if obj_ctrlp.puzzle_is_community = 1 {
+			_which_stats = STATS_COMMUNITY
 		}
 		
 		var _stat_h = 50
 		var _stat_y = 0.7+((1-game_finished_fd)*-0.2)
 		
-		scr_draw_stats(_is_daily,_panel_mid_y,_scl,game_finished_fd)
+		scr_draw_stats(_which_stats,_panel_mid_y+((1-game_finished_fd)*-0.2*_panel_ht),_scl,game_finished_fd)
 	
 		
 	
@@ -1413,22 +1689,41 @@ if global.game_phase = 3 || global.game_phase = 4 {
 					_yest_btn_enabled = 1	
 				}
 			
-				draw_sprite_ext(spr_btn,0,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,35+100*_yest_btn_enabled),3*game_finished_fd)
-				draw_sprite_ext(spr_btn,0,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,55+200*_yest_btn_enabled),3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,0,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,35+100*_yest_btn_enabled),3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,0,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,55+200*_yest_btn_enabled),3*game_finished_fd)
 			
-				draw_sprite_ext(spr_btn,3,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
-				draw_sprite_ext(spr_btn,3,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,c_white,3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,c_white,3*game_finished_fd)
+			
+				var _sin_middle_offset = 1.5
+				var _sin_last_offset = 3
+			
+				draw_sprite_ext(spr_btn,13,global.sw/2+(-145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,65+70*_yest_btn_enabled),3*game_finished_fd)
+				draw_sprite_ext(spr_btn,13,global.sw/2+(-145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*_yest_btn_enabled*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,55+200*_yest_btn_enabled),3*game_finished_fd)
+				if _yest_btn_enabled = 0 {
+					draw_sprite_ext(spr_btn,18,global.sw/2+(-145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*_yest_btn_enabled*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,80),0.4*game_finished_fd)
+				}
+			
+				draw_sprite_ext(spr_btn,14,global.sw/2+(-0*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),(1+(0+(-0.025*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
+				draw_sprite_ext(spr_btn,14,global.sw/2+(-0*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-((obj_ctrl.timey*0.07)+(_sin_middle_offset))))),(1+(0+(0.015*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),(1+(0+(-0.025*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),0,c_white,3*game_finished_fd)
+			
+				draw_sprite_ext(spr_btn,15,global.sw/2+(145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*(sin(((obj_ctrl.timey*0.07)+(_sin_last_offset)))))))*(_scl*0.25),(1+(0+(-0.025*(sin(((obj_ctrl.timey*0.07)+(_sin_last_offset)))))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
+				draw_sprite_ext(spr_btn,15,global.sw/2+(145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-((obj_ctrl.timey*0.07)+(_sin_last_offset))))),(1+(0+(0.015*(sin(((obj_ctrl.timey*0.07)+(_sin_last_offset)))))))*(_scl*0.25),(1+(0+(-0.025*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),0,c_white,3*game_finished_fd)
+			
+			
+				//draw_sprite_ext(spr_btn,15,global.sw/2+(145*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,15,global.sw/2+(145*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,c_white,3*game_finished_fd)
 			
 			
 			
 				if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
-					if scr_mouse_over_button(global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
-					0.39*_scl,0.12*_scl) {
+					if scr_mouse_over_button(global.sw/2+(-145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
+					0.26*_scl,0.12*_scl) {
 						show_debug_message("BTN 1 CLICKED")
 						
 						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 					
-						//play previous
+						////play previous
 						if obj_ctrlp.daily_prev_postId != "-9999" {
 					
 							scr_reddit_reset_post()
@@ -1442,13 +1737,13 @@ if global.game_phase = 3 || global.game_phase = 4 {
 					
 					}
 				
-					if scr_mouse_over_button(global.sw/2+(110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
-					0.39*_scl,0.12*_scl) {
+					if scr_mouse_over_button(global.sw/2+(0*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
+					0.26*_scl,0.12*_scl) {
 						show_debug_message("BTN 2 CLICKED")
 						
 						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 					
-						if 1 = 1 { //go to main menu
+						if 1 = 1 { //go to main menu for unlimited
 							obj_ctrlp.already_finished = 0 //reset this so that puzzles don't auto complete moving forward	
 							obj_ctrlp.daily_prev_postId = "-9999"
 							obj_ctrlp.daily_next_postId = "-9999"
@@ -1457,50 +1752,131 @@ if global.game_phase = 3 || global.game_phase = 4 {
 							room_restart()	
 						}
 					}
+					
+					if scr_mouse_over_button(global.sw/2+(145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
+					0.26*_scl,0.12*_scl) {
+						show_debug_message("BTN 3 CLICKED")
+						
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+					
+						if 1 = 1 { //go to create mode
+							obj_ctrlp.already_finished = 0 //reset this so that puzzles don't auto complete moving forward	
+							obj_ctrlp.daily_prev_postId = "-9999"
+							obj_ctrlp.daily_next_postId = "-9999"
+							
+							scr_board_reset_defs()
+						
+							scr_reddit_reset_post()
+							//room_restart()
+							
+							global.game_grid_size = 4
+							global.game_grid_size_sqr = sqr(global.game_grid_size)
+							global.am_creating = 1
+							global.am_creating_fd2 = 1
+							global.am_creating_fd = 1
+							
+							game_finished_fd = 0
+							
+							var _event_struct = { //
+							   screen_name: "CreateFromDailyEnd"+string(global.game_grid_size),
+							};
+							GoogHit("screen_view",_event_struct)
+							
+							scr_board_init()
+							
+							with (obj_tile_letter) {
+								//instance_destroy()
+								image_angle = 0
+								born_fd = 1
+								spawn_slam = 0
+								am_set = 1
+								am_set_fd = 1
+								am_set_flash = 0
+								x = x_targ
+								y = y_targ
+							}
+							
+							
+						}
+					}
 				}
 			
-			} else {
+			} else { //not daily
 				
-				var _yest_btn_enabled = 1
-				
-				
+				var _yest_btn_enabled = 0
+				if obj_ctrlp.daily_today_postId != "-9999" {
+					_yest_btn_enabled = 1	
+				}
 			
-				draw_sprite_ext(spr_btn,1,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,35+100*_yest_btn_enabled),3*game_finished_fd)
-				draw_sprite_ext(spr_btn,1,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,55+200*_yest_btn_enabled),3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,0,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,35+100*_yest_btn_enabled),3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,0,global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,55+200*_yest_btn_enabled),3*game_finished_fd)
 			
-				draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
-				draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,c_white,3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,4,global.sw/2+(110*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,c_white,3*game_finished_fd)
+			
+				var _sin_middle_offset = 1.5
+				var _sin_last_offset = 3
+			
+				draw_sprite_ext(spr_btn,16,global.sw/2+(-145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,65+70*_yest_btn_enabled),3*game_finished_fd)
+				draw_sprite_ext(spr_btn,16,global.sw/2+(-145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*_yest_btn_enabled*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,55+200*_yest_btn_enabled),3*game_finished_fd)
+				if _yest_btn_enabled = 0 {
+					draw_sprite_ext(spr_btn,18,global.sw/2+(-145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*_yest_btn_enabled*(sin(-obj_ctrl.timey*0.07))),(1+(0+(0.015*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(-0.025*_yest_btn_enabled*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,make_colour_hsv(0,0,80),0.4*game_finished_fd)
+				}
+				draw_sprite_ext(spr_btn,17,global.sw/2+(-0*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),(1+(0+(-0.025*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
+				draw_sprite_ext(spr_btn,17,global.sw/2+(-0*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-((obj_ctrl.timey*0.07)+(_sin_middle_offset))))),(1+(0+(0.015*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),(1+(0+(-0.025*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),0,c_white,3*game_finished_fd)
+			
+				draw_sprite_ext(spr_btn,15,global.sw/2+(145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(0.015*(sin(((obj_ctrl.timey*0.07)+(_sin_last_offset)))))))*(_scl*0.25),(1+(0+(-0.025*(sin(((obj_ctrl.timey*0.07)+(_sin_last_offset)))))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
+				draw_sprite_ext(spr_btn,15,global.sw/2+(145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(-((obj_ctrl.timey*0.07)+(_sin_last_offset))))),(1+(0+(0.015*(sin(((obj_ctrl.timey*0.07)+(_sin_last_offset)))))))*(_scl*0.25),(1+(0+(-0.025*(sin(((obj_ctrl.timey*0.07)+(_sin_middle_offset)))))))*(_scl*0.25),0,c_white,3*game_finished_fd)
+			
+			
+				//draw_sprite_ext(spr_btn,15,global.sw/2+(145*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,_c_gray,3*game_finished_fd)
+				//draw_sprite_ext(spr_btn,15,global.sw/2+(145*_scl)+((1-game_finished_fd)*1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl)+(5*_scl*(sin(obj_ctrl.timey*0.07))),(1+(0+(-0.015*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),(1+(0+(0.025*(sin(obj_ctrl.timey*0.07)))))*(_scl*0.25),0,c_white,3*game_finished_fd)
 			
 			
 			
 				if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
-					if scr_mouse_over_button(global.sw/2+(-110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
-					0.39*_scl,0.12*_scl) {
+					if scr_mouse_over_button(global.sw/2+(-145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
+					0.26*_scl,0.12*_scl) {
 						show_debug_message("BTN 1 CLICKED")
+						
+						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+					
+						////play previous
+						if obj_ctrlp.daily_today_postId != "-9999" {
+					
+							scr_reddit_reset_post()
+
+							//load prev id
+							scr_reddit_load_post(obj_ctrlp.daily_today_postId)
+				
+						} else {
+							show_debug_message("no obj_ctrlp.daily_today_postId")
+						}
+					
+					}
+				
+					if scr_mouse_over_button(global.sw/2+(0*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
+					0.26*_scl,0.12*_scl) {
+						show_debug_message("BTN 2 CLICKED")
 						
 						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 					
 						//play previous
 						show_debug_message("PLAY ANOTHER!")
-			
-						show_debug_message("NEW LETTERS")
-			
-						var _event_struct = { //
-							screen_name: "NewLetters"+string(global.game_grid_size),
-						};
-						GoogHit("screen_view",_event_struct)
+
 			
 						scr_reddit_reset_post()
 						scr_board_reset_defs()
-
 			
 						global.game_phase = 3
 			
-						//global.game_grid_size = 6
-						//global.game_grid_size_sqr = sqr(global.game_grid_size)
+						global.game_grid_size = clamp(global.game_grid_size,3,7)
+						global.game_grid_size_sqr = sqr(global.game_grid_size)
+						
 						global.am_creating = 0
 						global.skip_create = 1
 						global.am_generate_random = 1
+						obj_ctrlp.puzzle_is_unlimited = 1
 						var _event_struct = { //
 							screen_name: "RandomAnother",
 						};
@@ -1512,32 +1888,68 @@ if global.game_phase = 3 || global.game_phase = 4 {
 								level_status = LEVEL_STATUS_Started
 								if puzzle_is_daily = 1 {
 									stat_d_total_started = string(real(stat_d_total_started)+1)
+								} else if puzzle_is_community = 1 {
+									stat_c_total_started = string(real(stat_c_total_started)+1)
 								} else {
-									stat_u_total_started = string(real(stat_u_total_started)+1)	
+									stat_u_total_started = string(real(stat_u_total_started)+1)
 								}
 							}
 						}
 						
 						scr_board_init()
-					
 					}
-				
-					if scr_mouse_over_button(global.sw/2+(110*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
-					0.39*_scl,0.12*_scl) {
-						show_debug_message("BTN 2 CLICKED")
+					
+					if scr_mouse_over_button(global.sw/2+(145*_scl)+((1-game_finished_fd)*-1000*_scl),(_panel_mid_y)+(_panel_ht*_stat_y)+((_stat_h+50)*_scl)+(-5*_scl),
+					0.26*_scl,0.12*_scl) {
+						show_debug_message("BTN 3 CLICKED")
 						
 						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 					
-						if 1 = 1 { //go to main menu
+						if 1 = 1 { //go to create mode
 							obj_ctrlp.already_finished = 0 //reset this so that puzzles don't auto complete moving forward	
 							obj_ctrlp.daily_prev_postId = "-9999"
 							obj_ctrlp.daily_next_postId = "-9999"
+							
+							scr_board_reset_defs()
 						
 							scr_reddit_reset_post()
-							room_restart()	
+							//room_restart()
+							
+							global.game_grid_size = 4
+							global.game_grid_size_sqr = sqr(global.game_grid_size)
+							global.am_creating = 1
+							global.am_creating_fd2 = 1
+							global.am_creating_fd = 1
+							
+							game_finished_fd = 0
+							
+							var _event_struct = { //
+							   screen_name: "CreateFromDailyEnd"+string(global.game_grid_size),
+							};
+							GoogHit("screen_view",_event_struct)
+							
+							scr_board_init()
+							
+							with (obj_tile_letter) {
+								//instance_destroy()
+								image_angle = 0
+								born_fd = 1
+								spawn_slam = 0
+								am_set = 1
+								am_set_fd = 1
+								am_set_flash = 0
+								x = x_targ
+								y = y_targ
+							}
+							
+							
 						}
 					}
 				}
+			
+
+				
+					
 				
 			}
 			
@@ -1638,8 +2050,13 @@ if 1=1 {//global.game_phase >= 3 {
 	//	draw_text_transformed(global.sw*0.9,_nav_mid_y,"how to",_sscl*_tscl,_sscl*_tscl,0)	
 	//}
 	
+	//draw_sprite_ext(spr_btn_5,3,(global.sw*0)+((20+5)*_scl),_nav_mid_y,0.25*_scl,0.25*_scl,0,_c_white,1.2)
+	
 	draw_sprite_ext(spr_btn_5,1,(global.sw*1)+((20+5)*-_scl),_nav_mid_y,0.25*_scl,0.25*_scl,0,_c_white,1.2)
-	draw_sprite_ext(spr_btn_5,2,(global.sw*1)+((20+5+40+5)*-_scl),_nav_mid_y,0.25*_scl,0.25*_scl,0,_c_white,1.2)
+	draw_sprite_ext(spr_btn_5,0,(global.sw*1)+((20+5+40+5)*-_scl),_nav_mid_y,0.25*_scl,0.25*_scl,0,_c_white,1.2)
+	//draw_sprite_ext(spr_btn_5,2,(global.sw*1)+((20+5+40+5+40+5)*-_scl),_nav_mid_y,0.25*_scl,0.25*_scl,0,_c_white,1.2)
+	
+	
 	
 	if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
 			
@@ -1654,6 +2071,12 @@ if 1=1 {//global.game_phase >= 3 {
 		0.083*_scl,0.0983*_scl) {
 			show_debug_message("options CLICKED")
 			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			
+			
+			
+			//addClassElemID("modalCreateTypeLetters","active")
+			//setElementProperty("CreateTypeLettersInput","value",string(_current_board))
+			
 			global.show_options = 1
 			obj_ctrlp.clear_stats_confirm = 0 //reset
 		}
@@ -1661,7 +2084,34 @@ if 1=1 {//global.game_phase >= 3 {
 	}
 	
 }
+
+
+if global.am_creating = 1 {
+	if global.game_phase >= 1 && global.game_phase <= 2 {
+		draw_set_alpha(0.6)
 	
+		draw_set_font(fnt_main_r)
+		draw_set_alpha(0.7)
+		draw_set_valign(fa_top)
+	
+		var _level_name_y_offset = 0
+		_level_name = "C R E A T E   M O D E"
+	
+		draw_set_color(make_colour_hsv(35,200,255))
+		if global.light_mode = 1 {
+			draw_set_color(make_colour_hsv(35,240,155))
+		}
+		draw_set_alpha(0.7)
+		draw_set_font(fnt_main)
+		if _level_name != "" {
+			draw_text_ext_transformed(global.sw*0.5,_nav_mid_y+((-8+_level_name_y_offset)*_scl),_level_name,150,2000,0.1*_tscl,0.1*_tscl,0)
+		}
+	
+		draw_set_color(_c_white)
+		draw_set_valign(fa_middle)	
+	}
+}
+
 	
 if global.game_phase >= 3 {
 	
@@ -1683,9 +2133,11 @@ if global.game_phase >= 3 {
 	var _level_name_y_offset = 0
 	var _has_levelDate_formatted = 0
 
+	//_level_name = "MaxDoor's First Custom Puzzle"
 	//obj_ctrlp.puzzle_is_daily = 0
 	//obj_ctrlp.puzzle_is_community = 1
 	//obj_ctrlp.postData_levelCreator = "FermenterGames"
+	//obj_ctrlp.postData_nonStandard = "1"
 	
 	var _has_level_creator = 0
 	
@@ -1722,10 +2174,26 @@ if global.game_phase >= 3 {
 		}
 
 		var _level_creator_y_offset = 0
+		draw_set_font(fnt_main)
 		_level_creator_y_offset = clamp(-18+string_height_ext(_level_name,150,2000)*0.1,0,999)
+		draw_set_font(fnt_main_r)
 		
-		if _has_level_creator {
+		if _has_level_creator = 1 {
 			draw_text_transformed(global.sw*0.5,_nav_mid_y+((-8-_level_name_y_offset+_level_creator_y_offset+(3))*_scl),_level_creator,0.08*_tscl,0.08*_tscl,0)	
+		}
+		
+		
+		if real(obj_ctrlp.postData_nonStandard) >= 1 {
+			
+			draw_set_font(fnt_main)
+			draw_set_alpha(0.9)
+			
+			draw_sprite_ext(spr_sqr512,0,global.sw*0.5,_nav_mid_y+((-8-_level_name_y_offset+_level_creator_y_offset+(3+28))*_scl),0.24*_scl,0.04*_scl,0,make_colour_hsv(2,170,155),1)
+			draw_set_valign(fa_middle)
+			draw_text_transformed(global.sw*0.5,_nav_mid_y+((-8-_level_name_y_offset+_level_creator_y_offset+(3+28))*_scl),"! NON-STANDARD !",0.08*_tscl,0.08*_tscl,0)	
+		
+			draw_set_valign(fa_top)
+			
 		}
 		
 	} else if obj_ctrlp.puzzle_is_unlimited = 1 {
@@ -1823,10 +2291,10 @@ if global.game_phase >= 3 {
 		//draw_sprite_ext(spr_sqr512,0,global.sw*0.9,gui_footer_mid_y,0.18*_tscl*0.8,0.12*_tscl*0.8,0,_c_white,0.04) 
 		
 		
-		draw_sprite_ext(spr_btn_3,2,global.sw*0.1,gui_footer_mid_y,0.25*_scl,0.25*_scl,0,_c_white,1.2)
+		draw_sprite_ext(spr_btn_3,3,global.sw*0.1,gui_footer_mid_y,0.25*_scl,0.25*_scl,0,make_colour_hsv(250,150,255),1.2)
 
 		draw_set_alpha(0.6)
-		draw_text_transformed(global.sw*0.1,gui_footer_mid_y,"give up",0.12*_tscl,0.12*_tscl,0)
+		draw_text_transformed(global.sw*0.1,gui_footer_mid_y,"give up",0.11*_tscl,0.11*_tscl,0)
 		
 		
 		
@@ -1838,7 +2306,7 @@ if global.game_phase >= 3 {
 		
 		draw_sprite_ext(spr_btn_3,2,global.sw*0.9,gui_footer_mid_y,0.25*_scl,0.25*_scl,0,_c_white,1.2)
 
-		draw_text_transformed(global.sw*0.9,gui_footer_mid_y,"hint?",0.12*_tscl,0.12*_tscl,0)
+		draw_text_transformed(global.sw*0.9,gui_footer_mid_y,"hint?",0.11*_tscl,0.11*_tscl,0)
 		
 	} else if global.game_phase = 4 {
 		
@@ -1860,11 +2328,13 @@ if global.game_phase >= 3 {
 				draw_set_halign(fa_left)
 				draw_text_transformed((global.sw*0.0)+(10*_scl)+(-490000*(1-game_finished_fd)),gui_footer_mid_y,"upvote if you enjoyed! :)",0.09*_tscl,0.09*_tscl,0)
 				draw_set_halign(fa_right)
-				draw_text_transformed((global.sw*1.0)+(-10*_scl)+(-490000*(1-game_finished_fd)),gui_footer_mid_y,"+ join r/Sneakle for more!",0.09*_tscl,0.09*_tscl,0)
+				//draw_text_transformed((global.sw*1.0)+(-10*_scl)+(490000*(1-game_finished_fd)),gui_footer_mid_y,"+ join r/Sneakle for more!",0.09*_tscl,0.09*_tscl,0)
 			} else { //is landscape
 				draw_set_halign(fa_center)
-				draw_text_transformed((global.sw*0.5)+(0*_scl),gui_footer_mid_y+(490000*(1-game_finished_fd)),"upvote if you enjoyed! :)",0.12*_tscl,0.12*_tscl,0)
+				draw_text_transformed((global.sw*0.5)+(0*_scl),gui_footer_mid_y+(490000*(1-game_finished_fd)),"upvote if you enjoyed :)",0.12*_tscl,0.12*_tscl,0)
 			}
+			
+			draw_set_halign(fa_center)
 		}
 	}
 
@@ -1920,10 +2390,10 @@ draw_set_colour(_c_white)
 
 
 
-if keyboard_check(vk_shift) {
-	draw_set_alpha(0.3)
-	draw_text_transformed(global.sw*0.5,(global.sh*1)-(50*_pos_scl),global.current_copy_code,0.07*_tscl,0.07*_tscl,0)
-}
+//if keyboard_check(vk_shift) {
+//	draw_set_alpha(0.3)
+//	draw_text_transformed(global.sw*0.5,(global.sh*1)-(50*_pos_scl),global.current_copy_code,0.07*_tscl,0.07*_tscl,0)
+//}
 
 
 
@@ -1936,16 +2406,16 @@ if global.game_phase <= 0 {
 	}
 	draw_set_font(fnt_main)
 	draw_set_alpha(0.5*_version_scl)
-	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-50*_version_scl*_scl),"<3 @FermenterGames",0.1*_version_scl*_tscl,0.1*_version_scl*_tscl,0)
+	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-35*_version_scl*_scl),"<3 @FermenterGames",0.1*_version_scl*_tscl,0.1*_version_scl*_tscl,0)
 	draw_set_font(fnt_main_r)
 	draw_set_alpha(0.2*_version_scl)
-	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-50*_version_scl*_scl),"\n\n\n"+date_datetime_string(GM_build_date)+" - "+string(global.is_ios)+" "+string(global.is_android)+" "+string(global.is_firefox)+" "+string(global.do_basic_input),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
+	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-35*_version_scl*_scl),"\n\n\n"+date_datetime_string(GM_build_date)+" - "+string(global.is_ios)+" "+string(global.is_android)+" "+string(global.is_firefox)+" "+string(global.do_basic_input)+" "+string(global.is_mobile),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
 	
 	//draw_text_transformed(global.sw*0.5,(global.sh*1)+(-50*_version_scl*_scl),"\n\n\n"+string(global.sw)+"x"+string(global.sh),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
 }
 
 if global.game_phase = 3 {
-	if obj_ctrlp.option_show_timer = 1 {
+	if real(obj_ctrlp.option_show_timer) = 1 {
 		draw_set_font(fnt_main_r)
 		draw_set_alpha(0.3)
 		draw_text_transformed(global.sw*0.5,gui_footer_mid_y,scr_format_time(global.game_timer,0),0.12*_tscl,0.12*_tscl,0)
@@ -2019,6 +2489,11 @@ if global.show_TypeLetters_input_prompt = 1 {
 			draw_set_font(fnt_main)
 			draw_text_transformed((global.sw*0.5)+(160*_scl),(global.sh*0)+(212*_scl),"CLEAR",0.1*_tscl,0.1*_tscl,0)
 		
+			draw_sprite_ext(spr_btn,12,(global.sw*0.5)+(-160*_scl),(global.sh*0)+(212*_scl),0.21*_scl,0.21*_scl,0,c_white,0.5*global.show_any_modal_fd) 
+		
+			draw_set_font(fnt_main)
+			draw_text_transformed((global.sw*0.5)+(-160*_scl),(global.sh*0)+(212*_scl),"AUTOFILL\nto next sqr",0.08*_tscl,0.08*_tscl,0)
+		
 		
 		}
 	
@@ -2041,8 +2516,11 @@ if global.show_TypeLetters_input_prompt = 1 {
 	
 		if 1=1 {
 		
-		
-			draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,c_black,0.5*global.show_any_modal_fd) 
+			var _box_col = c_black
+			if global.light_mode = 1 {
+				_box_col = c_white	
+			}
+			draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,_box_col,0.5*global.show_any_modal_fd) 
 	
 		
 			draw_set_color(_c_white)
@@ -2086,6 +2564,7 @@ if global.show_TypeLetters_input_prompt = 1 {
 		
 		
 			var _keyboard_string_forgrid = string_copy(_keyboard_string,0,(sqrd_l*sqrd_l))
+			draw_set_colour(_c_white)
 		
 			scr_draw_letter_grid(_keyboard_string_forgrid,(global.sw*0.5),(global.sh*0)+(260*_scl)+(16*sqrd_l*_scl),sqrd_l,32*_scl,0.15*_scl)
 		
@@ -2155,6 +2634,56 @@ if global.show_TypeLetters_input_prompt = 1 {
 				_submit_letters_now = 1
 			
 			}
+			
+			//AUTOFILL
+			if scr_mouse_over_button((global.sw*0.5)+(-160*_scl),(global.sh*0)+(212*_scl),0.19*_scl,0.09*_scl) {
+				if sqrd_l <= 6 {
+					
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+
+				
+					global.letter_set_default = "AAAAAAAAAAAAABBBCCCDDDDDDEEEEEEEEEEEEEEEEEEFFFGGGGHHHIIIIIIIIIIIIJJKKLLLLLMMMNNNNNNNNOOOOOOOOOOOPPPQQRRRRRRRRRSSSSSSTTTTTTTTTUUUUUUVVVWWWXXYYYZZ"
+	
+					//global.letter_set_default = "TSECRETWORDINSIDE"
+	
+					//global.letter_set_default = "AAAAQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+	
+					for (var l = 0; l <= string_length(global.letter_set_default)-1; ++l) {
+						global.letters_bag[l] = string_char_at(global.letter_set_default,l)
+						//show_debug_message(global.letters_bag[l])
+					}
+				
+					//global.letters_bag[0] = "R"	//to avoid undefined in array	
+				
+					global.letters_bag = array_shuffle(global.letters_bag)
+				
+				
+					var _excess_next = sqr(sqrd_l+1)-_keyboard_string_l
+				
+					for (var i = 1; i <= _excess_next; ++i) {
+						//take first array entry
+					
+						var _next_letter = array_shift(global.letters_bag)
+						array_push(global.letters_bag,_next_letter)
+					
+						//try again if letter is too common in string already
+						if string_count(_next_letter,keyboard_string) > floor(sqrd_l*0.5) {
+							show_debug_message("DOING!")
+							show_debug_message(_next_letter)
+							var _next_letter = array_shift(global.letters_bag)
+							array_push(global.letters_bag,_next_letter)
+						}
+					
+						keyboard_string += _next_letter
+						//replace letters array end
+					
+					}
+				
+
+					//setElementProperty("CreateTypeLettersInput","value",keyboard_string)
+				}
+			
+			}
 		
 			//CLEAR
 			if scr_mouse_over_button((global.sw*0.5)+(160*_scl),(global.sh*0)+(212*_scl),0.19*_scl,0.09*_scl) {
@@ -2181,7 +2710,9 @@ if global.show_TypeLetters_input_prompt = 1 {
 			
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 			
-				addClassElemID("modalCreateTypeLetters","active")
+				if global.is_mobile >= 1 {
+					addClassElemID("modalCreateTypeLetters","active")
+				}
 				setElementProperty("CreateTypeLettersInput","value",string(_keyboard_string))
 			
 			}
@@ -2239,10 +2770,10 @@ if global.show_PostTitle_input_prompt = 1 {
 			draw_set_font(fnt_main)
 			draw_set_alpha(0.7*global.show_any_modal_fd)	
 		
-			draw_text_transformed(global.sw*0.5,(global.sh*0.0)+(70*_scl),"Enter a title for your puzzle and submit.",0.14*_tscl,0.14*_tscl,0)
+			draw_text_transformed(global.sw*0.5,(global.sh*0.0)+(70*_scl),"Enter a Title for your puzzle and submit.",0.14*_tscl,0.14*_tscl,0)
 			draw_set_font(fnt_main_r)
 			draw_set_alpha(0.5*global.show_any_modal_fd)	
-			draw_text_transformed(global.sw*0.5,(global.sh*0.0)+(95*_scl),"(This will create a post as your reddit username)",0.115*_tscl,0.115*_tscl,0)
+			draw_text_transformed(global.sw*0.5,(global.sh*0.0)+(95*_scl),"(*This will create a post as your Reddit username!)",0.115*_tscl,0.115*_tscl,0)
 			
 			draw_set_alpha(0.7*global.show_any_modal_fd)	
 			
@@ -2261,6 +2792,51 @@ if global.show_PostTitle_input_prompt = 1 {
 
 			draw_set_font(fnt_main)
 			draw_text_transformed((global.sw*0.5)+(160*_scl),(global.sh*0)+(212*_scl),"CLEAR",0.1*_tscl,0.1*_tscl,0)
+		
+		
+			if obj_ctrlp.username = "FermenterGames" || obj_ctrlp.username = "JigglyStardust" || !global.is_reddit {
+				draw_set_alpha(0.7*global.show_any_modal_fd)	
+		
+				draw_sprite_ext(spr_btn,12,(global.sw*0.5)+(-160*_scl),(global.sh*0)+(212*_scl),0.21*_scl,0.21*_scl,0,c_white,0.5*global.show_any_modal_fd) 
+
+				draw_set_font(fnt_main)
+				draw_text_transformed((global.sw*0.5)+(-160*_scl),(global.sh*0)+(212*_scl),"COPY\npuzzle",0.1*_tscl,0.1*_tscl,0)
+		
+			}
+			
+			var _grid_offset_y = 0
+			if nonstandard_allowed = 1 || nonstandard_used >= 1 {
+				_grid_offset_y = 70
+				draw_set_font(fnt_main)
+				draw_set_alpha(0.9*global.show_any_modal_fd)
+				draw_set_colour(make_colour_hsv(5,120,255))
+				draw_text_transformed(global.sw*0.5,(global.sh*0.0)+(280*_scl),"Because you used a non-standard SECRET,\nyour post will be flagged as 'Non-Standard'\nto avoid frustrating players.",0.1*_tscl,0.1*_tscl,0)
+			}
+		
+			draw_set_color(_c_white)
+			
+			
+			draw_set_font(fnt_main)
+			draw_set_alpha(0.5*global.show_any_modal_fd)
+			//draw_text_transformed((global.sw*0.5)+(-380*0.5*_scl)+(40*_scl),(global.sh*0)+(210*_scl),"length: "+string(_keyboard_string_l)+"\n"+string(sqrd_l)+"x"+string(sqrd_l),0.1*_scl,0.1*_scl,0)
+		
+			draw_set_alpha(0.7*global.show_any_modal_fd)
+		
+		
+			var _keyboard_string_forgrid = string_copy(global.current_copy_code,0,global.game_grid_size_sqr)
+			var _keyboard_string_l = string_length(_keyboard_string_forgrid)
+			var sqrd_l = 1// sqr(floor(sqrt(_keyboard_string_l)))
+			if _keyboard_string_l >= 4 {
+				sqrd_l = floor(sqrt(_keyboard_string_l))
+			}
+			
+			draw_set_colour(_c_white)
+		
+			scr_draw_letter_grid(_keyboard_string_forgrid,(global.sw*0.5),(global.sh*0)+((260+_grid_offset_y)*_scl)+(16*sqrd_l*_scl),sqrd_l,32*_scl,0.15*_scl)
+		
+		
+			//draw_set_alpha(0.5*global.show_any_modal_fd)
+			draw_text_transformed((global.sw*0.5),(global.sh*0)+((260+_grid_offset_y)*_scl)+(16*2*sqrd_l*_scl)+(18*_scl),"secret: "+string(secret_word_str),0.1*_scl,0.1*_scl,0)
 		
 		
 		}
@@ -2283,8 +2859,11 @@ if global.show_PostTitle_input_prompt = 1 {
 	
 		if 1=1 {
 		
-		
-			draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,c_black,0.5*global.show_any_modal_fd) 
+			var _box_col = c_black
+			if global.light_mode = 1 {
+				_box_col = c_white	
+			}
+			draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,_box_col,0.5*global.show_any_modal_fd) 
 	
 		
 			draw_set_color(_c_white)
@@ -2331,6 +2910,12 @@ if global.show_PostTitle_input_prompt = 1 {
 				//close
 				html_submit_closebtn()
 				global.show_PostTitle_input_prompt = 0
+				
+				
+				//do something
+				//with (obj_ctrl) {
+				//	scr_validate_word()
+				//}
 		
 				//keyboard_virtual_hide()
 			
@@ -2353,6 +2938,16 @@ if global.show_PostTitle_input_prompt = 1 {
 				setElementProperty("CreatePostTitleInput","value","")
 			
 			}
+			
+			//COPY
+			if obj_ctrlp.username = "FermenterGames" || obj_ctrlp.username = "JigglyStardust" || !global.is_reddit {
+				if scr_mouse_over_button((global.sw*0.5)+(-160*_scl),(global.sh*0)+(212*_scl),0.19*_scl,0.09*_scl) {
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+				
+					copyToClipboard(global.current_copy_url)
+			
+				}
+			}
 		
 		
 		
@@ -2361,7 +2956,9 @@ if global.show_PostTitle_input_prompt = 1 {
 			
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 			
-				addClassElemID("modalCreatePostTitle","active")
+				if global.is_mobile >= 1 {
+					addClassElemID("modalCreatePostTitle","active")
+				}
 				setElementProperty("CreatePostTitleInput","value",string(_keyboard_string))
 			
 			}
@@ -2387,6 +2984,10 @@ if global.show_PostTitle_input_prompt = 1 {
 			show_debug_message("resetting keyboard_string")
 			keyboard_string = ""	
 		
+		}
+	
+		if keyboard_check(vk_control) && keyboard_check_pressed(ord("C")) {
+			copyToClipboard(global.current_copy_url)
 		}
 	
 	}
@@ -2431,25 +3032,366 @@ if global.show_export_prompt = 1 {
 
 if global.show_archives = 1 {
 	
-	draw_set_alpha(0.7*global.show_any_modal_fd)
-	draw_rectangle_color(0,0,global.sw,global.sh,_overlay_blue,_overlay_blue,_overlay_blue,_overlay_blue,0)
+	//draw_set_alpha(0.7*global.show_any_modal_fd)
+	//draw_rectangle_color(0,0,global.sw,global.sh,_overlay_blue,_overlay_blue,_overlay_blue,_overlay_blue,0)
+	//draw_set_alpha(1)
+	//draw_set_color(_c_white)
+	
+	////Render a div with fancy css
+	//var archives_container = html_div(undefined, "puzzleMenuWrapper","","archives-container");
+	
+	//var puzzleMenuHeader = html_div(archives_container, "puzzleMenuHeader","Archives","puzzleMenuHeader");
+	//html_h2(puzzleMenuHeader, "puzzleMenuH2","Archives","puzzleMenuH2");
+
+	////close button
+	//var closebtn = html_form(puzzleMenuHeader, "closebtn-form");
+	//html_submit(closebtn, "closebtn", "Close", !form_is_loading, form_is_loading ? "loading" : "");
+	//if html_element_interaction(closebtn)
+	//html_submit_closebtn()
+	
+	
+	//var puzzleMenu = html_div(archives_container, "puzzleMenu","i'm the ul","puzzleMenu");
+	
+	draw_set_alpha(0.97*global.show_any_modal_fd)
+	draw_rectangle_color(0,0,global.sw,global.sh,_overlay_blue_dk,_overlay_blue_dk,_overlay_blue_dk,_overlay_blue_dk,0)
 	draw_set_alpha(1)
 	draw_set_color(_c_white)
-	
-	//Render a div with fancy css
-	var archives_container = html_div(undefined, "puzzleMenuWrapper","","archives-container");
-	
-	var puzzleMenuHeader = html_div(archives_container, "puzzleMenuHeader","Archives","puzzleMenuHeader");
-	html_h2(puzzleMenuHeader, "puzzleMenuH2","Archives","puzzleMenuH2");
 
-	//close button
-	var closebtn = html_form(puzzleMenuHeader, "closebtn-form");
-	html_submit(closebtn, "closebtn", "Close", !form_is_loading, form_is_loading ? "loading" : "");
-	if html_element_interaction(closebtn)
-	html_submit_closebtn()
+	
+	//X to close
+	draw_sprite_ext(spr_sqr512,4,global.sw+(-40*_scl),(40*_scl),0.05*_scl,0.05*_scl,45,_c_white,0.5*global.show_any_modal_fd) 
+		
+	if global.show_any_modal_fd > 0.5 && mouse_check_button_pressed(mb_left) {
+		
+		if scr_mouse_over_button(global.sw+(-40*_scl),(40*_scl),0.2*_scl,0.1*_scl) {
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
+			//close
+			html_submit_closebtn()
+			global.show_options = 0
+		}
+	}
 	
 	
-	var puzzleMenu = html_div(archives_container, "puzzleMenu","i'm the ul","puzzleMenu");
+	
+	draw_set_color(c_white)
+	draw_set_valign(fa_middle)
+	draw_set_halign(fa_center)
+	draw_set_font(fnt_main)
+	draw_set_alpha(0.9*global.show_any_modal_fd)
+	
+	var xx = global.sw*0.5;
+	var yy = 170*_scl;
+	var spacing = 54*_scl;
+
+
+	var _total = array_length(global.browser_puzzles);
+	//if (_total == 0) exit; // nothing to draw
+
+	
+
+	var _start = global.browser_page * global.browser_limit //max(0, global.browser_cursor);
+	var _end   = min(_start + global.browser_limit - 1, array_length(global.browser_puzzles) - 1);//min(global.browser_cursor + global.browser_limit - 1, _total - 1);
+
+	//show_debug_message(global.browser_cursor)
+	
+	var _bord_col = merge_color(_highlight_blue,c_white,0.2)
+	var _highlight_blue_dk = merge_color(_highlight_blue,c_black,0.1)
+	var _highlight_blue_dk2 = make_color_hsv(145,220,80)
+
+	for (var i = _start; i <= _end; i++) {
+		
+		xx = (global.sw*0.5)+((i+1)*-40000*_scl*sqr(1-global.show_any_modal_fd))
+
+	   var p = global.browser_puzzles[i];
+		//show_debug_message(p)
+
+	   var _level_name =  p.levelName //+ " (" + p.levelTag + ")";
+		
+		/*
+		var _ldate = p.date_mmdd //scr_format_levelDate(p.levelDate,false)
+		//_ldate = string_copy(_ldate,0,string_length(_ldate)-5)
+		
+		var _ldaywk = p.date_wkday //scr_format_levelDate(p.levelDate,2)
+		*/
+		
+		var _ldate = scr_format_levelDate(p.levelDate,false)
+		_ldate = string_copy(_ldate,0,string_length(_ldate)-5)
+		
+		var _ldaywk = scr_format_levelDate(p.levelDate,2)
+		
+		
+		//var item_y = yy + (i * spacing);
+		var item_y = yy + ((i - _start) * spacing); // page offset
+    
+		draw_sprite_ext(spr_sqr512,0,xx, item_y+(4*_scl),0.6*_scl,0.085*_scl,0,_highlight_blue_dk2,1)
+		draw_sprite_ext(spr_sqr512,0,xx, item_y,0.6*_scl,0.085*_scl,0,_bord_col,1)
+		draw_sprite_ext(spr_sqr512,0,xx, item_y,0.597*_scl,0.082*_scl,0,_highlight_blue,1)
+		draw_sprite_ext(spr_sqr512,0,xx+(9*_scl), item_y,0.45*_scl,0.079*_scl,0,_highlight_blue_dk,1)
+		
+		
+		draw_set_halign(fa_left)
+		draw_set_font(fnt_main)
+		draw_set_alpha(1*global.show_any_modal_fd)
+		
+		//
+		
+		var _max_width = 220//290
+		var _letters_str_w = string_width(string(_level_name)+"?")*_scl
+			  
+		var _letters_scl = min(0.11,(_max_width*_scl)/(_letters_str_w+0.1))
+		
+		
+		if p.levelTag = "daily" { //&& 1=0 {
+			draw_text_transformed(xx+(-98*_scl), item_y+(0*_scl), _level_name, _letters_scl*_scl,0.11*_scl,0);
+		} else {
+		   draw_text_transformed(xx+(-98*_scl), item_y+(-7*_scl), _level_name, _letters_scl*_scl,0.11*_scl,0);
+			draw_set_font(fnt_main_r)
+			draw_text_transformed(xx+(-98*_scl), item_y+(9*_scl), "by u/"+p.levelCreator, 0.07*_scl,0.07*_scl,0);
+		}
+		
+		
+		
+		
+		//date
+		if 1=1 {//p.levelTag = "daily" {
+			//draw_set_colour(c_black)
+			draw_set_halign(fa_center)
+			//draw_set_alpha(0.15*global.show_any_modal_fd)
+			//draw_set_font(fnt_main_r)
+			////draw_text_transformed(xx+(-107*_scl), item_y+(-1*_scl), "|", 0.13*_scl,0.32*_scl,0);
+			//draw_text_transformed(xx+(125*_scl), item_y+(-1*_scl), "|", 0.13*_scl,0.32*_scl,0);
+			
+			draw_sprite_ext(spr_play_icon,0,xx+(138*_scl), item_y,0.06*_scl,0.06*_scl,0,c_white,0.8)
+			
+			draw_set_alpha(0.8*global.show_any_modal_fd)
+			draw_set_colour(c_white)
+			draw_set_font(fnt_main)
+			draw_text_transformed(xx+(-130*_scl), item_y+(-10*_scl), _ldaywk, 0.09*_scl,0.09*_scl,0);
+			draw_text_transformed(xx+(-130*_scl), item_y+(7*_scl), _ldate, 0.11*_scl,0.11*_scl,0);
+			
+		}
+		
+		draw_set_colour(c_white)
+		draw_set_halign(fa_center)
+		draw_set_font(fnt_main)
+		draw_set_alpha(0.9*global.show_any_modal_fd)
+		
+		if global.show_any_modal_fd > 0.5 && mouse_check_button_pressed(mb_left) {
+		
+			if scr_mouse_over_button(xx, item_y,0.6*_scl,0.09*_scl) {
+        
+				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				var selected = global.browser_puzzles[i]; 
+        
+				show_debug_message("Clicked: " + selected.postId);
+
+				// load level using postId
+				//load_level_from_post(selected.postId);
+				
+				html_submit_closebtn()
+				global.show_options = 0
+				
+				scr_reddit_reset_post()
+
+				//load post id
+				scr_reddit_load_post(selected.postId)
+				
+			}
+		}
+		 
+	}
+	
+	
+	draw_set_colour(c_white)
+	draw_set_halign(fa_center)
+	draw_set_font(fnt_main_r)
+	draw_set_alpha(0.9*global.show_any_modal_fd)
+	
+	var _pag_y = yy+(spacing*global.browser_limit)+(20*_scl)
+	var total_pages = ceil(array_length(global.browser_puzzles) / global.browser_limit);
+	
+	// Disabled logic
+   var can_prev = global.browser_page > 0;
+   var can_next = global.browser_page < total_pages - 1 || global.browser_hasMore;
+
+	draw_set_color(can_prev ? _c_white : c_dkgray);
+	draw_sprite_ext(spr_sqr512,0,xx+(-180*_scl)+(45*_scl), _pag_y,0.16*_scl,0.09*_scl,0,draw_get_color(),0.2)
+	draw_text_transformed(xx+(-180*_scl)+(45*_scl), _pag_y, "<< First", 0.1*_scl,0.1*_scl,0);
+	
+	draw_set_color(can_prev ? _c_white : c_dkgray);
+	draw_sprite_ext(spr_sqr512,0,xx+(-90*_scl)+(45*_scl), _pag_y,0.16*_scl,0.09*_scl,0,draw_get_color(),0.2)
+	draw_text_transformed(xx+(-90*_scl)+(45*_scl), _pag_y, "< Prev", 0.1*_scl,0.1*_scl,0);
+	
+	draw_set_color(can_next ? _c_white : c_dkgray);
+	draw_sprite_ext(spr_sqr512,0,xx+(90*_scl)+(-45*_scl), _pag_y,0.16*_scl,0.09*_scl,0,draw_get_color(),0.2)
+	draw_text_transformed(xx+(90*_scl)+(-45*_scl), _pag_y, "Next >", 0.1*_scl,0.1*_scl,0);
+	
+	draw_set_color(can_next ? _c_white : c_dkgray);
+	draw_sprite_ext(spr_sqr512,0,xx+(180*_scl)+(-45*_scl), _pag_y,0.16*_scl,0.09*_scl,0,draw_get_color(),0.2)
+	draw_text_transformed(xx+(180*_scl)+(-45*_scl), _pag_y, "Last >>", 0.1*_scl,0.1*_scl,0);
+	
+	draw_set_font(fnt_main_r)
+	draw_set_alpha(0.3*global.show_any_modal_fd)
+	
+	
+	draw_text_transformed(xx+(0*_scl), _pag_y+(45*_scl), "PAGE "+string(global.browser_page+1), 0.08*_scl,0.08*_scl,0);
+	
+	
+	draw_set_font(fnt_main)
+	draw_set_alpha(0.9*global.show_any_modal_fd)
+	
+	
+	draw_set_color(c_white)
+	
+	if global.show_any_modal_fd > 0.5 && mouse_check_button_pressed(mb_left) {
+		
+		if scr_mouse_over_button(xx+(-180*_scl)+(45*_scl), _pag_y,0.16*_scl,0.09*_scl) && can_prev {
+			//first
+			show_debug_message("Clicked: first");
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			global.browser_page = 0;
+		} else if scr_mouse_over_button(xx+(-90*_scl)+(45*_scl), _pag_y,0.16*_scl,0.09*_scl) && can_prev {
+			//prev
+			show_debug_message("Clicked: prev");
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			global.browser_page = max(0, global.browser_page - 1);
+		} else if scr_mouse_over_button(xx+(90*_scl)+(-45*_scl), _pag_y,0.16*_scl,0.09*_scl) && can_next {
+			//next
+			show_debug_message("Clicked: next");
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			var next_page = global.browser_page + 1;
+			
+			// do we already have enough data for next page?
+			if (next_page * global.browser_limit < _total) {
+				// data already exists, just move page
+				global.browser_page = next_page;
+				
+			} else if (global.browser_hasMore && !global.browser_loading) {
+				// Need to load more first
+				scr_browser_load_next_page();
+				// IMPORTANT: do NOT advance page yet
+			}
+			 
+		} else if scr_mouse_over_button(xx+(180*_scl)+(-45*_scl), _pag_y,0.16*_scl,0.09*_scl) && can_next {
+			//last
+			show_debug_message("Clicked: last");
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			//global.browser_page = max(0, total_pages - 1);
+			if (global.browser_hasMore) {
+			   // We don't have all data yet → keep loading
+			   global.browser_pending_last = true;
+			   scr_browser_load_next_page();
+			} else {
+			   // Already fully loaded → go to last page instantly
+			   var total_pages = ceil(array_length(global.browser_puzzles) / global.browser_limit);
+			   global.browser_page = max(0, total_pages - 1);
+			}
+		}
+	}
+	
+	
+	//draw_text(50, btn_y, "<< First");
+	//draw_text(120, btn_y, "< Prev");
+	//draw_text(200, btn_y, "Next >");
+	//draw_text(280, btn_y, "Last >>");
+
+	// --- Tag filter buttons ---
+	var tag_y = 110*_scl;
+	//draw_text(50, tag_y, "[All]");
+	//draw_text(120, tag_y, "[Daily]");
+	//draw_text(200, tag_y, "[Community]");
+	
+	draw_set_color(c_white)
+	draw_set_valign(fa_middle)
+	draw_set_halign(fa_left)
+	
+	
+	draw_text_transformed(xx+(-176*_scl), tag_y+(-68*_scl), string_upper("S n e a k l e   A r c h i v e"), 0.14*_scl,0.14*_scl,0);
+	
+	draw_set_font(fnt_main_r)
+	draw_set_alpha(0.5*global.show_any_modal_fd)
+	
+	draw_text_transformed(xx+(-176*_scl), tag_y+(-32*_scl), "filter by:", 0.1*_scl,0.1*_scl,0);
+	
+	draw_set_alpha(0.9*global.show_any_modal_fd)
+	draw_set_valign(fa_middle)
+	draw_set_halign(fa_center)
+	draw_set_font(fnt_main_r)
+	
+	
+	draw_set_color(global.browser_tag == "" ? _highlight_blue : c_dkgray);
+	draw_sprite_ext(spr_sqr512,0,xx+(-120*_scl), tag_y,0.22*_scl,0.07*_scl,0,draw_get_color(),(global.browser_tag == "" ? 0.9 : 0.3))
+	draw_set_color(global.browser_tag == "" ? c_white : c_gray);
+	draw_text_transformed(xx+(-120*_scl), tag_y, "All", 0.1*_scl,0.1*_scl,0);
+	
+	draw_set_color(global.browser_tag == "daily" ? _highlight_blue : c_dkgray);
+	draw_sprite_ext(spr_sqr512,0,xx+(-0*_scl), tag_y,0.22*_scl,0.07*_scl,0,draw_get_color(),(global.browser_tag == "daily" ? 0.9 : 0.3))
+	draw_set_color(global.browser_tag == "daily" ? c_white : c_gray);
+	draw_text_transformed(xx+(-0*_scl), tag_y, "Daily", 0.1*_scl,0.1*_scl,0);
+	
+	draw_set_color(global.browser_tag == "community" ? _highlight_blue : c_dkgray);
+	draw_sprite_ext(spr_sqr512,0,xx+(120*_scl), tag_y,0.22*_scl,0.07*_scl,0,draw_get_color(),(global.browser_tag == "community" ? 0.9 : 0.3))
+	draw_set_color(global.browser_tag == "community" ? c_white : c_gray);
+	draw_text_transformed(xx+(120*_scl), tag_y, "Community", 0.1*_scl,0.1*_scl,0);
+	
+
+	if global.show_any_modal_fd > 0.5 && mouse_check_button_pressed(mb_left) {
+		
+		if scr_mouse_over_button(xx+(-120*_scl), tag_y,0.22*_scl,0.07*_scl) {
+			//all
+			show_debug_message("Clicked: all");
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			if (global.browser_tag != "") {
+		      global.browser_tag = "";
+		      global.browser_puzzles = [];
+		      global.browser_page = 0;
+		      global.browser_cursor = 0;
+		      global.browser_hasMore = true;
+		      scr_browser_load_next_page();
+		   }
+		} else if scr_mouse_over_button(xx+(-0*_scl), tag_y,0.22*_scl,0.07*_scl) {
+			//daily
+			show_debug_message("Clicked: daily");
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			if (global.browser_tag != "daily") {
+		      global.browser_tag = "daily";
+		      global.browser_puzzles = [];
+		      global.browser_page = 0;
+		      global.browser_cursor = 0;
+		      global.browser_hasMore = true;
+		      scr_browser_load_next_page();
+		   }
+		} else if scr_mouse_over_button(xx+(120*_scl), tag_y,0.22*_scl,0.07*_scl) {
+			//community
+			show_debug_message("Clicked: community");
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			if (global.browser_tag != "community") {
+		      global.browser_tag = "community";
+		      global.browser_puzzles = [];
+		      global.browser_page = 0;
+		      global.browser_cursor = 0;
+		      global.browser_hasMore = true;
+		      scr_browser_load_next_page();
+		   }
+		}
+	}
+	
+	
+	if archive_loading_fd > 0 {
+		
+		
+		draw_set_alpha(0.9*archive_loading_fd)
+		draw_set_color(_overlay_blue)
+		draw_rectangle(0,tag_y+(30*_scl),global.sw,_pag_y-(35*_scl),0)
+		
+		draw_set_color(c_white)
+		draw_text_transformed(global.sw*0.5,mean(tag_y,_pag_y),"loading...",0.13*_tscl*archive_loading_fd,0.13*_tscl*archive_loading_fd,0)
+		
+		draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.5,mean(tag_y,_pag_y),0.4*_scl*archive_loading_fd,0.4*_scl*archive_loading_fd,global.game_timer_meta*1,_c_white,0.06)
+		draw_sprite_ext(spr_sqr512_tile_dotted,0,global.sw*0.5,mean(tag_y,_pag_y),0.5*_scl*archive_loading_fd,0.5*_scl*archive_loading_fd,global.game_timer_meta*-0.88,_c_white,0.06)
+		
+	}
+	
 	
 }
 
@@ -2528,7 +3470,7 @@ if global.show_options_fd > 0 {
 	//draw_text_transformed(global.sw*0.5,(global.sh*0)+(140*_scl),"in development :)",0.15*_tscl,0.15*_tscl,0)
 	
 	//sep line
-	draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(130*_scl),0.65*_scl,0.004*_scl,0,_c_white,0.2*global.show_options_fd) 
+	draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(110*_scl),0.65*_scl,0.004*_scl,0,_c_white,0.2*global.show_options_fd) 
 	
 	
 	var _op_b_1_si = 0
@@ -2543,7 +3485,7 @@ if global.show_options_fd > 0 {
 	}
 	
 	//obj_ctrlp.option_show_timer = 0
-	if obj_ctrlp.option_show_timer = 1 {
+	if real(obj_ctrlp.option_show_timer) = 1 {
 		_op_b_2_si = 1
 	}
 	
@@ -2562,22 +3504,22 @@ if global.show_options_fd > 0 {
 	
 	draw_set_color(c_white)
 	//btn1
-	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(200*_scl)+(60*_scl*0)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*global.show_options_fd) 
-	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(200*_scl)+(60*_scl*0),0.25*_scl,0.25*_scl,0,c_white,2*global.show_options_fd)
+	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(160*_scl)+(60*_scl*0)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*global.show_options_fd) 
+	draw_sprite_ext(spr_btn_8,_op_b_1_si,global.sw*0.5,(160*_scl)+(60*_scl*0),0.25*_scl,0.25*_scl,0,c_white,2*global.show_options_fd)
 	
 	
 	draw_set_font(fnt_main)
 	draw_set_alpha(0.9*global.show_options_fd)
-	draw_text_transformed(global.sw*0.5,(200*_scl)+(60*_scl*0),_op_b_1_str,0.11*_tscl,0.11*_tscl,0)
+	draw_text_transformed(global.sw*0.5,(160*_scl)+(60*_scl*0),_op_b_1_str,0.11*_tscl,0.11*_tscl,0)
 	
 	
 	//btn2
-	draw_sprite_ext(spr_btn_8,_op_b_2_si,global.sw*0.5,(200*_scl)+(60*_scl*1)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*global.show_options_fd) 
-	draw_sprite_ext(spr_btn_8,_op_b_2_si,global.sw*0.5,(200*_scl)+(60*_scl*1),0.25*_scl,0.25*_scl,0,c_white,2*global.show_options_fd)
+	draw_sprite_ext(spr_btn_8,_op_b_2_si,global.sw*0.5,(160*_scl)+(60*_scl*1)+(5*_scl),0.25*_scl,0.25*_scl,0,_c_gray,1*global.show_options_fd) 
+	draw_sprite_ext(spr_btn_8,_op_b_2_si,global.sw*0.5,(160*_scl)+(60*_scl*1),0.25*_scl,0.25*_scl,0,c_white,2*global.show_options_fd)
 	
 	//btn3
-	draw_sprite_ext(spr_btn_8,_op_b_3_si,global.sw*0.5,(200*_scl)+(60*_scl*2)+(5*_scl),0.25*_scl,0.25*_scl,0,_op_b_3_col2,1*global.show_options_fd) 
-	draw_sprite_ext(spr_btn_8,_op_b_3_si,global.sw*0.5,(200*_scl)+(60*_scl*2),0.25*_scl,0.25*_scl,0,_op_b_3_col,2*global.show_options_fd) 
+	draw_sprite_ext(spr_btn_8,_op_b_3_si,global.sw*0.5,(160*_scl)+(60*_scl*2)+(5*_scl),0.25*_scl,0.25*_scl,0,_op_b_3_col2,1*global.show_options_fd) 
+	draw_sprite_ext(spr_btn_8,_op_b_3_si,global.sw*0.5,(160*_scl)+(60*_scl*2),0.25*_scl,0.25*_scl,0,_op_b_3_col,2*global.show_options_fd) 
 	
 	
 	if global.show_options_fd > 0.5 && mouse_check_button_pressed(mb_left) {
@@ -2595,25 +3537,46 @@ if global.show_options_fd > 0 {
 			global.show_debug = !global.show_debug
 		}
 		
-		if scr_mouse_over_button(global.sw*0.5,(200*_scl)+(60*_scl*0),0.64*_scl,0.08*_scl) {
+		if scr_mouse_over_button(global.sw*0.5,(160*_scl)+(60*_scl*0),0.64*_scl,0.08*_scl) {
 			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 			//btn1
 			
-			global.light_mode = !global.light_mode
-		}
-		
-		if scr_mouse_over_button(global.sw*0.5,(200*_scl)+(60*_scl*1),0.64*_scl,0.08*_scl) {
-			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
-			//btn1
+			with (obj_ctrlp) {
+				
+				option_darkmode = real(option_darkmode)
+				option_darkmode = !option_darkmode
+				
+				if option_darkmode = 0 {
+					global.light_mode = 1
+				} else if option_darkmode = 1 {
+					global.light_mode = 0
+				}
 			
-			if obj_ctrlp.option_show_timer = 0 {
-				obj_ctrlp.option_show_timer = 1	
-			} else if obj_ctrlp.option_show_timer = 1 {
-				obj_ctrlp.option_show_timer = 0
+				option_darkmode = string(option_darkmode)
+				api_save_profile({option_darkmode},undefined)
+			
 			}
+			
 		}
 		
-		if scr_mouse_over_button(global.sw*0.5,(200*_scl)+(60*_scl*2),0.64*_scl,0.08*_scl) {
+		if scr_mouse_over_button(global.sw*0.5,(160*_scl)+(60*_scl*1),0.64*_scl,0.08*_scl) {
+			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			//btn1
+			
+			with (obj_ctrlp) {
+				
+				option_show_timer = real(option_show_timer)
+				option_show_timer = !option_show_timer
+
+				option_show_timer = string(option_show_timer)
+				api_save_profile({option_show_timer},undefined)
+
+			}
+			
+
+		}
+		
+		if scr_mouse_over_button(global.sw*0.5,(160*_scl)+(60*_scl*2),0.64*_scl,0.08*_scl) {
 			audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 			//btn2
 			if obj_ctrlp.clear_stats_confirm = 0 {
@@ -2633,6 +3596,14 @@ if global.show_options_fd > 0 {
 					stat_d_total_time			= "0"
 					stat_d_total_guesses		= "0"
 					stat_d_total_hints		= "0"
+					
+					stat_c_total_started		= "0"
+					stat_c_total_finished	= "0"
+					stat_c_total_gaveup		= "0"
+					stat_c_total_score		= "0"
+					stat_c_total_time			= "0"
+					stat_c_total_guesses		= "0"
+					stat_c_total_hints		= "0"
 
 					stat_u_total_started		= "0"
 					stat_u_total_finished	= "0"
@@ -2646,6 +3617,11 @@ if global.show_options_fd > 0 {
 					stat_d_total_score_avg = "0"
 					stat_d_total_time_avg =	"0"
 					stat_d_total_guesses_avg = "0"
+					
+					stat_c_total_finished_perc = "0%"
+					stat_c_total_score_avg = "0"
+					stat_c_total_time_avg =	"0"
+					stat_c_total_guesses_avg = "0"
 
 					stat_u_total_finished_perc = "0%"
 					stat_u_total_score_avg = "0"
@@ -2662,6 +3638,13 @@ if global.show_options_fd > 0 {
 						stat_d_total_time,
 						stat_d_total_guesses,
 						stat_d_total_hints,
+						stat_c_total_started,
+						stat_c_total_finished,
+						stat_c_total_gaveup,
+						stat_c_total_score,
+						stat_c_total_time,
+						stat_c_total_guesses,
+						stat_c_total_hints,
 						stat_u_total_started,
 						stat_u_total_finished,
 						stat_u_total_gaveup,
@@ -2678,8 +3661,9 @@ if global.show_options_fd > 0 {
 		}
 	}
 	
-	scr_draw_stats(1,(300*_scl)+(120*_scl*0),_scl,1*global.show_options_fd)
-	scr_draw_stats(0,(300*_scl)+(120*_scl*1),_scl,1*global.show_options_fd)
+	scr_draw_stats(STATS_DAILY,(230*_scl)+(110*_scl*0),_scl,1*global.show_options_fd)
+	scr_draw_stats(STATS_COMMUNITY,(230*_scl)+(110*_scl*1),_scl,1*global.show_options_fd)
+	scr_draw_stats(STATS_UNLIMITED,(230*_scl)+(110*_scl*2),_scl,1*global.show_options_fd)
 }
 
 
