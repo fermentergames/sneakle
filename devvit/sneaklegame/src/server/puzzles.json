@@ -1,0 +1,62 @@
+[ 
+    {
+        "gameData": "loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3",
+        "title": "Puzzle title 1",
+        "author": "Satan!",
+        "date": "2024-11-03"
+    },
+    {
+        "gameData": "loadBoard=HIDEWORDINTOGRID&loadSecret=4-7-12-16-15-10-13",
+        "title": "Puzzle title 2",
+        "author": "Satan",
+        "date": "2024-11-03"
+    },
+    {
+        "gameData": "loadBoard=LIVELOVELAFFWORD&loadSecret=11-6-5-9-14-13",
+        "title": "Puzzle title 3",
+        "author": "Acey",
+        "date": "2024-11-03"
+    },
+    {
+        "gameData": "loadBoard=WHATWORDISINGRID&loadSecret=3-7-11-16",
+        "title": "#4",
+        "author": "Acey",
+        "date": "2024-11-03"
+    },
+    {
+        "gameData": "loadBoard=IOOWYDSCDVEPENTGAAAIIJMEU&loadSecret=13-14-9-3-4",
+        "title": "#4",
+        "author": "Satan",
+        "date": "2024-11-02"
+    },
+    {
+        "gameData": "loadBoard=UWXVMPENENUDDLKHSEEAATWOR&loadSecret=23-19-20-15-9-8-7-13",
+        "title": "#4",
+        "author": "Satan",
+        "date": "2024-11-01"
+    },
+    {
+        "gameData": "loadBoard=BDOEBKNSIROEERBAMDIRGGATE&loadSecret=6-7-12-13",
+        "title": "#4",
+        "author": "Acey",
+        "date": "2024-10-31"
+    },
+    {
+        "gameData": "loadBoard=IYEIORAOABEANEAEPCINMALNI&loadSecret=17-23-22-18-14-10-5",
+        "title": "#4",
+        "author": "Acey",
+        "date": "2024-10-30"
+    },
+    {
+        "gameData": "loadBoard=MUSIXIDMTETEEALCHDYRATDAE&loadSecret=16-17-13-18-23-24-20",
+        "title": "#3",
+        "author": "Acey",
+        "date": "2024-10-29"
+    },
+    {
+        "gameData": "loadBoard=FDTSUREOSIAIOTME&loadSecret=4-3-6-7-11-15",
+        "title": "#2",
+        "author": "Acey",
+        "date": "2024-10-28"
+    }
+]

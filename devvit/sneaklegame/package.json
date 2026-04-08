@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "name": "sneaklegame",
+  "version": "0.0.0",
+  "license": "BSD-3-Clause",
+  "type": "module",
+  "scripts": {
+    "postinstall": "npm run build",
+    "build:client": "cd src/client && vite build --emptyOutDir",
+    "build:server": "cd src/server && vite build --emptyOutDir",
+    "build": "npm run build:client && npm run build:server",
+    "deploy": "npm run build && devvit upload",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"CLIENT,SERVER,DEVVIT\" -c \"blue,green,magenta\" \"npm run dev:client\" \"npm run dev:server\" \"npm run dev:devvit\"",
+    "dev:client": "cd src/client && vite build --watch --emptyOutDir",
+    "dev:devvit": "dotenv -e .env -- devvit playtest",
+    "dev:server": "cd src/server && vite build --watch --emptyOutDir",
+    "login": "devvit login",
+    "launch": "npm run build && npm run deploy && devvit publish",
+    "type-check": "tsc --build"
+  },
+  "dependencies": {
+    "@devvit/public-api": "^0.12.15",
+    "@devvit/web": "^0.12.15",
+    "express": "5.1.0"
+  },
+  "devDependencies": {
+    "@devvit/cli": "^0.12.16",
+    "@types/express": "5.0.1",
+    "concurrently": "9.1.2",
+    "devvit": "^0.12.15",
+    "dotenv-cli": "8.0.0",
+    "typescript": "5.8.3",
+    "vite": "6.2.4"
+  }
+}

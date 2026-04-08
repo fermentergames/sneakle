@@ -1,0 +1,386 @@
+@-webkit-keyframes rotation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-moz-keyframes rotation {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@-o-keyframes rotation {
+  from {
+    -o-transform: rotate(0deg);
+  }
+  to {
+    -o-transform: rotate(360deg);
+  }
+}
+
+@keyframes rotation { 
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;  
+  }
+}
+
+html { 
+  background: #0e1732;
+} 
+
+ 
+body { 
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  min-height: fill-available;
+  min-height: 100svh;
+  min-width: 100vw;
+  background: radial-gradient(56.63% 56.63% at 50% 43.37%, #15224b 0%, #0e1732 100%);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  place-items: center;
+}
+
+body.scrollingDisabled {
+  overflow: hidden;
+}
+
+.game-canvas {
+  display: none;
+  border: 0px none;
+  background-color: black;
+  position: relative;
+  transition: opacity .5s cubic-bezier(0, 0.33, 0.58, 1);
+  -webkit-transition: opacity .5s cubic-bezier(0, 0.33, 0.58, 1);
+  opacity: 0;
+  filter: blur(0) grayscale(0);
+  margin-top: auto;
+  margin-bottom: auto;
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -o-crisp-edges;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+.game-canvas.active {
+  animation-name: fadeIn;
+  animation-duration: 0.2s;
+  opacity: 1;
+}
+
+.spinner {
+  height: 30px;
+  width: 30px; 
+  -webkit-animation: rotation 0.8s linear infinite;
+  -moz-animation: rotation 0.8s linear infinite;
+  -o-animation: rotation 0.8s linear infinite;
+  animation: rotation 0.8s linear infinite;
+  border: 5px solid #45b9f7;
+  border-top: 5px solid #1f6dff;
+  border-radius: 100px; 
+}
+
+.status {
+  display: inline-block;
+  vertical-align: top;
+  font-weight: bold;
+  color: white;
+}
+
+#progress {
+  width: 250px;
+  height: 10px;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 5px;
+}
+
+progress[value]::-webkit-progress-bar {
+  background-color: rgba(132, 146, 166, 0.5);
+  height: 10px;
+  border-radius: 15px;
+}
+
+progress[value]::-webkit-progress-value {
+  background-image: -webkit-linear-gradient(left, #1f6dff, #45b9f7);
+  height: 10px;
+  border-radius: 15px;
+}
+
+.loading {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.loading > * {
+  padding: 10px;
+  margin: 10px;
+}
+
+
+/**/
+/**/
+/**/
+/**/
+
+.img-logo {
+  max-width: 100%;
+  margin: 0 auto; 
+  object-fit: contain;
+  height: auto;
+  width: 50vw;
+  max-height: 10vh;
+}
+
+.img-logo.img-prev {
+  max-height: 40vh;
+}
+
+.img-prev {
+  border-radius: 8px;
+}
+
+@media screen and (min-width: 500px) {
+  .img-logo {
+    max-height: 6vh;
+  }
+
+  .img-logo.img-prev {
+    max-height: 24vh;
+  }
+} 
+
+p.subtitle {
+  color: #fff;
+  opacity: 0.8;
+}
+
+.modalMenu {
+  display: flex;
+  position: absolute;
+  top: 0px;
+  /* height: 0px; */
+  max-height: 0;
+  background: #224062;
+  border: 0;
+  border-radius: 10px;
+  width: calc(100vw - 80px); 
+  max-width: calc(400px - 10px);
+  padding-inline: 20px;
+  padding-block: 0px; 
+  overflow: hidden;
+  transition: all 0.4s ease-in-out;
+  flex-direction: column;
+  color: #fff;
+}
+
+.modalMenu.active {
+  max-height: min(80dvh, 500px);
+  /* height: fit-content; */ 
+  padding-top: 15px;
+  padding-bottom: 15px;
+  top: calc(100lvh - 100svh + 290px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.puzzleMenu {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 30px;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+a.menu-item ul.puzzle-details {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+a.menu-item {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  align-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 15px;
+  background: #29638c;
+  color: #fff;
+  text-decoration: none;
+  padding-block: 10px;
+}
+
+a.menu-item:hover {
+  background: #4b90c1;
+}
+
+.puzzle-items-main {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  flex-direction: column;
+  /* gap: 10px; */
+}
+
+
+.puzzle-item {
+  font-size: 10px;
+  font-weight: 300;
+  opacity: 0.5;
+}
+
+.puzzle-item.puzzle-date {
+  font-weight: 300;
+}
+
+
+.puzzle-item.puzzle-title {
+  font-size: 20px;
+  font-weight: 800;
+  opacity: 1;
+}
+
+.puzzle-item.puzzle-letters {
+  font-family: "DM Mono", monospace;
+  font-weight: 500;
+  font-size: 12px;
+  font-style: normal;
+  width: fit-content;
+  padding: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  /* aspect-ratio: 1; */
+  opacity: 1;
+  /* transform: scale(0.8); */
+  letter-spacing: 8px;
+  padding: 7px 2px 5px 10px;
+}
+
+.modalMenuHeader {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalMenuHeader h2 {
+  margin: 0;
+}
+
+a.modalMenuClose { 
+  color: #fff;
+  opacity: 0.5;
+}
+
+span.closeCreateTypeLettersDetails {
+  font-size: 80%; 
+  opacity: 0.8;
+}
+
+span.spanCreatePostTitleSmaller {
+  font-size: 70%;
+  opacity: 0.8;
+}
+
+input {
+  pointer-events: auto !important;
+  user-select: text !important;
+}
+
+form input, form button {
+  width: 100%;
+}
+
+form button {
+  pointer-events: auto;
+  z-index: 9999;
+}
+
+#CreateTypeLettersInput {
+  margin-bottom: 10px;
+  height: 40px;
+}
+
+#submitTypedLettersBtn { 
+  height: 30px;
+}
+
+#CreatePostTitleInput {
+  margin-bottom: 10px;
+  height: 40px;
+}
+
+#submitPostTitleBtn {
+  height: 30px;
+}
+
+/*************/
+
+/*#archiveList {    
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.archiveItem {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.archiveItem:hover {
+  background: #eee;
+}
+
+.archiveTitle {
+  font-weight: bold;
+}
+
+.archiveMeta {
+  font-size: 12px;
+  opacity: 0.7;
+}*/

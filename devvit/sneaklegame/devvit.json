@@ -1,0 +1,205 @@
+{
+  "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
+  "name": "sneaklegame",
+  "post": {
+    "dir": "dist/client",
+    "entrypoints": {
+      "default": {
+        "entry": "splash.html",
+        "inline": true
+      },
+      "game": {
+        "entry": "index.html"
+      }
+    }
+  },
+  "server": {
+    "dir": "dist/server",
+    "entry": "index.cjs"
+  },
+  "media": {
+    "dir": "src/client/public"
+  },
+  "marketingAssets": {
+    "icon": "src/client/public/sneakle-favicon-1024.png"
+  },
+  "menu": {
+    "items": [
+      {
+        "label": "➕🧩 Add puzzle to daily queue",
+        "description": "Add a new puzzle to the daily queue",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/add-puzzle-to-daily-queue"
+      },
+      {
+        "label": "🎚️ Toggle Daily Puzzle Auto-Posting",
+        "description": "toggle-puzzle-posting",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/toggle-puzzle-posting"
+      },
+      {
+        "label": "🧹📃 Clear Puzzle Queue",
+        "description": "Remove all queued puzzles",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/puzzle-clear-queue"
+      },
+      {
+        "label": "☢️🗑️🗓️❌ Reset daily/level lists",
+        "description": "⚠️❌Careful!❌⚠️",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/reset-lists"
+      },
+      {
+        "label": "🧩➡️ Post Next Puzzle Now",
+        "description": "Immediately post the next puzzle",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/puzzle-post-now"
+      },
+      {
+        "label": "📥🧩 Import Puzzles JSON for Daily Queue",
+        "description": "Submit JSON as text to import",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/puzzle-import-json"
+      },
+      {
+        "label": "📤🧩 Export Puzzle Queue (JSON)",
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/puzzle-export-queue",
+        "location": "subreddit"
+      },
+      {
+        "label": "📝🗓️🧩 Manage Daily Puzzle Queue",
+        "description": "reorder + delete puzzles in the queue",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/puzzle-manage-queue"
+      },
+      {
+        "label": "🛠️🧩 Manage PostData",
+        "description": "Edit a single post's postData",
+        "location": ["post"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/manage-postdata"
+      },
+      {
+        "label": "🛠️🗓️ Manage DailyList",
+        "description": "",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/manage-dailylist"
+      },
+      {
+        "label": "🛠️🧩🔀 migrate-puzzle-metadata",
+        "description": "",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/migrate-puzzle-metadata"
+      },
+      {
+        "label": "📜 Log 'puzzle.levelID' Redis",
+        "description": "",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/debug-puzzles-redis"
+      },
+      {
+        "label": "🪪👥 Resync ALL User Profiles",
+        "description": "",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/resync-user-profiles"
+      },
+      {
+        "label": "🪪👤 Resync SINGLE User Profile",
+        "description": "",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/resync-single-user"
+      },
+      {
+        "label": "🚫💼 Cancel Job",
+        "description": "",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/cancel-job"
+      }
+    ]
+  },
+  "forms": {
+    "addPuzzleForm": "/internal/form/add-puzzle-to-daily-queue",
+    "importPuzzlesForm": "/internal/form/puzzle-import-json",
+    "exportPuzzleQueueForm": "/internal/form/puzzle-export-queue",
+    "managePuzzleQueueForm": "/internal/form/puzzle-manage-queue",
+    "managePostDataForm": "/internal/form/manage-postdata",
+    "manageDailyListForm": "/internal/form/manage-dailylist",
+    "resyncSingleUserForm": "/internal/form/resync-single-user",
+    "cancelJobForm": "/internal/form/cancel-job"
+  },
+  "triggers": {
+    "onAppInstall": "/internal/on-app-install"
+  },
+  "scheduler": {
+    "tasks": {
+      "auto-post-daily-puzzle-from-queue-task-8am-est-task": {
+        "endpoint": "/internal/scheduler/auto-post-daily-puzzle-from-queue",
+        "cron": "0 12 * * *"
+      },
+      "resync-user-profiles-task": {
+        "endpoint": "/internal/scheduler/resync-user-profiles",
+        "cron": "* * * * *"
+      }
+    }
+  },
+  "dev": {
+    "subreddit": "sneaklegame_dev"
+  },
+  "permissions": {
+    "redis": true,
+    "reddit": {
+      "enable": true,
+      "asUser": [
+        "SUBMIT_POST",
+        "SUBMIT_COMMENT",
+        "SUBSCRIBE_TO_SUBREDDIT"
+      ]
+    }
+  },
+  "settings": {
+    "subreddit": {
+      "logLevel": {
+        "type": "select",
+        "label": "Log Level",
+        "helpText": "Controls the level of log messages for performance..",
+        "defaultValue": "Info",
+        "options": [
+          {
+            "label": "Error",
+            "value": "Error"
+          },
+          {
+            "label": "Warn",
+            "value": "Warn"
+          },
+          {
+            "label": "Info",
+            "value": "Info"
+          },
+          {
+            "label": "Debug",
+            "value": "Debug"
+          },
+          {
+            "label": "Trace",
+            "value": "Trace"
+          }
+        ]
+      }
+    }
+  }
+}

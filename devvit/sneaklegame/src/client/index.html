@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>Sneakle</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+  </head>
+  <body>
+
+    <canvas
+      class="game-canvas"
+      id="canvas"
+      oncontextmenu="event.preventDefault()"
+      tabindex="-1"
+    >
+    </canvas>
+    <!-- <button type="button" onclick="document.getElementById('canvas').contentWindow.postMessage('Hello this is a message from your host window','*')">Post Message</button> -->
+    <!-- <div id="menu-modal" class="puzzleMenuWrapper active" >  --> 
+    
+    <!-- <button class="callGameMakerTestBtn" id="callGameMakerTestBtn">callGameMakerTestBtn</button> -->
+
+    <!-- <div id="menu-modal" class="modalMenu puzzleMenuWrapper" >
+      <div class="modalMenuHeader">
+          <h2>Archive</h2>
+          <a id="closeArchiveMenu" class="modalMenuClose" title="Close" href="#">Close</a>
+      </div>
+      <ul id="puzzleMenu" class="menu"></ul> 
+    </div>  -->
+
+    <!-- <div id="modalArchive" class="modalMenu modalArchive">
+      <div class="modalMenuHeader">
+        <h2>Sneakle Puzzle Archive</h2>  
+        <a id="closeArchive" class="modalMenuClose" href="#">Close</a> 
+      </div>
+
+      <div id="archiveList"></div>
+    </div> -->
+
+    <div id="modalCreateTypeLetters" class="modalMenu modalCreateTypeLetters" >
+      <div class="modalMenuHeader">
+          <p>Use Input below on mobile.</p> 
+          <a id="closeCreateTypeLetters" class="modalMenuClose" title="Close" href="#">Close</a>
+      </div>
+      <!-- <p>Enter the letters you want to use in your puzzle.<br><span class="closeCreateTypeLettersDetails">(Length must be a square number: 9 | 16 | 25 | 36 | 49)<br>(Excess length will be rounded down to nearest square number.)</span></p> --> 
+      
+      <form id="submitTypedLettersForm">
+        <input type="text" minlength="4" maxlength="100" size="10" name="CreateTypeLettersInput" id="CreateTypeLettersInput" autofocus>
+        <!-- <a id="submitTypedLettersBtn2" class="submitTypedLettersBtn2" title="Submit" href="#">iOS Submit</a> -->
+        <button type="submit" class="submitTypedLettersBtn" id="submitTypedLettersBtn" href="#">Okay</button>
+      </form>
+    </div>
+
+    <!--------|-------->
+
+    <div id="modalCreatePostTitle" class="modalMenu modalCreatePostTitle" >
+      <div class="modalMenuHeader">
+          <p>Enter a title for your puzzle and submit. <span class="spanCreatePostTitleSmaller">(*This will create a post as your Reddit username)</span></p> 
+          <a id="closeCreatePostTitle" class="modalMenuClose" title="Close" href="#">Close</a>
+      </div>
+      <!-- <p>Enter the letters you want to use in your puzzle.<br><span class="closeCreateTypeLettersDetails">(Length must be a square number: 9 | 16 | 25 | 36 | 49)<br>(Excess length will be rounded down to nearest square number.)</span></p> --> 
+      
+      <form id="submitPostTitleForm">
+        <input type="text" minlength="4" maxlength="100" size="10" name="CreatePostTitleInput" id="CreatePostTitleInput" autofocus>
+        <!-- <a id="submitTypedLettersBtn2" class="submitTypedLettersBtn2" title="Submit" href="#">iOS Submit</a> -->
+        <button type="submit" class="submitPostTitleBtn" id="submitPostTitleBtn" href="#">Okay</button>
+      </form>
+    </div>
+
+    <div class="loading" id="loading">
+      <img class="img-logo" src="/sneakle-logo.png" alt="Sneakle Logo" />
+      <img class="img-logo img-prev" src="/sneakle-grid-prev.png" alt="Sneakle Prev" />
+      <p class="subtitle">Find the <i>hidden word!</i></p>
+      <div class="spinner" id="spinner"></div>
+      <div class="status" id="status">Loading Sneakle...</div>
+      <progress value="0" max="100" id="progress" hidden="1"></progress>
+    </div>
+    <script type="module" src="main.ts" defer></script>
+  </body>
+</html>

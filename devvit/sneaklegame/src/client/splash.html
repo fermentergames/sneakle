@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="splash/splash.css" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, height=device-height, user-scalable=0"
+    />
+    <title>Sneakle</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+  </head>
+  <body class="app">
+
+    <div class="stars" id="stars"></div>
+    <div class="stars" id="stars2"></div>
+    <div class="stars" id="stars3"></div>
+
+    <div class="main">
+      
+      <div class="join-button-wrapper wiggle-intermittent" id="join-button-wrapper"> 
+        <button id="join-button"><span><b><span class="emoji-shadowed">⭐</span> Join <u>r/Sneakle</b></u></br><span class="SpanFordailypuzzles">for daily puzzles!</span></span></button>
+      </div>
+      <div class="create-button-wrapper">
+        <button id="create-button" disabled="true"><span><b>Create<span class="hidden-sm"> Your Own</span>! <span class="emoji-shadowed">🔠✏️</span></b></span></button>
+      </div>
+      <img class="img-logo" src="/sneakle-logo.png" alt="Sneakle Logo" />
+      <!-- <div class="join-ask wiggle-intermittent" id="">Join for daily puzzles!</div> -->
+      <img class="img-prev" src="/sneakle-prev.gif" alt="Sneakle Preview Gif" />
+      <h1 class="title" id="title"></h1>
+      <div class="content border-gradient">
+        <div class="level-details-wrapper">
+          <div class="level-details-loading" id="levelDetailsLoading">Loading...</div>
+          <div class="level-header-wrapper">
+            <!-- <div class="levelTagAndDate" id="">
+              <div class="" id="levelTag"></div>
+              <div class="" id="levelDate"></div>
+            </div> -->
+            <div class="level-name" id="levelName">Loading...</div>
+            <div class="" id="levelDate"></div>
+            <div class="" id="levelCreator"></div>
+            <!-- <div class="" id="levelStatus"></div> -->
+          </div>
+          <!-- <div class="puzzle-grid" id="puzzleGrid"></div> -->
+          <div>
+            <button class="start-button wiggle-intermittent" id="start-button">▶ Start</button>
+          </div>
+          <div class="level-meta-wrapper">
+            <div class="" id="levelID"></div>
+            <div class="" id="levelTag"></div>
+            <div class="" id="levelSize"></div>
+            <div class="" id="levelStatus">loading...</div>
+          </div>
+          <div class="level-stats-wrapper">
+            <div class="" id="totalPlayers"></div>
+            <div class="" id="totalPlayersCompleted"></div>
+            <div class="" id="avgGuesses"></div>
+            <div class="" id="avgTime"></div>
+            <div class="" id="avgScore"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script type="module" src="splash/splash.ts" defer></script>
+
+
+  </body>
+</html>
