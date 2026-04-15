@@ -172,7 +172,7 @@
       },
       "resync-created-karma-task": {
         "endpoint": "/internal/scheduler/resync-created-karma",
-        "cron": "* * * * *"
+        "cron": "*/10 * * * *"
       }
     }
   },

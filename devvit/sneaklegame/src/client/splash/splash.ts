@@ -339,7 +339,7 @@ function setupArchiveModal() {
             <div class="archive-filter-row">
               <label class="archive-toggle-wrap" for="archive-nonstandard-toggle">
                 <input type="checkbox" id="archive-nonstandard-toggle" class="archive-toggle" />
-                <span>Hide Non-Standard</span>
+                <span>⚠️ Hide Non-Standard</span>
               </label>
               <select id="archive-size-select" class="archive-select">
                 <option value="">Any Size</option>
@@ -685,7 +685,7 @@ async function loadArchiveModalData() {
       const tagIcon = tagValue === "daily" ? "🗓️" : tagValue === "community" ? "🌎" : "🧩";
       const authorInline = tagValue === "daily" ? "" : `u/${escapeHtml(puzzle.levelCreator ?? "unknown")}`;
       const restMetaParts = [
-        formatArchiveDate(puzzle.levelDate),
+        `<span class="archive-entry-inline-meta-date">${formatArchiveDate(puzzle.levelDate)}</span>`,
         `👥 ${totalPlayersLabel}`,
         `<span><span class="karma-arrow">▲</span> ${karma.toLocaleString()}</span>`,
       ];
@@ -693,6 +693,9 @@ async function loadArchiveModalData() {
       const inlineMetaHtml = authorInline
         ? `<span class="archive-entry-author">${escapeHtml(authorInline)}</span><span class="archive-entry-inline-meta-rest"> · ${restMeta}</span>`
         : `<span class="archive-entry-inline-meta-rest">${restMeta}</span>`;
+      const nonStandardInlineMeta = String(puzzle.nonStandard ?? "0") === "1"
+        ? `<span class="archive-entry-inline-meta-rest"> · ⚠️NS</span>`
+        : "";
       return `
         <article class="archive-entry" data-post-id="${escapeHtml(puzzle.postId)}">
           <span class="archive-played-pill ${puzzle.viewerPlayed ? "is-played" : "is-unplayed"}" aria-hidden="true"></span>
@@ -702,7 +705,7 @@ async function loadArchiveModalData() {
                 <span class="archive-entry-tag-icon" aria-hidden="true" title="${escapeHtml(categoryLabel)}">${tagIcon}</span>
                 <span class="archive-entry-title">${escapeHtml(puzzle.levelName ?? "Untitled Puzzle")}</span>
               </span>
-              <span class="archive-entry-inline-meta">${inlineMetaHtml}</span>
+              <span class="archive-entry-inline-meta">${inlineMetaHtml}${nonStandardInlineMeta}<span class="archive-entry-meta-expand" role="button" tabindex="0" aria-label="Show puzzle details" aria-expanded="false">⋯</span></span>
             </span>
             <span class="archive-entry-caret">▶</span>
           </button>
@@ -737,6 +740,30 @@ async function loadArchiveModalData() {
         const selectedPostId = button.dataset.postId ?? "";
         if (!selectedPostId) return;
         navigateTo(archivePostUrl(selectedPostId));
+      });
+    });
+
+    const metaToggles = list.querySelectorAll(".archive-entry-meta-expand") as NodeListOf<HTMLElement>;
+    metaToggles.forEach((toggle) => {
+      const entry = toggle.closest(".archive-entry") as HTMLElement | null;
+      if (!entry) return;
+
+      const setExpanded = (expanded: boolean) => {
+        entry.classList.toggle("is-expanded", expanded);
+        toggle.setAttribute("aria-expanded", String(expanded));
+      };
+
+      toggle.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setExpanded(!entry.classList.contains("is-expanded"));
+      });
+
+      toggle.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        event.stopPropagation();
+        setExpanded(!entry.classList.contains("is-expanded"));
       });
     });
   } catch (err) {

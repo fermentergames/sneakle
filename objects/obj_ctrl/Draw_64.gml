@@ -1116,7 +1116,7 @@ if global.game_phase = 0 {
 			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
 				if		scr_mouse_over_button(global.sw/2,(_panel_mid_y)+(80*_scl),0.65*_tscl,0.13*_tscl) {
 					show_debug_message("G CLICKED")	
-					if global.game_mode = 1 && selected_word_length >= 2 && (selected_word_is_valid >= 1 || nonstandard_allowed = 1) {
+					if global.game_mode = 1 && selected_word_length >= 2 && (selected_word_is_valid >= 1 || real(obj_ctrlp.postData_nonStandard) >= 1 || nonstandard_allowed = 1) {
 						//proceed, lock in word
 						
 						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
@@ -1276,8 +1276,9 @@ if global.game_phase = 0 {
 	
 	draw_set_alpha(0.3)
 	draw_set_font(fnt_main_r)
+	var _nonstandard_guessing_allowed = (nonstandard_allowed >= 1) || (real(obj_ctrlp.postData_nonStandard) >= 1)
 	if selected_word_length > 0 {
-		if selected_word_length < ((nonstandard_allowed >= 1) ? 2 : 5) {
+		if selected_word_length < ((_nonstandard_guessing_allowed) ? 2 : 5) {
 			draw_text_transformed(global.sw/2,(_panel_mid_y)+(25*_scl),"too short",0.15*_tscl,0.15*_tscl,0)
 		} else if selected_word_not_allowed >= 1 {
 			draw_text_transformed(global.sw/2,(_panel_mid_y)+(25*_scl),"word not allowed",0.15*_tscl,0.15*_tscl,0)
@@ -1359,8 +1360,6 @@ if global.game_phase = 3 || global.game_phase = 4 {
 		
 	//	draw_set_alpha(0.5)
 	//	draw_set_font(fnt_main_r)
-		
-	//	if global.gave_up = 0 {
 	//		draw_text_transformed(global.sw/2,(_panel_mid_y)+(-55*_scl),"SECRET WORD found!",0.2*_tscl,0.2*_tscl,0)
 	//	} else {
 	//		draw_text_transformed(global.sw/2,(_panel_mid_y)+(-55*_scl),"gave up... SECRET WORD was:",0.2*_tscl,0.2*_tscl,0)
@@ -1369,7 +1368,6 @@ if global.game_phase = 3 || global.game_phase = 4 {
 
 	
 	draw_set_font(fnt_main)
-	
 	var _length_str = ""
 	var _length_str_w = 0
 	var _letters_str_w = 0
@@ -1524,7 +1522,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 		if selected_word_length > 0 {
 			if selected_word_is_valid = 3 {
 				draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*0.16),"non-standard guesses allowed",0.15*_tscl,0.15*_tscl,0)
-			} else if selected_word_length >= 2 && selected_word_length < ((nonstandard_allowed >= 1) ? 2 : 4) {
+			} else if selected_word_length >= 2 && selected_word_length < (((nonstandard_allowed >= 1) || (real(obj_ctrlp.postData_nonStandard) >= 1)) ? 2 : 4) {
 				draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*0.16),"too short",0.15*_tscl,0.15*_tscl,0)
 			} else if selected_word_too_long >= 1 {
 				draw_text_transformed(global.sw/2,(_panel_mid_y)+(_panel_ht*0.16),"too long",0.15*_tscl,0.15*_tscl,0)

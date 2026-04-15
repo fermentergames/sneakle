@@ -610,7 +610,14 @@ form button {
 .game-lb-user {
   font-size: 14px;
   color: #fff;
-  word-break: break-word;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.game-leaderboard-row.entry-has-hints .game-lb-user {
+  width: 85%;
+  width: calc(100% - 28px);
 }
 
 .game-lb-you {
@@ -656,10 +663,21 @@ form button {
 }
 
 .game-lb-guesses {
+  display: block;
+  width: max-content;
+  max-width: none;
+  white-space: nowrap;
+  overflow: visible;
+  align-self: flex-end;
   font-size: 10px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.4);
   line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.game-lb-hints {
+  color: #ca7d7dc2;
 }
 
 .game-lb-guesses-emoji {
@@ -838,11 +856,11 @@ form button {
 }
 
 .game-archive-options-row {
-  margin-top: 6px;
+  margin-top: 0px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
-  gap: 6px;
+  gap: 4px;
 }
 
 .game-archive-unplayed-wrap {
@@ -855,7 +873,7 @@ form button {
 }
 
 .game-archive-more-summary {
-  height: 18px;
+  height: 16px;
   list-style: none;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 7px;
@@ -890,9 +908,10 @@ form button {
 
 .game-archive-more-body {
   display: grid;
-  gap: 6px;
-  width: calc(200% + 6px);
-  margin-left: calc(-100% - 6px);
+  gap: 4px;
+  width: calc(200% + 4px);
+  margin-left: calc(-100% - 4px);
+  margin-top: 4px;
 }
 
 .game-archive-tab,
@@ -1122,10 +1141,36 @@ form button {
 .game-archive-entry-inline-meta {
   display: flex;
   align-items: baseline;
+  gap: 6px;
   font-size: 0.68rem;
   color: rgba(255, 255, 255, 0.72);
   overflow: hidden;
   white-space: nowrap;
+}
+
+.game-archive-entry-meta-expand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.0);
+  color: #ffffffcc;
+  font-size: 0.82rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.game-archive-entry-meta-expand:hover,
+.game-archive-entry-meta-expand:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.48);
+  outline: none;
 }
 
 .game-archive-entry-author {
@@ -1144,14 +1189,13 @@ form button {
   white-space: nowrap;
 }
 
+.game-archive-entry-inline-meta-date {
+  font-size: .55rem;
+}
+
 .game-archive-entry-caret {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
-  transition: transform 0.15s ease;
-}
-
-.game-archive-entry.is-expanded .game-archive-entry-caret {
-  transform: rotate(180deg);
 }
 
 .game-archive-entry-meta {
@@ -1187,6 +1231,10 @@ form button {
   position: relative;
   top: -2px;
   font-size: 90%;
+}
+
+.game-archive-sort-tab .karma-arrow {
+  max-height: 5.5px;
 }
 
 .game-archive-pagination {
@@ -1253,7 +1301,7 @@ form button {
   }
 
   .game-leaderboard-row {
-    grid-template-columns: 45px 1fr 60px;
+    grid-template-columns: 45px 1fr 40px;
     padding: 6px;
     gap: 8px;
   }
@@ -1298,6 +1346,7 @@ form button {
 
   .game-archive-filter-row {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
+    gap: 4px;
   }
 
   .game-archive-tabs {
@@ -1316,7 +1365,8 @@ form button {
   }
 
   .game-archive-toggle-wrap {
-    font-size: 0.58rem;
+    font-size: .45rem;
+    gap: 4px;
     padding: 5px 4px;
     white-space: nowrap;
   }
@@ -1345,11 +1395,16 @@ form button {
   }
 
   .game-archive-entry-author,
-  .game-archive-meta-pill,
   .game-archive-summary,
   .game-archive-explainer {
     font-size: 11px;
   }
+
+  .game-archive-meta-pill {
+    font-size: 0.5em;
+    padding: 4px 2px;
+  }
+
 }
 
 .archiveTitle {

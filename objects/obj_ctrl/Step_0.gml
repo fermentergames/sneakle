@@ -341,7 +341,7 @@ if mouse_check_button_pressed(mb_left) {
 			
 	}
 	
-	if global.game_phase = 0 {
+	if global.game_phase = 0 { //main menu
 		
 		if global.show_any_modal = 0 && global.game_loading = 0 {
 	
@@ -496,6 +496,8 @@ if mouse_check_button_pressed(mb_left) {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
 				
+				//scr_board_reset_defs()
+				scr_reddit_reset_post()
 				global.game_grid_size = 4
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
 				global.am_creating = 1
@@ -506,87 +508,11 @@ if mouse_check_button_pressed(mb_left) {
 				GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
-			} else if 1=0 {//scr_mouse_over_button(global.sw*0.5,global.sh*0.4,0.18*_tscl,0.18*_tscl) {
-				//load
-				//var _event_struct = { //
-				//   screen_name: "LoadFromMainMenu",
-				//};
-				//GoogHit("screen_view",_event_struct)
-				//global.show_input_prompt = 1
-				global.show_archives = 1
-					
-				alarm[0] = 2
-					
-				//generatePuzzleList()
-				//addClassElemID("puzzleMenuWrapper","show")
-				
-			} else if 1=0 {//scr_mouse_over_button(global.sw*0.8,global.sh*0.4,0.18*_tscl,0.18*_tscl) {
-				
-				//how to
-				//global.show_debug = !global.show_debug
-				//show_debug_message(global.show_debug)
-					
-			
-			} else if 1=0 {//scr_mouse_over_button(global.sw*0.2,global.sh*0.6,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
-				
-				global.game_grid_size = 3
-				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
-				var _event_struct = { //
-				   screen_name: "Create3",
-				};
-				GoogHit("screen_view",_event_struct)
-				scr_board_init()
-				
-			} else if 1=0 {//scr_mouse_over_button(global.sw*0.35,global.sh*0.6,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
-				
-				global.game_grid_size = 4
-				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
-				var _event_struct = { //
-				   screen_name: "Create4",
-				};
-				GoogHit("screen_view",_event_struct)
-				scr_board_init()
-				
-			} else if 1=0 {//scr_mouse_over_button(global.sw*0.5,global.sh*0.6,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
-				
-				global.game_grid_size = 5
-				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
-				var _event_struct = { //
-				   screen_name: "Create5",
-				};
-				GoogHit("screen_view",_event_struct)
-				scr_board_init()
-				
-			} else if 1=0 {//scr_mouse_over_button(global.sw*0.65,global.sh*0.6,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
-				
-				global.game_grid_size = 6
-				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
-				var _event_struct = { //
-				   screen_name: "Create6",
-				};
-				GoogHit("screen_view",_event_struct)
-				scr_board_init()
-				
-			} else if 1=0 {//scr_mouse_over_button(global.sw*0.8,global.sh*0.6,0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
-				
-				global.game_grid_size = 7
-				global.game_grid_size_sqr = sqr(global.game_grid_size)
-				global.am_creating = 1
-				var _event_struct = { //
-				   screen_name: "Create7",
-				};
-				GoogHit("screen_view",_event_struct)
-				scr_board_init()
-			
-				////////////////////////////////////////
-			
 			} else if scr_mouse_over_button((global.sw*0.5)+(-160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				scr_board_reset_defs()
+				scr_reddit_reset_post()
 				global.game_grid_size = 3
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
 				global.am_creating = 0
@@ -602,6 +528,8 @@ if mouse_check_button_pressed(mb_left) {
 			} else if scr_mouse_over_button((global.sw*0.5)+(-80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				scr_board_reset_defs()
+				scr_reddit_reset_post()
 				global.game_grid_size = 4
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
 				global.am_creating = 0
@@ -617,6 +545,8 @@ if mouse_check_button_pressed(mb_left) {
 			} else if scr_mouse_over_button((global.sw*0.5)+(-0*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				scr_board_reset_defs()
+				scr_reddit_reset_post()
 				global.game_grid_size = 5
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
 				global.am_creating = 0
@@ -633,6 +563,8 @@ if mouse_check_button_pressed(mb_left) {
 			} else if scr_mouse_over_button((global.sw*0.5)+(80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				scr_board_reset_defs()
+				scr_reddit_reset_post()
 				global.game_grid_size = 6
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
 				global.am_creating = 0
@@ -648,6 +580,8 @@ if mouse_check_button_pressed(mb_left) {
 			} else if scr_mouse_over_button((global.sw*0.5)+(160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) {
 				
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+				scr_board_reset_defs()
+				scr_reddit_reset_post()
 				global.game_grid_size = 7
 				global.game_grid_size_sqr = sqr(global.game_grid_size)
 				global.am_creating = 0
@@ -661,14 +595,8 @@ if mouse_check_button_pressed(mb_left) {
 				scr_board_init()
 				
 			}
-
-		
-				
-		
-			
 			
 		}
-		
 		
 	}
 	
@@ -1294,9 +1222,10 @@ if mouse_check_button_released(mb_left) {//|| _too_far_trigger_release = 1 {
 
 				if global.game_phase = 3 {
 			
+					var _nonstandard_guessing_allowed = (nonstandard_allowed >= 1) || (real(obj_ctrlp.postData_nonStandard) >= 1)
 					var _valid_guess = 1
 			
-					if selected_word_length <= 3 {
+					if selected_word_length < ((_nonstandard_guessing_allowed) ? 2 : 4) {
 						_valid_guess = 0
 					}
 			

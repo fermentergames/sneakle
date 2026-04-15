@@ -12,7 +12,8 @@ function scr_validate_word() {
 	selected_word_is_valid = 1 //reset
 	selected_word_base_points = 0 //reset
 	
-	var _min_word_length = (nonstandard_allowed >= 1) ? 2 : 4
+	var _nonstandard_guessing_allowed = (nonstandard_allowed >= 1) || (real(obj_ctrlp.postData_nonStandard) >= 1)
+	var _min_word_length = (_nonstandard_guessing_allowed) ? 2 : 4
 	if selected_word_length < _min_word_length {
 		_valid_guess = 0
 		selected_word_is_valid = 0
@@ -20,7 +21,7 @@ function scr_validate_word() {
 	
 	//limit guess length on non-standard guessing to prevent abuse of very long words that aren't in the dictionary
 	var _max_nonstandard_length = max(11, floor(secret_word_length * 1.5))
-	if global.game_phase >= 3 && nonstandard_allowed >= 1 && selected_word_length > _max_nonstandard_length {
+	if global.game_phase >= 3 && _nonstandard_guessing_allowed && selected_word_length > _max_nonstandard_length {
 		_valid_guess = 0
 		selected_word_is_valid = 0
 		selected_word_too_long = 1
@@ -104,19 +105,10 @@ function scr_validate_word() {
 	nonstandard_used = 0 //reset
 	
 	if _valid_guess = 0 {
-		if nonstandard_allowed = 1 {
+		if _nonstandard_guessing_allowed {
 			if selected_word_length >= 2 && selected_word_too_long <= 0 && selected_word_not_allowed <= 0 {
 				_valid_guess = 1
 				nonstandard_used = 1
-				selected_word_is_valid = 3 //nonstandard word
-			}
-		}
-	}
-	
-	if _valid_guess = 0 {
-		if selected_word_length >= 2 && selected_word_too_long <= 0 && selected_word_not_allowed <= 0 {
-			if real(obj_ctrlp.postData_nonStandard) >= 1 {
-				_valid_guess = 1
 				selected_word_is_valid = 3 //nonstandard word
 			}
 		}

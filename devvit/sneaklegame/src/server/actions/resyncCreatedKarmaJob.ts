@@ -25,7 +25,7 @@ export const resyncCreatedKarmaJob = (router: Hono): void => {
         completedAt?: string | null;
       };
 
-      const BATCH_SIZE = 25;
+      const BATCH_SIZE = 50;
       let jobCanceled = false;
 
       const processed = new Set(job.processedUsernames ?? []);

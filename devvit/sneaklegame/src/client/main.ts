@@ -1302,9 +1302,9 @@ async function loadGameLeaderboardData() {
     const data = await res.json() as {
       metric?: GameLeaderboardMetric;
       scoreLabel?: string;
-      top?: Array<{ rank: number; username: string; score: number; guesses?: number }>;
-      aroundMe?: Array<{ rank: number; username: string; score: number; guesses?: number }>;
-      me?: { rank: number; username: string; score: number; guesses?: number } | null;
+      top?: Array<{ rank: number; username: string; score: number; guesses?: number; hints?: number }>;
+      aroundMe?: Array<{ rank: number; username: string; score: number; guesses?: number; hints?: number }>;
+      me?: { rank: number; username: string; score: number; guesses?: number; hints?: number } | null;
       totalPlayers?: number;
       page?: number;
       totalPages?: number;
@@ -1340,11 +1340,15 @@ async function loadGameLeaderboardData() {
               : "";
         const isSelf = data.me?.username === entry.username;
         const guessesValue = Number(entry.guesses ?? 0) || 0;
+        const hintsValue = Number(entry.hints ?? 0) || 0;
+        const hasHints = hintsValue > 0;
         const guessesLabel = `${guessesValue.toLocaleString()} ${guessesValue === 1 ? "guess" : "guesses"}`;
-        return `<div class="game-leaderboard-row ${topRankClass} ${isSelf ? "is-self" : ""}">
+        const hintsLabel = `${hintsValue.toLocaleString()} ${hintsValue === 1 ? "hint" : "hints"}`;
+        const hintSuffix = hasHints ? ` <span class="game-lb-hints">+ ${hintsLabel}</span>` : "";
+        return `<div class="game-leaderboard-row ${topRankClass} ${isSelf ? "is-self" : ""} ${hasHints ? "entry-has-hints" : ""}">
           <span class="game-lb-rank">${medal ? `${medal} ` : ""}#${entry.rank}</span>
           <span class="game-lb-user">u/${escapeHtmlGame(entry.username)}${isSelf ? ' <span class="game-lb-you">(You)</span>' : ""}</span>
-          <span class="game-lb-score"><span class="game-lb-score-main">${formatGameLeaderboardValue(gameLeaderboardMetricState, entry.score)}</span><span class="game-lb-guesses">${guessesLabel}${guessesValue === 1 ? ' <span class="game-lb-guesses-emoji">🎯</span>' : ""}</span></span>
+          <span class="game-lb-score"><span class="game-lb-score-main">${formatGameLeaderboardValue(gameLeaderboardMetricState, entry.score)}</span><span class="game-lb-guesses">${guessesLabel}${hintSuffix}${guessesValue === 1 && hintsValue === 0 ? ' <span class="game-lb-guesses-emoji">🎯</span>' : ""}</span></span>
         </div>`;
       })
       .join("");
@@ -1520,7 +1524,7 @@ function setupGameArchiveModal() {
             <div class="game-archive-filter-row">
               <label class="game-archive-toggle-wrap" for="game-archive-nonstandard-toggle">
                 <input type="checkbox" id="game-archive-nonstandard-toggle" class="game-archive-toggle" />
-                <span>Hide Non-Standard</span>
+                <span>⚠️ Hide Non-Standard</span>
               </label>
               <select id="game-archive-size-select" class="game-archive-select">
                 <option value="">Any Size</option>
@@ -1853,7 +1857,7 @@ async function loadGameArchiveData() {
       const tagIcon = tagValue === "daily" ? "🗓️" : tagValue === "community" ? "🌎" : "🧩";
       const authorInline = tagValue === "daily" ? "" : `u/${escapeHtmlGame(puzzle.levelCreator ?? "unknown")}`;
       const restMetaParts = [
-        formatGameArchiveDate(puzzle.levelDate),
+        `<span class="game-archive-entry-inline-meta-date">${formatGameArchiveDate(puzzle.levelDate)}</span>`,
         `👥 ${totalPlayersLabel}`,
         `<span><span class="karma-arrow">▲</span> ${karma.toLocaleString()}</span>`,
       ];
@@ -1861,6 +1865,9 @@ async function loadGameArchiveData() {
       const inlineMetaHtml = authorInline
         ? `<span class="game-archive-entry-author">${escapeHtmlGame(authorInline)}</span><span class="game-archive-entry-inline-meta-rest"> · ${restMeta}</span>`
         : `<span class="game-archive-entry-inline-meta-rest">${restMeta}</span>`;
+      const nonStandardInlineMeta = String(puzzle.nonStandard ?? "0") === "1"
+        ? `<span class="game-archive-entry-inline-meta-rest"> · ⚠️NS</span>`
+        : "";
       return `
         <article class="game-archive-entry" data-post-id="${escapeHtmlGame(puzzle.postId)}">
           <span class="game-archive-played-pill ${puzzle.viewerPlayed ? "is-played" : "is-unplayed"}" aria-hidden="true"></span>
@@ -1870,7 +1877,7 @@ async function loadGameArchiveData() {
                 <span class="game-archive-entry-tag-icon" aria-hidden="true" title="${escapeHtmlGame(categoryLabel)}">${tagIcon}</span>
                 <span class="game-archive-entry-title">${escapeHtmlGame(puzzle.levelName ?? "Untitled Puzzle")}</span>
               </span>
-              <span class="game-archive-entry-inline-meta">${inlineMetaHtml}</span>
+              <span class="game-archive-entry-inline-meta">${inlineMetaHtml}${nonStandardInlineMeta}<span class="game-archive-entry-meta-expand" role="button" tabindex="0" aria-label="Show puzzle details" aria-expanded="false">⋯</span></span>
             </span>
             <span class="game-archive-entry-caret">▶</span>
           </button>
@@ -1905,6 +1912,30 @@ async function loadGameArchiveData() {
         if (gameArchiveIsLoadingPost) return;
         const selectedPostId = button.dataset.postId ?? "";
         openPuzzleFromGameArchive(selectedPostId);
+      });
+    });
+
+    const metaToggles = list.querySelectorAll(".game-archive-entry-meta-expand") as NodeListOf<HTMLElement>;
+    metaToggles.forEach((toggle) => {
+      const entry = toggle.closest(".game-archive-entry") as HTMLElement | null;
+      if (!entry) return;
+
+      const setExpanded = (expanded: boolean) => {
+        entry.classList.toggle("is-expanded", expanded);
+        toggle.setAttribute("aria-expanded", String(expanded));
+      };
+
+      toggle.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setExpanded(!entry.classList.contains("is-expanded"));
+      });
+
+      toggle.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        event.stopPropagation();
+        setExpanded(!entry.classList.contains("is-expanded"));
       });
     });
 

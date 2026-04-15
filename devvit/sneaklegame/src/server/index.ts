@@ -1304,24 +1304,30 @@ router.get("/api/leaderboard", async (c) => {
     if (me?.username) usernamesToLoad.add(me.username);
 
     const guessesByUser = new Map<string, number>();
+    const hintsByUser = new Map<string, number>();
     await Promise.all([...usernamesToLoad].map(async (entryUsername) => {
       try {
         const stateRaw = await redis.get(stateKey(postId, entryUsername));
         if (!stateRaw) {
           guessesByUser.set(entryUsername, 0);
+          hintsByUser.set(entryUsername, 0);
           return;
         }
         const stateJson = JSON.parse(stateRaw) as { data?: Record<string, unknown> };
         const guesses = Number(stateJson?.data?.score_guesses ?? 0);
+        const hints = Number(stateJson?.data?.score_hints ?? 0);
         guessesByUser.set(entryUsername, Number.isFinite(guesses) ? Math.max(0, guesses) : 0);
+        hintsByUser.set(entryUsername, Number.isFinite(hints) ? Math.max(0, hints) : 0);
       } catch {
         guessesByUser.set(entryUsername, 0);
+        hintsByUser.set(entryUsername, 0);
       }
     }));
 
     const applyGuesses = <T extends { username: string }>(entry: T) => ({
       ...entry,
       guesses: guessesByUser.get(entry.username) ?? 0,
+      hints: hintsByUser.get(entry.username) ?? 0,
     });
 
     return c.json({

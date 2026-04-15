@@ -1301,11 +1301,11 @@ button#debug-button:active {
 }
 
 .archive-options-row {
-  margin-top: 6px;
+  margin-top: 0px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
-  gap: 6px;
+  gap: 4px;
 }
 
 .archive-unplayed-wrap {
@@ -1318,7 +1318,7 @@ button#debug-button:active {
 }
 
 .archive-more-summary {
-  height: 18px;
+  height: 16px;
   list-style: none;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 7px;
@@ -1341,7 +1341,7 @@ button#debug-button:active {
 
 .archive-more-summary::after {
   content: "▾";
-  font-size: 0.7em;
+  font-size: 0.9em;
   opacity: 0.9;
   transition: transform 0.15s ease;
 }
@@ -1352,10 +1352,10 @@ button#debug-button:active {
 
 .archive-more-body {
   display: grid;
-  gap: 6px;
-  margin-top: 6px;
-  width: calc(200% + 6px);
-  margin-left: calc(-100% - 6px);
+  gap: 4px;
+  width: calc(200% + 4px);
+  margin-left: calc(-100% - 4px);
+  margin-top: 4px;
 }
 
 .archive-search-row {
@@ -1523,10 +1523,36 @@ button#debug-button:active {
 .archive-entry-inline-meta {
   display: flex;
   align-items: baseline;
+  gap: 6px;
   font-size: 0.68rem;
   color: rgba(255, 255, 255, 0.72);
   overflow: hidden;
   white-space: nowrap;
+}
+
+.archive-entry-meta-expand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.0);
+  color: #ffffffcc;
+  font-size: 0.82rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.archive-entry-meta-expand:hover,
+.archive-entry-meta-expand:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.48);
+  outline: none;
 }
 
 .archive-entry-author {
@@ -1545,14 +1571,13 @@ button#debug-button:active {
   white-space: nowrap;
 }
 
+.archive-entry-inline-meta-date {
+  font-size: .55rem;
+}
+
 .archive-entry-caret {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
-  transition: transform 0.15s ease;
-}
-
-.archive-entry.is-expanded .archive-entry-caret {
-  transform: rotate(180deg);
 }
 
 .archive-entry-meta {
@@ -1592,6 +1617,10 @@ button#debug-button:active {
 
 .game-archive-sort-tab .karma-arrow {
   top: 0px;
+}
+
+.archive-sort-tab .karma-arrow {
+  max-height: 5.5px;
 }
 
 
@@ -1682,6 +1711,7 @@ button#debug-button:active {
 
   .archive-filter-row {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
+    gap: 4px;
   }
 
   .archive-tabs {
@@ -1700,7 +1730,8 @@ button#debug-button:active {
   }
 
   .archive-toggle-wrap {
-    font-size: 0.58rem;
+    font-size: .45rem;
+    gap: 4px;
     padding: 5px 4px;
     white-space: nowrap;
   }
@@ -1727,9 +1758,13 @@ button#debug-button:active {
     font-size: 0.79rem;
   }
 
-  .archive-entry-author,
-  .archive-meta-pill {
+  .archive-entry-author {
     font-size: 0.62rem;
+  }
+
+  .archive-meta-pill {
+    font-size: 0.5em;
+    padding: 4px 2px;
   }
 
   .leaderboard-score-tab {
