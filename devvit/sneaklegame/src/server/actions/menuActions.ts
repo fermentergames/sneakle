@@ -1,9 +1,10 @@
-import { Router } from "express";
+import { Hono } from "hono";
 import { Logger } from "../utils/Logger";
-import { enqueuePuzzle, getQueue, dequeuePuzzle, clearQueue, replaceQueue, setQueue, isPostingEnabled, togglePostingEnabled } from "../utils/puzzleQueueHelpers";
+import { enqueuePuzzle, getQueue, dequeuePuzzle, clearQueue, replaceQueue, isPostingEnabled, togglePostingEnabled } from "../utils/puzzleQueueHelpers";
 import { context, reddit, redis } from "@devvit/web/server";
 import crypto from "crypto";
 import { getCurrentDailyCount } from "../actions/createGamePost";
+import { buildProfileEditorFields, extractProfileDataFromForm, getUserProfile, saveUserProfile } from "../utils/profileHelpers";
 
 //
 
@@ -19,133 +20,110 @@ function getNextDailyRun(hourUTC: number): Date {
   return next;
 }
 
-export async function getAllGamePosts() {
-  // get all levelList entries
-  const entries = await redis.zRange("levelList", 0, -1);
+export const menuActions = (router: Hono): void => {
 
-  const results = [];
+  router.post("/internal/menu/edit-user-profile", async (c) => {
+    const logger = await Logger.Create("Menu - Edit User Profile");
+    logger.traceStart("Menu Action");
 
-  for (const e of entries) {
     try {
-      const post = await reddit.getPostById(e.member, {
-        include: ["postData"]
+      return c.json({
+        showForm: {
+          name: "loadUserProfileForm",
+          form: {
+            fields: [
+              {
+                type: "string",
+                name: "username",
+                label: "Username to load",
+                required: true,
+              },
+            ],
+          },
+        },
       });
-
-      console.log("post", post);
-      if (!post) continue;
-
-      results.push({
-        postId: e.member,
-        levelID: e.score,
-        postData: post.postData ?? {}
+    } catch (error) {
+      logger.error("Menu action error:", error);
+      return c.json({
+        showToast: { text: "Failed to open user profile loader" },
       });
-
-    } catch (err) {
-      console.error("Failed loading post", e.member, err);
+    } finally {
+      logger.traceEnd();
     }
-  }
-
-  return results;
-}
-
-async function updatePostData(
-  postId: string,
-  newPostData: Record<string, string>
-) {
-  const posts = (await redis.get("posts")) ?? [];
-
-  const updated = posts.map((p) => {
-    if (p.postId !== postId) return p;
-
-    return {
-      ...p,
-      postData: {
-        ...p.postData,
-        ...newPostData,   // ← merge
-      },
-    };
   });
 
-  await redis.set("posts", updated);
-}
+  router.post("/internal/form/load-user-profile", async (c) => {
+    const logger = await Logger.Create("Form - Load User Profile");
+    logger.traceStart("Form Submit");
 
-//
-
-
-
-/////////////////////// profile sync stuff //////////////////
-
-// Level status macros
-const LEVEL_STATUS_NotStarted = 0;
-const LEVEL_STATUS_Started = 1;
-const LEVEL_STATUS_GaveUp = 2;
-const LEVEL_STATUS_Complete = 3;
-
-// Helper keys
-const userProfileKey = (username: string) => `profile:${username}`;
-const userStateKey = (postId: string, username: string) => `state:${postId}:${username}`;
-
-// Function to compute totals
-async function computeTotals(username: string, postIds: string[]) {
-  let totalStarted = 0;
-  let totalFinished = 0;
-
-  for (const postId of postIds) {
-    const stateRaw = await redis.get(userStateKey(postId, username));
-    if (!stateRaw) continue;
-
-    let stateJson;
     try {
-      stateJson = JSON.parse(stateRaw);
-    } catch {
-      continue;
+      const values = await c.req.json<any>();
+      const username = typeof values.username === "string" ? values.username.trim() : "";
+
+      if (!username) {
+        return c.json({
+          showToast: { text: "Username is required" },
+        }, 400);
+      }
+
+      const profile = await getUserProfile(username);
+
+      return c.json({
+        showForm: {
+          name: "editUserProfileForm",
+          form: {
+            title: `Edit profile: ${username}`,
+            fields: buildProfileEditorFields(username, profile),
+          },
+        },
+      });
+    } catch (error) {
+      logger.error("Load profile form failed", error);
+      return c.json({
+        showToast: { text: "Failed to load user profile" },
+      }, 500);
+    } finally {
+      logger.traceEnd();
     }
+  });
 
-    const status = parseInt(stateJson?.data?.level_status ?? "0", 10);
+  router.post("/internal/form/edit-user-profile", async (c) => {
+    const logger = await Logger.Create("Form - Edit User Profile");
+    logger.traceStart("Form Submit");
 
-    if (status === LEVEL_STATUS_Started || status === LEVEL_STATUS_GaveUp) {
-      totalStarted += 1;
-    } else if (status === LEVEL_STATUS_Complete) {
-      totalStarted += 1;
-      totalFinished += 1;
+    try {
+      const values = await c.req.json<any>();
+      const username = typeof values.username === "string" ? values.username.trim() : "";
+
+      if (!username) {
+        return c.json({
+          showToast: { text: "Username is required" },
+        }, 400);
+      }
+
+      const actorUsername = await reddit.getCurrentUsername();
+      const next = await saveUserProfile({
+        username,
+        profileData: extractProfileDataFromForm(values),
+        updatedBy: actorUsername ?? "anonymous",
+      });
+
+      logger.info("Updated user profile", next);
+
+      return c.json({
+        showToast: { text: `Saved profile for ${username}` },
+      });
+    } catch (error) {
+      logger.error("Edit profile form failed", error);
+      return c.json({
+        showToast: { text: "Failed to save user profile" },
+      }, 500);
+    } finally {
+      logger.traceEnd();
     }
-  }
+  });
 
-  return { totalStarted, totalFinished };
-}
-
-// Direct Redis Profile update
-async function updateProfileDirect(username: string, totalStarted: number, totalFinished: number) {
-  const profileKey = userProfileKey(username);
-  const prevRaw = await redis.get(profileKey);
-  const prev = prevRaw ? JSON.parse(prevRaw) : {};
-
-  const next = {
-    ...prev,
-    profileData: {
-      ...(prev.profileData ?? {}),
-      stat_d_total_started: totalStarted,
-      stat_d_total_finished: totalFinished,
-    },
-    username,
-    updatedBy: username,
-    updatedAt: new Date().toISOString(),
-  };
-
-  //await redis.set(profileKey, JSON.stringify(next));
-
-  console.log(`${username}: updated started=${totalStarted}, finished=${totalFinished}`);
-}
-
-
-//////////////////////////////////
-
-
-
-
-export const menuActions = (router: Router) => {
-
-  router.post("/internal/menu/resync-user-profiles", async (req, res) => {
+  router.post("/internal/menu/resync-user-profiles", async (c) => {
     const logger = await Logger.Create("Menu - Resync Profiles");
     logger.traceStart("Resync Profiles");
 
@@ -154,10 +132,10 @@ export const menuActions = (router: Router) => {
       const postIds = await redis.zRange("levelList", 0, -1);
       const postIdsStrings = postIds.map(p => p.member);
 
-      const postTagMap = {};
-      const postCreatorMap = {};
-      const postTimestampMap = {};
-      const usernameSet = new Set();
+      const postTagMap: Record<string, string> = {};
+      const postCreatorMap: Record<string, string> = {};
+      const postTimestampMap: Record<string, number> = {};
+      const usernameSet = new Set<string>();
 
       for (const entry of postIds) {
         const postId = entry.member;
@@ -207,7 +185,7 @@ export const menuActions = (router: Router) => {
 
       logger.info(`Queued job for ${job.total} users`);
 
-      res.json({
+      return c.json({
         showToast: {
           text: `Queued resync for ${job.total} users`
         }
@@ -215,18 +193,18 @@ export const menuActions = (router: Router) => {
 
     } catch (err) {
       logger.error(err);
-      res.json({ showToast: { text: "Failed to queue job" } });
+      return c.json({ showToast: { text: "Failed to queue job" } });
     } finally {
       logger.traceEnd();
     }
   });
 
-  router.post("/internal/menu/resync-single-user", async (_req, res) => {
+  router.post("/internal/menu/resync-single-user", async (c) => {
     const logger = await Logger.Create("Menu - Resync Single User");
     logger.traceStart("Menu Action");
 
     try {
-      res.json({
+      return c.json({
         showForm: {
           name: "resyncSingleUserForm",
           form: {
@@ -243,7 +221,7 @@ export const menuActions = (router: Router) => {
       });
     } catch (error) {
       logger.error("Menu action error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to open form" }
       });
     } finally {
@@ -251,30 +229,30 @@ export const menuActions = (router: Router) => {
     }
   });
 
-  router.post("/internal/form/resync-single-user", async (req, res) => {
+  router.post("/internal/form/resync-single-user", async (c) => {
     const logger = await Logger.Create("Form - Resync Single User");
     logger.traceStart("Form Submit");
 
     try {
-      const values = req.body;
+      const values = await c.req.json<any>();
 
       logger.info("Form POST body:", JSON.stringify(values, null, 2));
 
       const usernames = values.username
       .split(",")
-      .map(u => u.trim())
+      .map((u: string) => u.trim())
       .filter(Boolean);
 
-      if (!usernames) {
-        return res.status(400).json({
+      if (usernames.length === 0) {
+        return c.json({
           showToast: { text: "Username(s) is required" }
-        });
+        }, 400);
       }
 
       // Optional: block if job already running
       const existing = await redis.get("job:resyncProfiles");
       if (existing) {
-        return res.json({
+        return c.json({
           showToast: { text: "A resync job is already running" }
         });
       }
@@ -284,10 +262,9 @@ export const menuActions = (router: Router) => {
       const postIdsStrings = postIds.map(p => p.member);
 
 
-      const postTagMap = {};
-      const postCreatorMap = {};
-      const postTimestampMap = {};
-      const usernameSet = new Set();
+      const postTagMap: Record<string, string> = {};
+      const postCreatorMap: Record<string, string> = {};
+      const postTimestampMap: Record<string, number> = {};
 
       for (const entry of postIds) {
         const postId = entry.member;
@@ -334,7 +311,7 @@ export const menuActions = (router: Router) => {
 
       logger.info(`Queued single-user resync for ${usernames}`);
 
-      res.json({
+      return c.json({
         showToast: {
           text: `Queued resync for ${usernames}`
         }
@@ -342,9 +319,51 @@ export const menuActions = (router: Router) => {
 
     } catch (error) {
       logger.error("Form submit error:", error);
-      res.status(500).json({
+      return c.json({
         showToast: { text: "Failed to queue resync" }
+      }, 500);
+    } finally {
+      logger.traceEnd();
+    }
+  });
+
+  router.post("/internal/menu/resync-created-karma", async (c) => {
+    const logger = await Logger.Create("Menu - Resync Created Karma");
+    logger.traceStart("Resync Created Karma");
+
+    try {
+      const existing = await redis.get("job:resyncCreatedKarma");
+      if (existing) {
+        return c.json({
+          showToast: { text: "A created karma resync job is already running" },
+        });
+      }
+
+      const creatorsAsc = await redis.zRange("lb:alltime:created:total", 0, -1);
+      const usernames = creatorsAsc
+        .map((entry) => entry.member)
+        .filter((u): u is string => Boolean(u));
+
+      const job = {
+        name: "job-resync-created-karma",
+        usernames,
+        index: 0,
+        total: usernames.length,
+        startedAt: new Date().toISOString(),
+        lastRunAt: "...Job not ran yet...",
+        completedAt: null,
+      };
+
+      await redis.set("job:resyncCreatedKarma", JSON.stringify(job));
+
+      return c.json({
+        showToast: { text: `Queued created karma resync for ${job.total} creators` },
       });
+    } catch (error) {
+      logger.error("Failed to queue created karma resync", error);
+      return c.json({
+        showToast: { text: "Failed to queue created karma resync" },
+      }, 500);
     } finally {
       logger.traceEnd();
     }
@@ -352,12 +371,12 @@ export const menuActions = (router: Router) => {
 
   //
 
-  router.post("/internal/menu/cancel-job", async (_req, res) => {
+  router.post("/internal/menu/cancel-job", async (c) => {
     const logger = await Logger.Create("Menu - cancelJobForm");
     logger.traceStart("Menu Action");
 
     try {
-      res.json({
+      return c.json({
         showForm: {
           name: "cancelJobForm",
           form: {
@@ -374,7 +393,7 @@ export const menuActions = (router: Router) => {
       });
     } catch (error) {
       logger.error("Menu action error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to open form" }
       });
     } finally {
@@ -382,12 +401,12 @@ export const menuActions = (router: Router) => {
     }
   });
 
-  router.post("/internal/form/cancel-job", async (req, res) => {
+  router.post("/internal/form/cancel-job", async (c) => {
     const logger = await Logger.Create("Form - cancel-job");
     logger.traceStart("Form Submit");
 
     try {
-      const values = req.body;
+      const values = await c.req.json<any>();
       const CANCEL_KEY_PREFIX = "job:cancel:";
 
       logger.info("Form POST body:", JSON.stringify(values, null, 2));
@@ -395,15 +414,15 @@ export const menuActions = (router: Router) => {
       const jobName = values.jobName;
 
       if (!jobName) {
-        return res.status(400).json({
+        return c.json({
           showToast: { text: "jobName is required" }
-        });
+        }, 400);
       }
 
       await redis.set(`${CANCEL_KEY_PREFIX}${jobName}`, "1");
       logger.info(`Set cancel flag for job: ${jobName}`);
 
-      res.json({
+      return c.json({
         showToast: {
           text: `cancel job sent for ${jobName}`
         }
@@ -411,9 +430,9 @@ export const menuActions = (router: Router) => {
 
     } catch (error) {
       logger.error("Form submit error:", error);
-      res.status(500).json({
+      return c.json({
         showToast: { text: "Failed to cancel job" }
-      });
+      }, 500);
     } finally {
       logger.traceEnd();
     }
@@ -422,15 +441,15 @@ export const menuActions = (router: Router) => {
 
   //old version that failed because lists too long to complete
   /*
-  router.post("/internal/menu/resync-user-profiles", async (req, res) => {
+  router.post("/internal/menu/resync-user-profiles", async (c) => {
     const logger = await Logger.Create("Menu - Resync Profiles");
     logger.traceStart("Resync Profiles");
 
     try {
 
       // ! Using usernamesCollected below now instead
-      const usernames = ["FermenterGames", "Alice", "Bob"] //: string[] = req.body?.usernames ?? [];
-      if (!usernames.length) return res.status(400).json({ error: "No usernames provided" });
+      const usernames = ["FermenterGames", "Alice", "Bob"] //: string[] = await c.req.json<any>()?.usernames ?? [];
+      if (!usernames.length) return c.json({ error: "No usernames provided" }, 400);
 
       // Fetch all post IDs from levelList
       const postIds: string[] = await redis.zRange("levelList", 0, -1);
@@ -653,10 +672,10 @@ export const menuActions = (router: Router) => {
 
           if (prevVal !== newVal) {
 
-            diffs.push(`${key}: ${prevVal} → ${newVal}`);
+            diffs.push(`${key}: ${prevVal} -> ${newVal}`);
 
             if (newVal < prevVal) {
-              logger.info(`${username} stat decreased: ${key} ${prevVal} → ${newVal}`);
+              logger.info(`${username} stat decreased: ${key} ${prevVal} -> ${newVal}`);
             }
 
           }
@@ -691,14 +710,14 @@ export const menuActions = (router: Router) => {
 
       }
 
-      res.json({
+      return c.json({
         showToast: {
           text: `Resynced ${usernamesCollected.length} users`
         }
       });
     } catch (error) {
       logger.error("Resync Profiles error:", error);
-      res.json({
+      return c.json({
         showToast: {
           text: `Resynced failed!`
         }
@@ -711,12 +730,12 @@ export const menuActions = (router: Router) => {
 
 
   // ========== Add Puzzle Form (handled below) ==========
-  router.post("/internal/menu/add-puzzle-to-daily-queue", async (_req, res) => {
+  router.post("/internal/menu/add-puzzle-to-daily-queue", async (c) => {
     const logger = await Logger.Create("Menu - Add Puzzle");
     logger.traceStart("Menu Action");
 
     try {
-      res.json({
+      return c.json({
         showForm: {
           name: "addPuzzleForm",
           form: {
@@ -733,7 +752,7 @@ export const menuActions = (router: Router) => {
       });
     } catch (error) {
       logger.error("Menu action error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to open form" },
       });
     } finally {
@@ -743,21 +762,21 @@ export const menuActions = (router: Router) => {
 
 
   // ========== Handle Add Puzzle Form ==========
-  router.post("/internal/form/add-puzzle-to-daily-queue", async (req, res) => {
+  router.post("/internal/form/add-puzzle-to-daily-queue", async (c) => {
     const logger = await Logger.Create("Form - Add Puzzle");
     logger.traceStart("Form Submit");
 
     try {
-      const values = req.body;
+      const values = await c.req.json<any>();
 
-      logger.info("Form POST body:", JSON.stringify(req.body, null, 2));
+      logger.info("Form POST body:", JSON.stringify(values, null, 2));
 
       if (!values?.levelName || !values?.gameData) {
-        return res.status(400).json({
+        return c.json({
           showToast: {
             text: "Missing required fields: levelName, gameData"
           }
-        });
+        }, 400);
       }
 
       const puzzle = {
@@ -775,14 +794,14 @@ export const menuActions = (router: Router) => {
 
       const queue = await getQueue();
 
-      res.json({
+      return c.json({
         showToast: {
           text: `Puzzle "${puzzle.levelName}" added to queue (length ${queue.length})`
         }
       });
     } catch (error) {
       logger.error("Form submit error:", error);
-      res.status(500).json({ error: "Failed to add puzzle to queue" });
+      return c.json({ error: "Failed to add puzzle to queue" }, 500);
     } finally {
       logger.traceEnd();
     }
@@ -790,41 +809,41 @@ export const menuActions = (router: Router) => {
 
 
   // ========== toggle-puzzle-posting ==========
-  router.post("/internal/menu/toggle-puzzle-posting", async (_req, res) => {
+  router.post("/internal/menu/toggle-puzzle-posting", async (c) => {
     const logger = await Logger.Create("Menu - Toggle Puzzle Posting");
     logger.traceStart("Menu Action");
 
     try {
       const newState = await togglePostingEnabled();
 
-      res.json({
+      return c.json({
         showToast: {
           text: `Puzzle auto-posting ${newState ? "enabled" : "paused"}`
         }
       });
     } catch (err) {
       logger.error("Toggle posting failed", err);
-      res.status(500).json({ error: "Failed to toggle posting" });
+      return c.json({ error: "Failed to toggle posting" }, 500);
     } finally {
       logger.traceEnd();
     }
   });
 
   // ========== Show Queue Length ==========
-  router.post("/internal/menu/puzzle-queue-status", async (_req, res) => {
+  router.post("/internal/menu/puzzle-queue-status", async (c) => {
     const logger = await Logger.Create("Menu - Queue Status");
     logger.traceStart("Menu Action");
 
     try {
       const queue = await getQueue();
-      res.json({
+      return c.json({
         showToast: {
           text: `Puzzle queue length: ${queue.length}`
         },
       });
     } catch (error) {
       logger.error("Queue status error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to fetch queue status" },
       });
     } finally {
@@ -833,7 +852,7 @@ export const menuActions = (router: Router) => {
   });
 
   // ========== Preview Next Puzzle ==========
-  router.post("/internal/menu/puzzle-preview-next", async (_req, res) => {
+  router.post("/internal/menu/puzzle-preview-next", async (c) => {
     const logger = await Logger.Create("Menu - Preview Next Puzzle");
     logger.traceStart("Menu Action");
 
@@ -842,18 +861,17 @@ export const menuActions = (router: Router) => {
       const nextPuzzle = queue[0] ?? null;
 
       if (!nextPuzzle) {
-        res.json({
+        return c.json({
           showToast: { text: "Queue is empty"},
         });
-        return;
       }
 
-      res.json({
+      return c.json({
         showToast: { text: `Next puzzle: "${nextPuzzle.levelName}"`},
       });
     } catch (error) {
       logger.error("Preview next puzzle error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to preview next puzzle" },
       });
     } finally {
@@ -862,18 +880,18 @@ export const menuActions = (router: Router) => {
   });
 
   // ========== Clear Queue (Mod Only) ==========
-  router.post("/internal/menu/puzzle-clear-queue", async (_req, res) => {
+  router.post("/internal/menu/puzzle-clear-queue", async (c) => {
     const logger = await Logger.Create("Menu - Clear Queue");
     logger.traceStart("Menu Action");
 
     try {
       await clearQueue();
-      res.json({
+      return c.json({
         showToast: { text: "Puzzle queue cleared"},
       });
     } catch (error) {
       logger.error("Clear queue error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to clear puzzle queue" },
       });
     } finally {
@@ -882,7 +900,7 @@ export const menuActions = (router: Router) => {
   });
 
   // ========== RESET Level/Daily lists/counts (Mod Only) ==========
-  router.post("/internal/menu/reset-lists", async (_req, res) => {
+  router.post("/internal/menu/reset-lists", async (c) => {
     const logger = await Logger.Create("Menu - Reset Lists");
     logger.traceStart("Menu Action");
 
@@ -894,12 +912,12 @@ export const menuActions = (router: Router) => {
       await redis.del("levelList");
       console.log("Reset daily/level counts and lists complete");
 
-      res.json({
+      return c.json({
         showToast: { text: "Reset daily/level counts and lists complete"},
       });
     } catch (error) {
       logger.error("Reset Lists error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to Reset Lists" },
       });
     } finally {
@@ -908,7 +926,7 @@ export const menuActions = (router: Router) => {
   });
 
   // ========== Post Next Puzzle Now ==========
-  router.post("/internal/menu/puzzle-post-now", async (_req, res) => {
+  router.post("/internal/menu/puzzle-post-now", async (c) => {
     const logger = await Logger.Create("Menu - Post Next Puzzle");
     logger.traceStart("Menu Action");
 
@@ -916,7 +934,7 @@ export const menuActions = (router: Router) => {
       // Optional: respect posting toggle
 
       // if (!(await isPostingEnabled())) {
-      //   res.json({
+      //   return c.json({
       //     showToast: { text: "Auto-posting is currently paused"},
       //   });
       //   return;
@@ -925,22 +943,21 @@ export const menuActions = (router: Router) => {
       // Dequeue next puzzle
       const puzzle = await dequeuePuzzle();
       if (!puzzle) {
-        res.json({
+        return c.json({
           showToast: { text: "Queue is empty. Nothing to post."},
         });
-        return;
       }
 
       // Post puzzle using the same function as scheduled job
       const { createGamePostFromPuzzle } = await import("../actions/createGamePost");
       const post = await createGamePostFromPuzzle(puzzle);
 
-      res.json({
+      return c.json({
         showToast: { text: `Puzzle "${puzzle.levelName}" posted successfully! Post ID: ${post.id}`},
       });
     } catch (error) {
       logger.error("Post next puzzle error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to post next puzzle" },
       });
     } finally {
@@ -950,13 +967,13 @@ export const menuActions = (router: Router) => {
 
 
   // ========== Import Puzzles JSON ==========
-  router.post("/internal/menu/puzzle-import-json", async (_req, res) => {
+  router.post("/internal/menu/puzzle-import-json", async (c) => {
     const logger = await Logger.Create("Menu - Import Puzzles JSON");
     logger.traceStart("Menu Action");
 
     try {
       // Step 1: Show form to paste JSON
-      res.json({
+      return c.json({
         showForm: {
           name: "importPuzzlesForm",
           form: {
@@ -975,21 +992,21 @@ export const menuActions = (router: Router) => {
       });
     } catch (err) {
       logger.error("Failed to show import form", err);
-      res.status(500).json({ error: "Failed to open import form" });
+      return c.json({ error: "Failed to open import form" }, 500);
     } finally {
       logger.traceEnd();
     }
   });
 
   // ========== Handle form submission ==========
-  router.post("/internal/form/puzzle-import-json", async (req, res) => {
+  router.post("/internal/form/puzzle-import-json", async (c) => {
     const logger = await Logger.Create("Form - Import Puzzles JSON");
     logger.traceStart("Form Submission");
 
     try {
-      const values = req.body;
+      const values = await c.req.json<any>();
       if (!values?.json) {
-        return res.status(400).json({ error: "Missing JSON input" });
+        return c.json({ error: "Missing JSON input" }, 400);
       }
 
       let puzzles: any[];
@@ -997,7 +1014,7 @@ export const menuActions = (router: Router) => {
         puzzles = JSON.parse(values.json);
         if (!Array.isArray(puzzles)) throw new Error("JSON is not an array");
       } catch (err) {
-        return res.status(400).json({ error: "Invalid JSON: " + err.message });
+        return c.json({ error: "Invalid JSON: " + (err instanceof Error ? err.message : String(err)) }, 400);
       }
 
       // Validate each puzzle and enqueue
@@ -1017,14 +1034,14 @@ export const menuActions = (router: Router) => {
         }
       }
 
-      res.json({
+      return c.json({
         showToast: {
           text: `Imported ${added} puzzles into the queue`
         }
       });
     } catch (err) {
       logger.error("Failed to import puzzles", err);
-      res.status(500).json({ error: "Failed to import puzzles" });
+      return c.json({ error: "Failed to import puzzles" }, 500);
     } finally {
       logger.traceEnd();
     }
@@ -1032,7 +1049,7 @@ export const menuActions = (router: Router) => {
 
 
   // ========== Manage Puzzle Queue ==========
-  router.post("/internal/menu/puzzle-manage-queue", async (_req, res) => {
+  router.post("/internal/menu/puzzle-manage-queue", async (c) => {
     const logger = await Logger.Create("Menu - Manage Puzzle Queue");
     logger.traceStart("Menu Action");
 
@@ -1047,7 +1064,7 @@ export const menuActions = (router: Router) => {
       const queue = await getQueue();
 
       // if (queue.length === 0) {
-      //   res.json({
+      //   return c.json({
       //     showToast: { text: "Queue is empty"}
       //   });
       //   return;
@@ -1078,7 +1095,7 @@ export const menuActions = (router: Router) => {
           `📊 Queue status --\n\n` +
           `• Length: ${queue.length}\n` +
           `• Auto-posting: ${postingEnabled ? "ENABLED" : "PAUSED"}\n` +
-          `• Next post: ${nextRun ? nextRun.toLocaleString() : "—"}\n` +
+          `• Next post: ${nextRun ? nextRun.toLocaleString() : "-"}\n` +
           `• Next Daily ID: ${nextDailyId}\n`,
         fields: [
         ],
@@ -1139,7 +1156,7 @@ export const menuActions = (router: Router) => {
 
       //console.log(JSON.stringify(formFields));
 
-      res.json({
+      return c.json({
         showForm: {
           name: "managePuzzleQueueForm",
           form: {
@@ -1152,7 +1169,7 @@ export const menuActions = (router: Router) => {
       });
     } catch (err) {
       logger.error("Failed to show Manage Queue form", err);
-      res.json({ showToast: { text: "Failed to open queue management form" } });
+      return c.json({ showToast: { text: "Failed to open queue management form" } });
     } finally {
       logger.traceEnd();
     }
@@ -1160,7 +1177,7 @@ export const menuActions = (router: Router) => {
 
   // ========== Handle Manage Queue Form Submission ==========
   // POST handler for form submission
-  router.post("/internal/form/puzzle-manage-queue", async (req, res) => {
+  router.post("/internal/form/puzzle-manage-queue", async (c) => {
     const logger = await Logger.Create("Menu - Manage Puzzle Queue Submission");
     logger.traceStart("Form Submit");
 
@@ -1170,13 +1187,12 @@ export const menuActions = (router: Router) => {
       await redis.del("levelCount");
 
       const queue = await getQueue();
-      const values = req.body ?? {};
+      const values = await c.req.json<any>();
 
       if (!queue.length) {
-        res.json({
+        return c.json({
           showToast: { text: "Queue is already empty" },
         });
-        return;
       }
 
       const working: any[] = [];
@@ -1198,10 +1214,9 @@ export const menuActions = (router: Router) => {
             : puzzle.gameData;
 
         if (!gameData.startsWith("loadBoard=")) {
-          res.json({
+          return c.json({
             showToast: { text: "Invalid game data format" },
           });
-          return;
         }
 
         // Position hint (forgiving)
@@ -1231,22 +1246,21 @@ export const menuActions = (router: Router) => {
       // Allow delete-all
       if (!finalQueue.length) {
         await replaceQueue([]);
-        res.json({
-          showToast: { text: "Queue cleared — all puzzles deleted" },
+        return c.json({
+          showToast: { text: "Queue cleared - all puzzles deleted" },
         });
-        return;
       }
 
       await replaceQueue(finalQueue);
 
-      res.json({
+      return c.json({
         showToast: {
           text: `Queue updated (${finalQueue.length} puzzles saved)`,
         },
       });
     } catch (err) {
       logger.error("Failed to update puzzle queue", err);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to update queue" },
       });
     } finally {
@@ -1256,7 +1270,7 @@ export const menuActions = (router: Router) => {
 
 
   // ========== Export Puzzle Queue as JSON ==========
-  router.post("/internal/menu/puzzle-export-queue", async (_req, res) => {
+  router.post("/internal/menu/puzzle-export-queue", async (c) => {
     const logger = await Logger.Create("Menu - Export Puzzle Queue");
     logger.traceStart("Menu Action");
 
@@ -1264,15 +1278,14 @@ export const menuActions = (router: Router) => {
       const queue = await getQueue();
 
       if (!queue.length) {
-        res.json({
+        return c.json({
           showToast: { text: "Queue is empty" },
         });
-        return;
       }
 
       const json = JSON.stringify(queue, null, 2);
 
-      res.json({
+      return c.json({
         showForm: {
           name: "exportPuzzleQueueForm",
           form: {
@@ -1290,7 +1303,7 @@ export const menuActions = (router: Router) => {
       });
     } catch (err) {
       logger.error("Export queue failed", err);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to export queue" },
       });
     } finally {
@@ -1301,18 +1314,18 @@ export const menuActions = (router: Router) => {
 
   ////////////////
 
-  router.post("/internal/menu/manage-postdata", async (_req, res) => {
+  router.post("/internal/menu/manage-postdata", async (c) => {
     const logger = await Logger.Create("Menu - Edit PostData");
 
     try {
       const postId = context.postId;
       if (!postId) {
-        return res.json({ showToast: { text: "No post context" }});
+        return c.json({ showToast: { text: "No post context" }});
       }
 
       const data = context.postData || {};
 
-      res.json({
+      return c.json({
         showForm: {
           name: "managePostDataForm",
           form: {
@@ -1367,33 +1380,33 @@ export const menuActions = (router: Router) => {
 
     } catch (err) {
       logger.error("Open editor failed", err);
-      res.json({ showToast: { text: "Failed opening editor" }});
+      return c.json({ showToast: { text: "Failed opening editor" }});
     }
   });
 
 
   //
 
-  router.post("/internal/form/manage-postdata", async (req, res) => {
+  router.post("/internal/form/manage-postdata", async (c) => {
     const logger = await Logger.Create("Form - Manage PostData");
 
     try {
-      const { postId } = req.body;
+      const { postId } = await c.req.json<any>();
       if (!postId) {
-        return res.json({ showToast: { text: "No post context" }});
+        return c.json({ showToast: { text: "No post context" }});
       }
 
-      const values = req.body;
+      const values = await c.req.json<any>();
 
       if (!values.gameData?.trim()) {
-        return res.json({
+        return c.json({
           showToast: { text: "Game Data cannot be empty" }
         });
       }
 
       const post = await reddit.getPostById(postId);
       if (!post) {
-        return res.json({ showToast: { text: "Post not found" }});
+        return c.json({ showToast: { text: "Post not found" }});
       }
 
       const existing = await post.getPostData();
@@ -1416,11 +1429,11 @@ export const menuActions = (router: Router) => {
 
       await post.setPostData(updated);
 
-      res.json({ showToast: { text: "Post updated" }});
+      return c.json({ showToast: { text: "Post updated" }});
 
     } catch (err) {
       logger.error("Save failed", err);
-      res.json({ showToast: { text: "Save failed" }});
+      return c.json({ showToast: { text: "Save failed" }});
     }
   });
 
@@ -1428,15 +1441,14 @@ export const menuActions = (router: Router) => {
 
   ////////////////////////////
 
-  router.post("/internal/menu/manage-dailylist", async (_req, res) => {
+  router.post("/internal/menu/manage-dailylist", async (c) => {
     const logger = await Logger.Create("Menu - Manage DailyList");
 
     try {
       const entries = await redis.zRange("dailyList", 0, -1);
 
       if (!entries.length) {
-        res.json({ showToast: { text: "Daily list is empty" }});
-        return;
+        return c.json({ showToast: { text: "Daily list is empty" }});
       }
 
       const fields = entries.map((e, index) => ({
@@ -1466,7 +1478,7 @@ export const menuActions = (router: Router) => {
         ]
       }));
 
-      res.json({
+      return c.json({
         showForm: {
           name: "manageDailyListForm",
           form: { fields }
@@ -1475,18 +1487,18 @@ export const menuActions = (router: Router) => {
 
     } catch (err) {
       logger.error("Failed opening daily list manager", err);
-      res.json({ showToast: { text: "Failed to open manager" }});
+      return c.json({ showToast: { text: "Failed to open manager" }});
     }
   });
 
   //
 
   //for rearranging and deleting dailyList lb entries
-  router.post("/internal/form/manage-dailylist", async (req, res) => {
+  router.post("/internal/form/manage-dailylist", async (c) => {
     const logger = await Logger.Create("Form - Manage DailyList");
 
     try {
-      const values = req.body;
+      const values = await c.req.json<any>();
       const existing = await redis.zRange("dailyList", 0, -1);
 
       const updated: { member: string; score: number }[] = [];
@@ -1519,7 +1531,7 @@ export const menuActions = (router: Router) => {
         await redis.zAdd("dailyList", e);
       }
 
-      res.json({
+      return c.json({
         showToast: {
           text: `Daily list updated (${normalized.length} entries)`
         }
@@ -1527,7 +1539,7 @@ export const menuActions = (router: Router) => {
 
     } catch (err) {
       logger.error("Failed updating daily list", err);
-      res.json({ showToast: { text: "Update failed" }});
+      return c.json({ showToast: { text: "Update failed" }});
     }
   });
 
@@ -1535,7 +1547,7 @@ export const menuActions = (router: Router) => {
   //
 
   //for moving preexisting puzzles from basic levelList lb redis to more robust puzzle:levelList which mirrors all relavant postData
-  router.post("/internal/menu/migrate-puzzle-metadata", async (_req, res) => {
+  router.post("/internal/menu/migrate-puzzle-metadata", async (c) => {
 
     const logger = await Logger.Create("Menu - migrate-puzzle-metadata");
 
@@ -1566,7 +1578,8 @@ export const menuActions = (router: Router) => {
 
         try {
 
-          const post = await reddit.getPostById(postId);
+          const post = await reddit.getPostById(postId as `t3_${string}`);
+          //const post = await reddit.getPostById(postId as `t3_${string}`);
           const postData = await post.getPostData();
 
           if (!postData) continue;
@@ -1587,7 +1600,7 @@ export const menuActions = (router: Router) => {
           });
 
           // new mapping for archive
-          await redis.set(`post:${postId}:levelID`, postData.levelID);
+          await redis.set(`post:${postId}:levelID`, String(postData.levelID ?? ""));
 
           const puzzDebug = await redis.hGetAll(`puzzle:${levelID}`);
           logger.info("AFTER WRITE: " + JSON.stringify(puzzDebug));
@@ -1604,7 +1617,7 @@ export const menuActions = (router: Router) => {
       // console.log("test output:"); // should print "67"
       // console.log(test); // should print "67"
 
-      res.json({
+      return c.json({
         showToast: {
           text: "migrate-puzzle-metadata complete"
         }
@@ -1614,7 +1627,7 @@ export const menuActions = (router: Router) => {
 
       console.error("Migration failed:", err);
 
-      res.status(500).json({ status: "error" });
+      return c.json({ status: "error" }, 500);
 
     }
   });
@@ -1624,7 +1637,7 @@ export const menuActions = (router: Router) => {
 
   // ========== debug-puzzles ==========
   //to log detailed list of puzzle:levelID
-  router.post("/internal/menu/debug-puzzles-redis", async (_req, res) => {
+  router.post("/internal/menu/debug-puzzles-redis", async (c) => {
     const logger = await Logger.Create("Menu - debug-puzzles-redis");
     logger.traceStart("Menu Action");
 
@@ -1645,19 +1658,19 @@ export const menuActions = (router: Router) => {
       logger.info("debug-puzzles-redis:::")
       logger.info("COUNT: " + puzzles.length);
 
-      puzzles.forEach((puzzle, i) => {
+      puzzles.forEach((puzzle) => {
         logger.info(`Puzzle ${puzzle.levelID}: ${JSON.stringify(puzzle)}`);
       });
 
 
-      res.json({
+      return c.json({
         showToast: {
           text: `debug-puzzles-redis complete?`
         },
       });
     } catch (error) {
       logger.error("debug-puzzles-redis error:", error);
-      res.json({
+      return c.json({
         showToast: { text: "Failed to debug-puzzles" },
       });
     } finally {

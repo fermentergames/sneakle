@@ -29,6 +29,13 @@ declare global {
     g_pAddAsyncMethod?: any;
     g_pJSExceptionHandler?: any;
     g_pWadLoadCallback?: any;
+    redditNavigateTo?: (url: string) => void;
+    addClassElemID?: (elemID: string, className: string) => void;
+    removeClassElemID?: (elemID: string, className: string) => void;
+    setElementProperty?: (elemID: string, propertyName: string, value: string) => void;
+    showGameLeaderboard?: (postId: string, levelName?: string, levelAuthor?: string) => void;
+    showGameArchive?: (visible?: boolean | number | string) => void;
+    copyToClipboard?: (string: string) => void;
   }
 }
 
@@ -171,8 +178,10 @@ class GameLoader {
 
     this.canvasElement.classList.add("active");
     
-    const maxWidth = window.innerWidth;
-    const maxHeight = window.innerHeight;
+    const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    const maxWidth = viewportWidth;
+    const maxHeight = viewportHeight;
     let newHeight: number, newWidth: number;
     var pixelRatio = window.devicePixelRatio; 
 
@@ -196,8 +205,8 @@ class GameLoader {
     console.log("window.devicePixelRatio:"); 
     console.log(window.devicePixelRatio);
     var pixelRatio = window.devicePixelRatio; 
-    this.canvasElement.height = window.innerHeight*pixelRatio;
-    this.canvasElement.width = window.innerWidth*pixelRatio;
+    this.canvasElement.height = Math.round(viewportHeight)* pixelRatio;
+    this.canvasElement.width = Math.round(viewportWidth)* pixelRatio;
 
   }
 
@@ -408,10 +417,74 @@ class GameLoader {
 
 // Initialize the game when the DOM is loaded 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => new GameLoader());
+  document.addEventListener('DOMContentLoaded', () => {
+    new GameLoader();
+    // setupFullscreenButton();
+  });
 } else {
   new GameLoader();
+  // setupFullscreenButton();
 }
+
+// const FULLSCREEN_ICON_ENTER = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+// const FULLSCREEN_ICON_EXIT  = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`;
+
+function isInRedditApp(): boolean {
+  // Reddit native app WebViews identify themselves in the UA
+  return /Reddit\/\d|RedditApp/i.test(navigator.userAgent);
+}
+
+function isMobileDevice(): boolean {
+  return /Android|iPhone|iPod|iPad/i.test(navigator.userAgent) ||
+    ('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0);
+}
+
+// function setupFullscreenButton(): void {
+//   // Only show on mobile, and only when fullscreen API is available
+//   //if (!isMobileDevice()) return;
+//   //if (isInRedditApp()) return;
+//   const fsEnabled = document.fullscreenEnabled || (document as any).webkitFullscreenEnabled;
+//   if (!fsEnabled) return;
+
+//   const btn = document.createElement('button');
+//   btn.id = 'fullscreen-btn';
+//   btn.setAttribute('aria-label', 'Enter fullscreen');
+//   btn.setAttribute('aria-pressed', 'false');
+//   btn.innerHTML = FULLSCREEN_ICON_ENTER;
+
+//   const updateBtn = () => {
+//     const isFS = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+//     btn.setAttribute('aria-pressed', String(isFS));
+//     btn.setAttribute('aria-label', isFS ? 'Exit fullscreen' : 'Enter fullscreen');
+//     btn.innerHTML = isFS ? FULLSCREEN_ICON_EXIT : FULLSCREEN_ICON_ENTER;
+//   };
+
+//   btn.addEventListener('click', () => {
+//     const doc = document as any;
+//     if (!document.fullscreenElement && !doc.webkitFullscreenElement) {
+//       const el = document.documentElement;
+//       if (el.requestFullscreen) {
+//         el.requestFullscreen();
+//       } else if ((el as any).webkitRequestFullscreen) {
+//         (el as any).webkitRequestFullscreen();
+//       }
+//     } else {
+//       if (document.exitFullscreen) {
+//         document.exitFullscreen();
+//       } else if (doc.webkitExitFullscreen) {
+//         doc.webkitExitFullscreen();
+//       }
+//     }
+//   });
+
+//   document.addEventListener('fullscreenchange', updateBtn);
+//   document.addEventListener('webkitfullscreenchange', updateBtn);
+
+//   document.body.appendChild(btn);
+
+//   console.log("Fullscreen button setup complete");
+// }
 
 
 
@@ -457,15 +530,26 @@ if (document.readyState === 'loading') {
 // window.addEventListener("load", () => {
 //   // Sometimes runner.js still hasn't attached all listeners
 //   // Use setTimeout to ensure your capture-phase listener comes last
-//   setTimeout(initCustomUI, 50);
+//   setTimeout(initCustomUI, 50); 
 // });
 
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Only send callback if NOT in Reddit app (where callbacks may not work reliably).
+  // GML defaults to is_reddit_app = 1; only override to 0 if we detect a browser.
+  const isRedditApp = isInRedditApp();
+  if (!isRedditApp) {
+    const msg = { action: "set-is-reddit-app", isRedditApp: 0 };
+    window.postMessage(msg, "*");
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(msg, "*");
+    }
+    console.log("Detected browser, set is_reddit_app to 0");
+  } else {
+    console.log("Detected Reddit app, skipping postMessage (callbacks unreliable in app)");
+  }
 
-
-
-  // document.addEventListener("keydown", e => {
+  // document.addEventListener("keydown", e => { 
   //   console.log("JS saw key:", e.key);
   // }, true);
 
@@ -488,16 +572,22 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 
-  // const callGameMakerTestBtn = document.getElementById("callGameMakerTestBtn");
+  const callGameMakerTestBtn = document.getElementById("callGameMakerTestBtn");
 
-  // callGameMakerTestBtn.addEventListener("click", () => {
+  callGameMakerTestBtn.addEventListener("click", () => {
 
-  //   window.postMessage({
-  //     action: "display_message",
-  //     msg: "THIS IS A MESSAGE FROM JS :)"
-  //   }, "*");
+    window.postMessage({
+      action: "display_message",
+      msg: "THIS IS A MESSAGE FROM JS :)"
+    }, "*");
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+        action: "display_message",
+        msg: "THIS IS A MESSAGE FROM JS :)"
+      }, "*");
+    }
 
-  // });
+  });
 
   // const submitTypedLettersBtn = document.getElementById("submitTypedLettersBtn");
 
@@ -526,8 +616,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('CreateTypeLettersInput').blur();
   });
 
-  const input = document.getElementById("CreateTypeLettersInput");
-  input.addEventListener("keydown", (e) => {
+    const input = document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null;
+
+  // Simple callback: on form submit, send the input value to GML.
+  document.getElementById("submitTypedLettersForm")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (input?.value && input.value.length > 0) {
+      const letters = input.value
+        .toUpperCase()
+        .replace(/[^A-Z]/g, "");
+      const msg = { action: "submit-typed-letters", letters: letters };
+      window.postMessage(msg, "*");
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(msg, "*");
+      }
+      input.value = "";
+    }
+    funcCloseCreateTypeLetters();
+  });
+
+  input?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       // submitTypedLettersSend();
@@ -535,6 +643,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('CreateTypeLettersInput').blur();
     }
   });
+
+
 
 
   /////////////////
@@ -775,9 +885,9 @@ function funcCloseCreateTypeLetters() {
     thething.classList.remove("active");
     console.log("REMOVE "+"active"+" from "+"modalCreateTypeLetters");
 
-    // window.postMessage({
-    //   action: "close-modals"
-    // }, "*");
+    window.postMessage({
+      action: "close-modals"
+    }, "*");
 
     if (window.parent !== window) {
         window.parent.postMessage({ action: "close-modals" }, "*");
@@ -793,9 +903,9 @@ function funcCloseCreatePostTitle() {
     thething.classList.remove("active");
     console.log("REMOVE "+"active"+" from "+"modalCreatePostTitle");
 
-    // window.postMessage({
-    //   action: "close-modals"
-    // }, "*");
+    window.postMessage({
+      action: "close-modals"
+    }, "*");
 
     if (window.parent !== window) {
         window.parent.postMessage({ action: "close-modals" }, "*");
@@ -1002,7 +1112,828 @@ function focus_window() {
   window.focus();
 }
 
+// ============================================
+// GAME LEADERBOARD MODAL - called from GameMaker
+// ============================================
 
+const GAME_LEADERBOARD_MODAL_ID = "game-leaderboard-modal";
+const GAME_LEADERBOARD_LIMIT = 25;
+let gameLeaderboardPostId: string = "";
+let gameLeaderboardLevelName: string = "";
+let gameLeaderboardLevelAuthor: string = "";
+let gameLeaderboardPageState = 1;
+let gameLeaderboardTotalPagesState = 1;
+type GameLeaderboardMetric = "score" | "time";
+let gameLeaderboardMetricState: GameLeaderboardMetric = "score";
+let gameLeaderboardModalWired = false;
+
+function escapeHtmlGame(v: unknown): string {
+  return String(v ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function setupGameLeaderboardModal() {
+  const modal = document.getElementById(GAME_LEADERBOARD_MODAL_ID);
+  if (!modal || gameLeaderboardModalWired) return;
+
+  const closeButton = modal.querySelector(".game-leaderboard-close") as HTMLButtonElement | null;
+  const prevBtn = modal.querySelector("#game-leaderboard-prev-btn") as HTMLButtonElement | null;
+  const nextBtn = modal.querySelector("#game-leaderboard-next-btn") as HTMLButtonElement | null;
+  const scoreTab = modal.querySelector("#game-leaderboard-tab-score") as HTMLButtonElement | null;
+  const timeTab = modal.querySelector("#game-leaderboard-tab-time") as HTMLButtonElement | null;
+
+  // Close overlay when clicking outside the card
+  modal.addEventListener("click", () => {
+    closeGameLeaderboardModal();
+  });
+
+  // Close when clicking the X button
+  closeButton?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeGameLeaderboardModal();
+  });
+
+  // Prevent closing when clicking inside the card
+  const card = modal.querySelector(".game-leaderboard-card") as HTMLDivElement | null;
+  card?.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+
+  // Close on Escape key
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeGameLeaderboardModal();
+    }
+  });
+
+  prevBtn?.addEventListener("click", () => {
+    if (gameLeaderboardPageState <= 1) return;
+    gameLeaderboardPageState -= 1;
+    void loadGameLeaderboardData();
+  });
+
+  nextBtn?.addEventListener("click", () => {
+    if (gameLeaderboardPageState >= gameLeaderboardTotalPagesState) return;
+    gameLeaderboardPageState += 1;
+    void loadGameLeaderboardData();
+  });
+
+  scoreTab?.addEventListener("click", () => {
+    if (gameLeaderboardMetricState === "score") return;
+    gameLeaderboardMetricState = "score";
+    gameLeaderboardPageState = 1;
+    updateGameLeaderboardMetricTabs();
+    void loadGameLeaderboardData();
+  });
+
+  timeTab?.addEventListener("click", () => {
+    if (gameLeaderboardMetricState === "time") return;
+    gameLeaderboardMetricState = "time";
+    gameLeaderboardPageState = 1;
+    updateGameLeaderboardMetricTabs();
+    void loadGameLeaderboardData();
+  });
+
+  gameLeaderboardModalWired = true;
+}
+
+function updateGameLeaderboardMetricTabs() {
+  const scoreTab = document.getElementById("game-leaderboard-tab-score") as HTMLButtonElement | null;
+  const timeTab = document.getElementById("game-leaderboard-tab-time") as HTMLButtonElement | null;
+
+  const scoreActive = gameLeaderboardMetricState === "score";
+  scoreTab?.classList.toggle("is-active", scoreActive);
+  scoreTab?.setAttribute("aria-selected", scoreActive ? "true" : "false");
+
+  const timeActive = gameLeaderboardMetricState === "time";
+  timeTab?.classList.toggle("is-active", timeActive);
+  timeTab?.setAttribute("aria-selected", timeActive ? "true" : "false");
+}
+
+function openGameLeaderboardModal() {
+  setupGameLeaderboardModal();
+  const modal = document.getElementById(GAME_LEADERBOARD_MODAL_ID);
+  if (modal) {
+    modal.classList.remove("hidden");
+    gameLeaderboardPageState = 1;
+    gameLeaderboardMetricState = "score";
+    updateGameLeaderboardMetricTabs();
+    void loadGameLeaderboardData();
+  }
+}
+
+function closeGameLeaderboardModal() {
+  const modal = document.getElementById(GAME_LEADERBOARD_MODAL_ID);
+  if (modal) {
+    modal.classList.add("hidden");
+  }
+}
+
+function medalForGameRank(rank: number): string {
+  if (rank === 1) return "🥇";
+  if (rank === 2) return "🥈";
+  if (rank === 3) return "🥉";
+  return "";
+}
+
+function formatGameLeaderboardValue(metric: GameLeaderboardMetric, value: number): string {
+  if (metric === "time") {
+    // GML stores timer units at 60 ticks per second.
+    const ticks = Math.max(0, Math.floor(value));
+    const hours = ticks >= 216000 ? Math.floor(((ticks / 60) / 60) / 60) : 0;
+    const minutes = ticks >= 3600 ? Math.floor((ticks / 60) / 60) - (hours * 60) : 0;
+    const seconds = (ticks / 60 >> 0) - (minutes * 60) - (hours * 60 * 60);
+
+    const secondStr = String(seconds).padStart(2, "0");
+    if (hours > 0) {
+      const minuteStr = String(minutes).padStart(2, "0");
+      return `${hours}:${minuteStr}:${secondStr}`;
+    }
+    return `${minutes}:${secondStr}`;
+  }
+  return value.toLocaleString();
+}
+
+function updateGameLeaderboardPaginationUi(page: number, totalPages: number) {
+  const prevBtn = document.getElementById("game-leaderboard-prev-btn") as HTMLButtonElement | null;
+  const nextBtn = document.getElementById("game-leaderboard-next-btn") as HTMLButtonElement | null;
+  const meta = document.getElementById("game-leaderboard-page-meta") as HTMLSpanElement | null;
+
+  if (meta) {
+    meta.textContent = `Page ${page} / ${Math.max(1, totalPages)}`;
+  }
+  if (prevBtn) {
+    prevBtn.disabled = page <= 1;
+  }
+  if (nextBtn) {
+    nextBtn.disabled = page >= totalPages;
+  }
+}
+
+async function loadGameLeaderboardData() {
+  const list = document.getElementById("game-leaderboard-list") as HTMLDivElement | null;
+  const selfRowEl = document.getElementById("game-leaderboard-self-row") as HTMLDivElement | null;
+  const levelNameEl = document.getElementById("game-leaderboard-levelname") as HTMLParagraphElement | null;
+  const authorEl = document.getElementById("game-leaderboard-author") as HTMLParagraphElement | null;
+  if (!list) return;
+
+  if (levelNameEl) {
+    levelNameEl.textContent = gameLeaderboardLevelName ? gameLeaderboardLevelName : "";
+  }
+  if (authorEl) {
+    authorEl.textContent = gameLeaderboardLevelAuthor ? `by u/${gameLeaderboardLevelAuthor}` : "";
+  }
+
+  list.innerHTML = `<p class="game-leaderboard-loading">Loading leaderboard...</p>`;
+
+  try {
+    const res = await fetch(
+      `/api/leaderboard?postId=${encodeURIComponent(gameLeaderboardPostId)}&metric=${encodeURIComponent(gameLeaderboardMetricState)}&limit=${GAME_LEADERBOARD_LIMIT}&page=${gameLeaderboardPageState}`
+    );
+    if (!res.ok) {
+      list.innerHTML = `<p class="game-leaderboard-loading">Could not load leaderboard.</p>`;
+      return;
+    }
+
+    const data = await res.json() as {
+      metric?: GameLeaderboardMetric;
+      scoreLabel?: string;
+      top?: Array<{ rank: number; username: string; score: number; guesses?: number }>;
+      aroundMe?: Array<{ rank: number; username: string; score: number; guesses?: number }>;
+      me?: { rank: number; username: string; score: number; guesses?: number } | null;
+      totalPlayers?: number;
+      page?: number;
+      totalPages?: number;
+      generatedAt?: number;
+    };
+
+    gameLeaderboardMetricState = data.metric === "time" ? "time" : "score";
+    updateGameLeaderboardMetricTabs();
+    const valueLabel = data.scoreLabel ?? (gameLeaderboardMetricState === "time" ? "Time" : "Score");
+
+    gameLeaderboardPageState = Math.max(1, Number(data.page ?? gameLeaderboardPageState));
+    gameLeaderboardTotalPagesState = Math.max(1, Number(data.totalPages ?? 1));
+    updateGameLeaderboardPaginationUi(gameLeaderboardPageState, gameLeaderboardTotalPagesState);
+
+    const entries = data.top ?? [];
+    if (entries.length === 0) {
+      list.innerHTML = `<p class="game-leaderboard-loading">No ranked players yet.</p>`;
+      if (selfRowEl) {
+        selfRowEl.innerHTML = `Your Rank: <b>Unranked</b>`;
+      }
+      return;
+    }
+
+    const rows = entries
+      .map((entry) => {
+        const medal = medalForGameRank(entry.rank);
+        const topRankClass = entry.rank === 1
+          ? "is-rank-1"
+          : entry.rank === 2
+            ? "is-rank-2"
+            : entry.rank === 3
+              ? "is-rank-3"
+              : "";
+        const isSelf = data.me?.username === entry.username;
+        const guessesValue = Number(entry.guesses ?? 0) || 0;
+        const guessesLabel = `${guessesValue.toLocaleString()} ${guessesValue === 1 ? "guess" : "guesses"}`;
+        return `<div class="game-leaderboard-row ${topRankClass} ${isSelf ? "is-self" : ""}">
+          <span class="game-lb-rank">${medal ? `${medal} ` : ""}#${entry.rank}</span>
+          <span class="game-lb-user">u/${escapeHtmlGame(entry.username)}${isSelf ? ' <span class="game-lb-you">(You)</span>' : ""}</span>
+          <span class="game-lb-score"><span class="game-lb-score-main">${formatGameLeaderboardValue(gameLeaderboardMetricState, entry.score)}</span><span class="game-lb-guesses">${guessesLabel}${guessesValue === 1 ? ' <span class="game-lb-guesses-emoji">🎯</span>' : ""}</span></span>
+        </div>`;
+      })
+      .join("");
+
+    const selfContent = data.me
+      ? `Your Rank: <b>#${data.me.rank}</b> • ${valueLabel}: <b>${formatGameLeaderboardValue(gameLeaderboardMetricState, data.me.score)}</b>`
+      : `Your Rank: <b>Unranked</b>`;
+    if (selfRowEl) selfRowEl.innerHTML = selfContent;
+
+    const totalLabel = (data.totalPlayers ?? entries.length).toLocaleString();
+    const rankStart = (gameLeaderboardPageState - 1) * GAME_LEADERBOARD_LIMIT + 1;
+    const rankEnd = rankStart + entries.length - 1;
+    const rankLabel = gameLeaderboardPageState === 1 && entries.length <= GAME_LEADERBOARD_LIMIT
+      ? `Top ${entries.length}`
+      : `Ranks ${rankStart}-${rankEnd}`;
+    list.innerHTML = `
+      <div class="game-leaderboard-head">
+        <span>${rankLabel}</span>
+        <span>${totalLabel} players</span>
+      </div>
+      <div class="game-leaderboard-rows">${rows}</div>
+    `;
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = `<p class="game-leaderboard-loading">Could not load leaderboard.</p>`;
+  }
+}
+
+// Expose to GameMaker
+window.showGameLeaderboard = function (postId: string, levelName?: string, levelAuthor?: string) {
+  if (!postId || postId.trim() === "") {
+    console.error("showGameLeaderboard: postId is required");
+    return;
+  }
+  gameLeaderboardPostId = postId;
+  gameLeaderboardLevelName = String(levelName ?? "");
+  gameLeaderboardLevelAuthor = String(levelAuthor ?? "");
+  openGameLeaderboardModal();
+};
+
+// ============================================
+// GAME ARCHIVE MODAL - called from GameMaker
+// ============================================
+
+const GAME_ARCHIVE_MODAL_ID = "game-archive-modal";
+const GAME_ARCHIVE_LIMIT = 12;
+type GameArchiveCategory = "all" | "daily" | "community";
+type GameArchiveSort = "date" | "players" | "avg" | "karma";
+type GameArchiveNonStandardFilter = "any" | "standard";
+
+let gameArchiveCategoryState: GameArchiveCategory = "all";
+let gameArchiveSortState: GameArchiveSort = "date";
+let gameArchivePageState = 1;
+let gameArchiveTotalPagesState = 1;
+let gameArchiveSizeState = "";
+let gameArchiveNonStandardState: GameArchiveNonStandardFilter = "any";
+let gameArchiveUnplayedOnlyState = false;
+let gameArchiveAuthorState = "";
+let gameArchiveTitleState = "";
+let gameArchiveLoadFallbackTimeout = 0;
+let gameArchiveLoadFallbackPostId = "";
+let gameArchiveIsLoadingPost = false;
+
+function gameArchivePostUrl(postId: string): string {
+  const barePostId = postId.startsWith("t3_") ? postId.slice(3) : postId;
+  return `https://www.reddit.com/comments/${encodeURIComponent(barePostId)}`;
+}
+
+function setGameArchivePostLoading(isLoading: boolean) {
+  gameArchiveIsLoadingPost = isLoading;
+
+  const loadingEl = document.getElementById("game-archive-post-loading");
+  if (loadingEl) {
+    loadingEl.classList.toggle("hidden", !isLoading);
+  }
+
+  const entryButtons = document.querySelectorAll("#game-archive-list .game-archive-entry-toggle") as NodeListOf<HTMLButtonElement>;
+  entryButtons.forEach((button) => {
+    button.disabled = isLoading;
+  });
+
+  const summary = document.getElementById("game-archive-summary-row") as HTMLDivElement | null;
+  if (summary && isLoading) {
+    summary.textContent = "Loading post...";
+  }
+}
+
+function tryLoadPuzzleInGame(postId: string): boolean {
+  const normalizedPostId = String(postId ?? "").trim();
+  if (!normalizedPostId) {
+    return false;
+  }
+
+  const msg = { action: "load-archive-post", postId: normalizedPostId };
+  window.postMessage(msg, "*");
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage(msg, "*");
+  }
+
+  return true;
+}
+
+function openPuzzleFromGameArchive(postId: string) {
+  if (gameArchiveIsLoadingPost) return;
+
+  const normalizedPostId = String(postId ?? "").trim();
+  if (!normalizedPostId) return;
+
+  setGameArchivePostLoading(true);
+  gameArchiveLoadFallbackPostId = normalizedPostId;
+  window.clearTimeout(gameArchiveLoadFallbackTimeout);
+
+  const attemptedCallback = tryLoadPuzzleInGame(normalizedPostId);
+  if (!attemptedCallback) {
+    closeGameArchiveModal();
+    navigateTo(gameArchivePostUrl(normalizedPostId));
+    return;
+  }
+
+  // If GML callback works it will call showGameArchive("false") quickly.
+  // If modal remains open, fall back to direct post navigation.
+  gameArchiveLoadFallbackTimeout = window.setTimeout(() => {
+    if (gameArchiveLoadFallbackPostId !== normalizedPostId) return;
+    const modal = document.getElementById(GAME_ARCHIVE_MODAL_ID);
+    const modalStillOpen = Boolean(modal && !modal.classList.contains("hidden"));
+    if (!modalStillOpen) return;
+
+    closeGameArchiveModal();
+    navigateTo(gameArchivePostUrl(normalizedPostId));
+  }, 450);
+}
+
+function setupGameArchiveModal() {
+  if (document.getElementById(GAME_ARCHIVE_MODAL_ID)) {
+    return;
+  }
+
+  const modalOverlay = document.createElement("div");
+  modalOverlay.id = GAME_ARCHIVE_MODAL_ID;
+  modalOverlay.className = "game-archive-overlay hidden";
+  modalOverlay.innerHTML = `
+    <div class="game-archive-card" role="dialog" aria-modal="true" aria-labelledby="game-archive-title">
+      <button type="button" class="game-archive-close" aria-label="Close">✕</button>
+      <div class="game-archive-top">
+        <h2 id="game-archive-title">🗂️ PUZZLE ARCHIVE 🗂️</h2>
+        <p class="game-archive-post-loading hidden" id="game-archive-post-loading">Loading post...</p>
+        <div class="game-archive-tabs" id="game-archive-tabs">
+          <button type="button" class="game-archive-tab is-active" data-category="all">All</button>
+          <button type="button" class="game-archive-tab" data-category="daily">🗓️ Daily</button>
+          <button type="button" class="game-archive-tab" data-category="community">🌎 Community</button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 0.8rem; color: rgb(255 255 255 / 65%);">↕️</span>
+          <div class="game-archive-sort-tabs" id="game-archive-sort-tabs">
+          <button type="button" class="game-archive-sort-tab is-active" data-sort="date">🗓️ Date</button>
+          <button type="button" class="game-archive-sort-tab" data-sort="players">👥 Players</button>
+          <button type="button" class="game-archive-sort-tab" data-sort="avg">📊 Avg Score</button>
+          <button type="button" class="game-archive-sort-tab" data-sort="karma"><span class="karma-arrow">▲</span> Upvotes</button>
+        </div>
+        </div>
+        <div class="game-archive-options-row">
+          <label class="game-archive-toggle-wrap game-archive-unplayed-wrap" for="game-archive-unplayed-toggle">
+            <input type="checkbox" id="game-archive-unplayed-toggle" class="game-archive-toggle" />
+            <span>Unplayed Only</span>
+          </label>
+          <details class="game-archive-more-options">
+          <summary class="game-archive-more-summary">More options</summary>
+          <div class="game-archive-more-body">
+            <div class="game-archive-search-row">
+              <input type="text" id="game-archive-title-input" class="game-archive-input" placeholder="Search title ⌕" maxlength="80" />
+              <input type="text" id="game-archive-author-input" class="game-archive-input" placeholder="Search author ⌕" maxlength="40" />
+            </div>
+            <div class="game-archive-filter-row">
+              <label class="game-archive-toggle-wrap" for="game-archive-nonstandard-toggle">
+                <input type="checkbox" id="game-archive-nonstandard-toggle" class="game-archive-toggle" />
+                <span>Hide Non-Standard</span>
+              </label>
+              <select id="game-archive-size-select" class="game-archive-select">
+                <option value="">Any Size</option>
+                <option value="3">3x3</option>
+                <option value="4">4x4</option>
+                <option value="5">5x5</option>
+                <option value="6">6x6</option>
+                <option value="7">7x7</option>
+                <option value="8plus">8x8+</option>
+              </select>
+              <button type="button" class="game-archive-filter-btn" id="game-archive-reset-btn">Reset</button>
+            </div>
+          </div>
+          </details>
+        </div>
+      </div>
+      <div class="game-archive-list" id="game-archive-list">
+        <p class="game-archive-loading">Loading archive...</p>
+      </div>
+      <div class="game-archive-pagination">
+        <div class="game-archive-summary" id="game-archive-summary-row"></div>
+        <div class="game-archive-page-controls">
+          <button type="button" class="game-archive-page-btn" id="game-archive-prev-btn">◀  Prev</button>
+          <span class="game-archive-page-meta" id="game-archive-page-meta">Page 1 / 1</span>
+          <button type="button" class="game-archive-page-btn" id="game-archive-next-btn">Next  ▶</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modalOverlay);
+
+  const modalCard = modalOverlay.querySelector(".game-archive-card") as HTMLDivElement | null;
+  const closeButton = modalOverlay.querySelector(".game-archive-close") as HTMLButtonElement | null;
+
+  modalOverlay.addEventListener("click", () => {
+    closeGameArchiveModal();
+  });
+
+  closeButton?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    closeGameArchiveModal();
+  });
+
+  modalCard?.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !modalOverlay.classList.contains("hidden")) {
+      closeGameArchiveModal();
+    }
+  });
+
+  const categoryTabs = modalOverlay.querySelectorAll(".game-archive-tab") as NodeListOf<HTMLButtonElement>;
+  categoryTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      gameArchiveCategoryState = (tab.dataset.category ?? "all") as GameArchiveCategory;
+      gameArchivePageState = 1;
+      setGameArchiveActiveCategory(gameArchiveCategoryState);
+      void loadGameArchiveData();
+    });
+  });
+
+  const sortTabs = modalOverlay.querySelectorAll(".game-archive-sort-tab") as NodeListOf<HTMLButtonElement>;
+  sortTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      gameArchiveSortState = (tab.dataset.sort ?? "date") as GameArchiveSort;
+      gameArchivePageState = 1;
+      setGameArchiveActiveSort(gameArchiveSortState);
+      void loadGameArchiveData();
+    });
+  });
+
+  const titleInput = modalOverlay.querySelector("#game-archive-title-input") as HTMLInputElement | null;
+  const authorInput = modalOverlay.querySelector("#game-archive-author-input") as HTMLInputElement | null;
+  const sizeSelect = modalOverlay.querySelector("#game-archive-size-select") as HTMLSelectElement | null;
+  const nonStandardToggle = modalOverlay.querySelector("#game-archive-nonstandard-toggle") as HTMLInputElement | null;
+  const unplayedToggle = modalOverlay.querySelector("#game-archive-unplayed-toggle") as HTMLInputElement | null;
+  const resetBtn = modalOverlay.querySelector("#game-archive-reset-btn") as HTMLButtonElement | null;
+  const prevBtn = modalOverlay.querySelector("#game-archive-prev-btn") as HTMLButtonElement | null;
+  const nextBtn = modalOverlay.querySelector("#game-archive-next-btn") as HTMLButtonElement | null;
+
+  const applyArchiveFilters = () => {
+    gameArchiveTitleState = titleInput?.value.trim() ?? "";
+    gameArchiveAuthorState = authorInput?.value.trim() ?? "";
+    gameArchiveSizeState = sizeSelect?.value ?? "";
+    gameArchiveNonStandardState = nonStandardToggle?.checked ? "standard" : "any";
+    gameArchiveUnplayedOnlyState = unplayedToggle?.checked ?? false;
+    gameArchivePageState = 1;
+    void loadGameArchiveData();
+  };
+
+  let gameArchiveFilterDebounce = 0;
+  const scheduleGameArchiveFilterApply = () => {
+    window.clearTimeout(gameArchiveFilterDebounce);
+    gameArchiveFilterDebounce = window.setTimeout(() => {
+      applyArchiveFilters();
+    }, 220);
+  };
+
+  resetBtn?.addEventListener("click", () => {
+    gameArchiveCategoryState = "all";
+    gameArchiveSortState = "date";
+    gameArchivePageState = 1;
+    gameArchiveTotalPagesState = 1;
+    gameArchiveSizeState = "";
+    gameArchiveNonStandardState = "any";
+    gameArchiveUnplayedOnlyState = false;
+    gameArchiveAuthorState = "";
+    gameArchiveTitleState = "";
+    if (titleInput) titleInput.value = "";
+    if (authorInput) authorInput.value = "";
+    if (sizeSelect) sizeSelect.value = "";
+    if (nonStandardToggle) nonStandardToggle.checked = false;
+    if (unplayedToggle) unplayedToggle.checked = false;
+    setGameArchiveActiveCategory(gameArchiveCategoryState);
+    setGameArchiveActiveSort(gameArchiveSortState);
+    updateGameArchivePaginationUi(1, 1);
+    void loadGameArchiveData();
+  });
+
+  [titleInput, authorInput].forEach((input) => {
+    input?.addEventListener("input", () => {
+      scheduleGameArchiveFilterApply();
+    });
+    input?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        applyArchiveFilters();
+      }
+    });
+  });
+
+  sizeSelect?.addEventListener("change", () => {
+    gameArchiveSizeState = sizeSelect.value;
+    gameArchivePageState = 1;
+    void loadGameArchiveData();
+  });
+
+  nonStandardToggle?.addEventListener("change", () => {
+    gameArchiveNonStandardState = nonStandardToggle.checked ? "standard" : "any";
+    gameArchivePageState = 1;
+    void loadGameArchiveData();
+  });
+
+  unplayedToggle?.addEventListener("change", () => {
+    gameArchiveUnplayedOnlyState = unplayedToggle.checked;
+    gameArchivePageState = 1;
+    void loadGameArchiveData();
+  });
+
+  prevBtn?.addEventListener("click", () => {
+    if (gameArchivePageState <= 1) return;
+    gameArchivePageState -= 1;
+    void loadGameArchiveData();
+  });
+
+  nextBtn?.addEventListener("click", () => {
+    if (gameArchivePageState >= gameArchiveTotalPagesState) return;
+    gameArchivePageState += 1;
+    void loadGameArchiveData();
+  });
+}
+
+function setGameArchiveActiveCategory(category: GameArchiveCategory) {
+  const tabs = document.querySelectorAll("#game-archive-tabs .game-archive-tab") as NodeListOf<HTMLButtonElement>;
+  tabs.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.category === category);
+  });
+}
+
+function setGameArchiveActiveSort(sort: GameArchiveSort) {
+  const tabs = document.querySelectorAll("#game-archive-sort-tabs .game-archive-sort-tab") as NodeListOf<HTMLButtonElement>;
+  tabs.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.sort === sort);
+  });
+}
+
+function updateGameArchivePaginationUi(page: number, totalPages: number) {
+  const prevBtn = document.getElementById("game-archive-prev-btn") as HTMLButtonElement | null;
+  const nextBtn = document.getElementById("game-archive-next-btn") as HTMLButtonElement | null;
+  const meta = document.getElementById("game-archive-page-meta") as HTMLSpanElement | null;
+
+  if (meta) {
+    meta.textContent = `Page ${page} / ${Math.max(1, totalPages)}`;
+  }
+  if (prevBtn) {
+    prevBtn.disabled = page <= 1;
+  }
+  if (nextBtn) {
+    nextBtn.disabled = page >= totalPages;
+  }
+}
+
+function closeGameArchiveModal() {
+  const modal = document.getElementById(GAME_ARCHIVE_MODAL_ID);
+  if (modal) {
+    modal.classList.add("hidden");
+  }
+  setGameArchivePostLoading(false);
+  gameArchiveLoadFallbackPostId = "";
+  window.clearTimeout(gameArchiveLoadFallbackTimeout);
+}
+
+function openGameArchiveModal() {
+  setupGameArchiveModal();
+  gameArchiveCategoryState = "all";
+  gameArchiveSortState = "date";
+  gameArchivePageState = 1;
+  gameArchiveTotalPagesState = 1;
+  gameArchiveSizeState = "";
+  gameArchiveNonStandardState = "any";
+  gameArchiveUnplayedOnlyState = false;
+  gameArchiveAuthorState = "";
+  gameArchiveTitleState = "";
+  setGameArchiveActiveCategory(gameArchiveCategoryState);
+  setGameArchiveActiveSort(gameArchiveSortState);
+  updateGameArchivePaginationUi(1, 1);
+  setGameArchivePostLoading(false);
+  const modal = document.getElementById(GAME_ARCHIVE_MODAL_ID);
+  if (modal) {
+    modal.classList.remove("hidden");
+  }
+  void loadGameArchiveData();
+}
+
+function formatGameArchiveDate(value: string | undefined): string {
+  if (!value) return "Unknown date";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Unknown date";
+  return date.toLocaleDateString("en-US", {
+    month: "numeric",
+    day: "numeric",
+    year: "2-digit",
+  });
+}
+
+function gameArchiveCategoryLabel(category: string): string {
+  if (category === "daily") return "🗓️ Daily";
+  if (category === "community") return "🌎 Community";
+  return "All";
+}
+
+async function loadGameArchiveData() {
+  const list = document.getElementById("game-archive-list") as HTMLDivElement | null;
+  const summary = document.getElementById("game-archive-summary-row") as HTMLDivElement | null;
+  const titleInput = document.getElementById("game-archive-title-input") as HTMLInputElement | null;
+  const authorInput = document.getElementById("game-archive-author-input") as HTMLInputElement | null;
+  const sizeSelect = document.getElementById("game-archive-size-select") as HTMLSelectElement | null;
+  const nonStandardToggle = document.getElementById("game-archive-nonstandard-toggle") as HTMLInputElement | null;
+  const unplayedToggle = document.getElementById("game-archive-unplayed-toggle") as HTMLInputElement | null;
+  if (!list) return;
+
+  if (titleInput && titleInput.value !== gameArchiveTitleState) titleInput.value = gameArchiveTitleState;
+  if (authorInput && authorInput.value !== gameArchiveAuthorState) authorInput.value = gameArchiveAuthorState;
+  if (sizeSelect && sizeSelect.value !== gameArchiveSizeState) sizeSelect.value = gameArchiveSizeState;
+  if (nonStandardToggle) nonStandardToggle.checked = gameArchiveNonStandardState === "standard";
+  if (unplayedToggle) unplayedToggle.checked = gameArchiveUnplayedOnlyState;
+
+  list.innerHTML = `<p class="game-archive-loading">Loading archive...</p>`;
+
+  try {
+    const params = new URLSearchParams({
+      page: String(gameArchivePageState),
+      limit: String(GAME_ARCHIVE_LIMIT),
+      sort: gameArchiveSortState,
+      nonStandard: gameArchiveNonStandardState,
+      unplayedOnly: gameArchiveUnplayedOnlyState ? "1" : "0",
+    });
+    if (gameArchiveCategoryState !== "all") params.set("tag", gameArchiveCategoryState);
+    if (gameArchiveSizeState) params.set("size", gameArchiveSizeState);
+    if (gameArchiveAuthorState) params.set("author", gameArchiveAuthorState);
+    if (gameArchiveTitleState) params.set("title", gameArchiveTitleState);
+
+    const res = await fetch(`/api/list-levels?${params.toString()}`, { cache: "no-store" });
+    if (!res.ok) {
+      list.innerHTML = `<p class="game-archive-loading">Could not load archive.</p>`;
+      if (summary) summary.innerHTML = "";
+      return;
+    }
+
+    const data = await res.json() as {
+      puzzles?: Array<{
+        postId: string;
+        levelName?: string;
+        levelCreator?: string;
+        levelTag?: string;
+        levelDate?: string;
+        nonStandard?: string;
+        totalPlayers?: number | string;
+        avgScore?: number | string;
+        karma?: number | string;
+        puzzleSize?: number | string;
+        viewerPlayed?: boolean;
+      }>;
+      totalFiltered?: number;
+      page?: number;
+      totalPages?: number;
+    };
+
+    gameArchivePageState = Math.max(1, Number(data.page ?? gameArchivePageState));
+    gameArchiveTotalPagesState = Math.max(1, Number(data.totalPages ?? 1));
+    updateGameArchivePaginationUi(gameArchivePageState, gameArchiveTotalPagesState);
+
+    const puzzles = data.puzzles ?? [];
+    if (puzzles.length === 0) {
+      list.innerHTML = `
+        <p class="game-archive-loading">No puzzles matched those filters.</p>
+      `;
+      if (summary) {
+        summary.textContent = "Try broadening the filters or clearing search terms.";
+      }
+      return;
+    }
+
+    const rows = puzzles.map((puzzle) => {
+      const tagValue = String(puzzle.levelTag ?? "");
+      const sizeValue = Number(puzzle.puzzleSize ?? 0);
+      const totalPlayers = Number(puzzle.totalPlayers ?? 0);
+      const avgScore = Number(puzzle.avgScore ?? 0);
+      const karma = Number(puzzle.karma ?? 0);
+      const totalPlayersLabel = Number.isFinite(totalPlayers) ? totalPlayers.toLocaleString() : "0";
+      const avgScoreLabel = Number.isFinite(avgScore)
+        ? avgScore.toLocaleString(undefined, { maximumFractionDigits: 0 })
+        : "0";
+      const rulesLabel = String(puzzle.nonStandard ?? "0") === "1" ? "⚠️ Non-Standard" : "Standard";
+      const playedLabel = puzzle.viewerPlayed ? "Played" : "Unplayed";
+      const categoryLabel = gameArchiveCategoryLabel(tagValue);
+      const tagIcon = tagValue === "daily" ? "🗓️" : tagValue === "community" ? "🌎" : "🧩";
+      const authorInline = tagValue === "daily" ? "" : `u/${escapeHtmlGame(puzzle.levelCreator ?? "unknown")}`;
+      const restMetaParts = [
+        formatGameArchiveDate(puzzle.levelDate),
+        `👥 ${totalPlayersLabel}`,
+        `<span><span class="karma-arrow">▲</span> ${karma.toLocaleString()}</span>`,
+      ];
+      const restMeta = restMetaParts.join(" · ");
+      const inlineMetaHtml = authorInline
+        ? `<span class="game-archive-entry-author">${escapeHtmlGame(authorInline)}</span><span class="game-archive-entry-inline-meta-rest"> · ${restMeta}</span>`
+        : `<span class="game-archive-entry-inline-meta-rest">${restMeta}</span>`;
+      return `
+        <article class="game-archive-entry" data-post-id="${escapeHtmlGame(puzzle.postId)}">
+          <span class="game-archive-played-pill ${puzzle.viewerPlayed ? "is-played" : "is-unplayed"}" aria-hidden="true"></span>
+          <button type="button" class="game-archive-entry-toggle" data-post-id="${escapeHtmlGame(puzzle.postId)}">
+            <span class="game-archive-entry-copy">
+              <span class="game-archive-entry-title-row">
+                <span class="game-archive-entry-tag-icon" aria-hidden="true" title="${escapeHtmlGame(categoryLabel)}">${tagIcon}</span>
+                <span class="game-archive-entry-title">${escapeHtmlGame(puzzle.levelName ?? "Untitled Puzzle")}</span>
+              </span>
+              <span class="game-archive-entry-inline-meta">${inlineMetaHtml}</span>
+            </span>
+            <span class="game-archive-entry-caret">▶</span>
+          </button>
+          <div class="game-archive-entry-meta">
+            <span class="game-archive-meta-pill">${gameArchiveCategoryLabel(String(puzzle.levelTag ?? ""))}</span>
+            <span class="game-archive-meta-pill">${sizeValue > 0 ? `${sizeValue}x${sizeValue}` : "Unknown size"}</span>
+            <span class="game-archive-meta-pill">Avg Score: ${avgScoreLabel}</span>
+            <span class="game-archive-meta-pill">${rulesLabel}</span>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    const start = (gameArchivePageState - 1) * GAME_ARCHIVE_LIMIT + 1;
+    const end = start + puzzles.length - 1;
+    const totalFiltered = Number(data.totalFiltered ?? puzzles.length);
+    if (summary) {
+      summary.textContent = `Showing ${start}-${end} of ${totalFiltered.toLocaleString()} puzzles`;
+    }
+
+    list.innerHTML = `
+      <div class="game-leaderboard-head">
+        <span>${totalFiltered.toLocaleString()} puzzles</span>
+        <span>Sorted by ${gameArchiveSortState === "avg" ? "avg score" : gameArchiveSortState}</span>
+      </div>
+      <div class="game-archive-rows">${rows}</div>
+    `;
+
+    const toggleButtons = list.querySelectorAll(".game-archive-entry-toggle") as NodeListOf<HTMLButtonElement>;
+    toggleButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (gameArchiveIsLoadingPost) return;
+        const selectedPostId = button.dataset.postId ?? "";
+        openPuzzleFromGameArchive(selectedPostId);
+      });
+    });
+
+    setGameArchivePostLoading(gameArchiveIsLoadingPost);
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = `<p class="game-archive-loading">Could not load archive.</p>`;
+    if (summary) summary.innerHTML = "";
+  }
+}
+
+window.showGameArchive = function (visible?: boolean | number | string) {
+  let shouldShow = true;
+
+  if (typeof visible === "boolean") {
+    shouldShow = visible;
+  } else if (typeof visible === "number") {
+    shouldShow = visible !== 0;
+  } else if (typeof visible === "string") {
+    const normalized = visible.trim().toLowerCase();
+    shouldShow = !["0", "false", "hide", "close", "off"].includes(normalized);
+  }
+
+  if (shouldShow) {
+    openGameArchiveModal();
+    return;
+  }
+  closeGameArchiveModal();
+};
 
 ////////////////////////////////////
 

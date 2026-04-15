@@ -204,7 +204,8 @@ function api_join_subreddit(_callback) {
 /// @param {Real} _postId The post to save score to
 /// @param {Real} _score The score to submit.
 /// @param {Function} _callback The callback that you want to be executed upon task completion.
-function api_submit_score(_postId, _score, _callback) {
+/// @param {Real} _score_time Optional time value for time-based ranking.
+function api_submit_score(_postId, _score, _callback, _score_time = undefined) {
 	
 	if _postId = "-9999" {_postId = ""}
 	
@@ -219,6 +220,7 @@ function api_submit_score(_postId, _score, _callback) {
 	// Build request body
     var _body = {};
 	if (is_real(_score)) _body.score = _score;
+	if (is_real(_score_time)) _body.score_time = _score_time;
 
 	// Make request
     var _json = json_stringify(_body);

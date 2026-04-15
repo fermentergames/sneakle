@@ -21,11 +21,11 @@
   "dependencies": {
     "@devvit/public-api": "^0.12.15",
     "@devvit/web": "^0.12.15",
-    "express": "5.1.0"
+    "@hono/node-server": "^1.14.1",
+    "hono": "^4.7.7"
   },
   "devDependencies": {
     "@devvit/cli": "^0.12.16",
-    "@types/express": "5.0.1",
     "concurrently": "9.1.2",
     "devvit": "^0.12.15",
     "dotenv-cli": "8.0.0",

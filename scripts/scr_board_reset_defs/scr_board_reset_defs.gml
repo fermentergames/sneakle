@@ -33,8 +33,13 @@ with (obj_ctrl) {
 	selected_word_latest_tile = -1
 	selected_word_latest_tile_id = noone
 	selected_word_not_in_dictionary = 0
+	selected_word_not_allowed = 0
+	selected_word_too_long = 0
 	selected_word_is_valid = 0
 	selected_word_base_points = 0
+
+	phase1_banned_scan_signature = ""
+	phase1_grid_has_banned_words = 0
 	
 	nonstandard_allowed = 0
 	nonstandard_used = 0

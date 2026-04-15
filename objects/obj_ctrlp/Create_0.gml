@@ -9,8 +9,10 @@ show_debug_message("obj_ctrlp created!")
 
 global.dictionary = new CheckWordDictionary(working_directory + "dictionaries/full/full.txt");
 global.dictionary_simple = new CheckWordDictionary(working_directory + "dictionaries/simple/full.txt");
+global.dictionary_banned = new CheckWordDictionary(working_directory + "dictionaries/banned/banned-full.txt");
 
 global.dictionary_generate = new PickWordDictionary(working_directory + "dictionaries/simpler_MIT_by_length/5.txt");
+
 
 
 global.game_timer_meta = 0
@@ -28,6 +30,9 @@ global.game_timer_meta = 0
 #macro STATS_UNLIMITED 0
 #macro STATS_DAILY 1
 #macro STATS_COMMUNITY 2
+
+#macro rgb make_color_rgb
+
 
 
 //archive browser stuff
@@ -184,6 +189,8 @@ if 1=1 {//STATS
 	option_show_timer			= "1"
 	
 	profile_joined = "0"
+	nonstandard_tut_seen = "0"
+	nonstandard_tut_auto_shown = 0
 
 
 	stat_d_total_finished_perc = "0"
@@ -253,6 +260,7 @@ if 1=1 {//STATS
 				option_show_timer = _profile.option_show_timer;
 				
 				profile_joined = _profile.profile_joined;
+				nonstandard_tut_seen = _profile.nonstandard_tut_seen;
 				
 
 				scr_profile_update_stats()

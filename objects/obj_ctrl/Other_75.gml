@@ -38,6 +38,19 @@ if (async_load[? "event_type"] == "post_message_received")
 			   case "display_message":
 			      show_debug_message("display_message happening");
 			      show_debug_message(json.msg);
+				  global.light_mode = !global.light_mode
+				  
+			   break;
+
+			   case "load-archive-post":
+			      var _postIdToLoad = string(json.postId);
+			      show_debug_message("load-archive-post happening: " + _postIdToLoad);
+			      if (_postIdToLoad != "") {
+					  showGameArchive("false");
+					  global.show_archives = 0;
+					  scr_reddit_reset_post();
+					  scr_reddit_load_post(_postIdToLoad);
+				  }
 			   break;
 
 			   case "submit-typed-letters":
@@ -45,7 +58,17 @@ if (async_load[? "event_type"] == "post_message_received")
 			      scr_submit_typed_letters(json.letters);
 			      html_submit_closebtn();
 			   break;
-                
+
+			   case "paste-typed-letters":
+			      show_debug_message("paste-typed-letters happening");
+			      keyboard_string += string_upper(string_letters(string(json.letters)));
+			      alarm[1] = 2 //refresh the input display
+			   break;
+			   case "set-is-reddit-app":
+			      global.is_reddit_app = json.isRedditApp;
+			      show_debug_message("is_reddit_app set to " + string(global.is_reddit_app));
+			   break;
+			                   
 			   case "close-modals":
 			      show_debug_message("close-modals happening");
 			      html_submit_closebtn();

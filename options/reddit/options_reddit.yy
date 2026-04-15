@@ -3,7 +3,7 @@
   "%Name":"Reddit",
   "name":"Reddit",
   "option_reddit_devvit_project_id":"sneaklegame",
-  "option_reddit_devvit_project_path":"C:\\Users\\andre\\sneaklegame",
+  "option_reddit_devvit_project_path":"C:\\Users\\andre\\GameMakerProjects\\hidle\\devvit\\sneaklegame",
   "option_reddit_display_cursor":true,
   "option_reddit_game_name":"Sneakle",
   "option_reddit_interpolate_pixels":true,

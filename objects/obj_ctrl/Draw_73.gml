@@ -288,44 +288,53 @@ gpu_set_blendmode(bm_normal)
 
 with (obj_tile_letter) {
 	
-	var _tile_ht = 5*sqr(1-am_selected_fd)*global.tile_raises
 	var _spawn_slam = sqr(spawn_slam)*-1000
-	var _tile_scl = 1.002
-	var _tile_rot = 0
+	var _text_x = x
+	var _text_y = y+_spawn_slam
 	
 	if global.game_phase >= 2 {
 		
-		var _letter_col_highlight = c_white
+
+		draw_set_color(letter_col)
 		if global.light_mode = 1 {
-			//_letter_col_highlight = make_color_hsv(150,0,255)
+			var _letter_col_highlight = c_white
+			draw_set_color(merge_color(letter_col,_letter_col_highlight,am_selected_fd))
+		}
+	
+	
+		var _alpha_fd = am_selected_fd+am_clued_fd+am_part_of_secret_word_fd+am_exed_fd
+		draw_set_alpha(0.6)
+		if _alpha_fd > 0 {
+			draw_set_alpha(lerp(0.6,1,clamp(_alpha_fd,0,1)))
 		}
 		
-	
-	
-		draw_set_alpha(lerp(0.6,1,clamp(am_selected_fd+am_clued_fd+am_part_of_secret_word_fd+(1*am_exed_fd),0,1)))
-		draw_set_color(letter_col)//merge_color(letter_col,c_white,am_selected_fd))
-		draw_set_color(merge_color(letter_col,_letter_col_highlight,am_selected_fd))
 
-		var _text_offset_y = -0//20
+		//var _text_offset_y = -0//20
+		//var _text_y = _draw_y+(_text_offset_y*scl)
 		var _text_scl = (my_text_scl+(am_selected_flash2*2))*scl
 	
 	
-		if global.game_mode = 2 && my_letter_num >= 1 {
-			draw_set_color(merge_color(letter_col,c_yellow,clamp(am_selected_fd+am_part_of_secret_word_fd,0,1*obj_ctrl.selected_word_is_valid)))
-		}
+		// if global.game_mode = 2 && my_letter_num >= 1 {
+		// 	var _score_col = merge_color(letter_col,c_yellow,clamp(am_selected_fd+am_part_of_secret_word_fd,0,1*obj_ctrl.selected_word_is_valid))
+		// 	draw_set_color(_score_col)
+		// }
 
-		draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90),y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam,string_upper(my_letter_str),_text_scl,_text_scl,image_angle)
+		draw_text_transformed(_text_x,_text_y,my_letter_str,_text_scl,_text_scl,image_angle)
 
-		//draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90),y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+24,tile_id,_text_scl*0.2,_text_scl*0.2,image_angle)
+		//draw_text_transformed(_text_x,_text_y+24,tile_id,_text_scl*0.2,_text_scl*0.2,image_angle)
 
-		if global.game_mode = 2 && my_letter_num >= 1 {
-			draw_set_color(merge_color(letter_col,c_yellow,clamp(am_selected_fd+am_part_of_secret_word_fd,0,1*obj_ctrl.selected_word_is_valid)))
-			draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90)+0,y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+22,global.letter_data[my_letter_num,LETTER_POINTS],_text_scl*0.25,_text_scl*0.25,image_angle)
-		}
+		// if global.game_mode = 2 && my_letter_num >= 1 {
+		// 	draw_set_color(_score_col)
+		// 	draw_text_transformed(_text_x,_text_y+22,global.letter_data[my_letter_num,LETTER_POINTS],_text_scl*0.25,_text_scl*0.25,image_angle)
+		// }
 
-		draw_set_color(c_white)	
+		//draw_text_transformed(_text_x,_text_y+22,my_letter_num,_text_scl*0.25,_text_scl*0.25,image_angle)
+
+		
 	
 	}
+
+	
 	
 	//if am_selected >= 1 {
 		//depth = -y-5000
@@ -333,26 +342,28 @@ with (obj_tile_letter) {
 	
 	
 	
-	//draw_text_transformed(x+lengthdir_x(-_tile_ht+(_text_offset_y*scl),image_angle-90)+0,y+lengthdir_y(-_tile_ht+(_text_offset_y*scl),image_angle-90)+_spawn_slam+22,depth,_text_scl*0.25,_text_scl*0.25,image_angle)
+	//draw_text_transformed(_draw_x,_text_y+22,depth,_text_scl*0.25,_text_scl*0.25,image_angle)
 	
 	//if global.tile_style = 3 {
 	//	//border_col = make_colour_hsv(irandom(255),255*am_selected,255)
-	//	draw_sprite_ext(spr_sqr512,1,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*1.03,image_yscale*_tile_scl*1.03,image_angle+_tile_rot,border_col,image_alpha*0.9)
+	//	draw_sprite_ext(spr_sqr512,1,_draw_x,_draw_y,image_xscale*_tile_scl*1.03,image_yscale*_tile_scl*1.03,image_angle+_tile_rot,border_col,image_alpha*0.9)
 	//}
 	
 	if am_set_flash > 0 {
 		//flash on set
-		draw_sprite_ext(spr_sqr512,1,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*2*sqr(1-am_set_flash),image_yscale*2*sqr(1-am_set_flash),image_angle,c_white,image_alpha*2*am_set_flash)
+		draw_sprite_ext(spr_sqr512,1,_text_x,_text_y,image_xscale*2*sqr(1-am_set_flash),image_yscale*2*sqr(1-am_set_flash),image_angle,c_white,image_alpha*2*am_set_flash)
 	}
 	
 }
+
+draw_set_color(c_white)	
 
 //if global.game_phase >= 2 {
 //for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
 //	with (global.tile_letter[i]) {
 //		if global.tile_style = 3 {
 //			if am_selected <= 0 {
-//				draw_sprite_ext(spr_sqr512,1,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*1.00,image_yscale*_tile_scl*1.00,image_angle+_tile_rot,border_col,image_alpha*1)
+//				draw_sprite_ext(spr_sqr512,1,_draw_x,_draw_y,image_xscale*_tile_scl*1.00,image_yscale*_tile_scl*1.00,image_angle+_tile_rot,border_col,image_alpha*1)
 //			}
 //		}
 //	}
@@ -364,7 +375,7 @@ with (obj_tile_letter) {
 //	with (global.tile_letter[i]) {
 //		if global.tile_style = 3 {
 //			if am_selected >= 1 {
-//				draw_sprite_ext(spr_sqr512,1,x+lengthdir_x(-_tile_ht,image_angle-90),y+lengthdir_y(-_tile_ht,image_angle-90)+_spawn_slam,image_xscale*_tile_scl*1.00,image_yscale*_tile_scl*1.00,image_angle+_tile_rot,border_col,image_alpha*1)
+//				draw_sprite_ext(spr_sqr512,1,_draw_x,_draw_y,image_xscale*_tile_scl*1.00,image_yscale*_tile_scl*1.00,image_angle+_tile_rot,border_col,image_alpha*1)
 //			}
 //		}
 //	}

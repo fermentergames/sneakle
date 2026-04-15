@@ -1,39 +1,37 @@
-import { Router } from "express";
+import { Hono } from "hono";
 import { Logger } from "../utils/Logger";
 import { dequeuePuzzle, isPostingEnabled } from "../utils/puzzleQueueHelpers";
 import { createGamePostFromPuzzle } from "../actions/createGamePost";
 
-export const scheduledPuzzlePostAction = (router: Router): void => {
-  router.post("/internal/scheduler/auto-post-daily-puzzle-from-queue", async (_req, res) => {
+export const scheduledPuzzlePostAction = (router: Hono): void => {
+  router.post("/internal/scheduler/auto-post-daily-puzzle-from-queue", async (c) => {
     const logger = await Logger.Create("Scheduler - Auto Post Puzzle");
 
     try {
       if (!(await isPostingEnabled())) {
         logger.info("Posting paused");
-        res.json({
+        return c.json({
           showToast: { text: "Auto-posting is currently paused"}
         });
-        return;
       }
 
       const puzzle = await dequeuePuzzle();
       if (!puzzle) {
         logger.info("Queue empty");
-        res.json({
+        return c.json({
           showToast: { text: "Queue is empty. Nothing to post."}
         });
-        return;
       }
 
-      const post = await createGamePostFromPuzzle(puzzle);
+      await createGamePostFromPuzzle(puzzle);
 
       //logger.info(`Posted puzzle ${post.id}`);
-      res.json({
+      return c.json({
         showToast: { text: `auto-post-daily-puzzle-from-queue complete!`}
       });
     } catch (err) {
       logger.error("Scheduler failed", err);
-      res.status(500).json({ status: "error" });
+      return c.json({ status: "error" }, 500);
     }
   });
 };

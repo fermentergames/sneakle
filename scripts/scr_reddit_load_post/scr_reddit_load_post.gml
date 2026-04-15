@@ -168,6 +168,14 @@ with (obj_ctrlp) {
 					puzzle_is_community = 1
 				}
 				
+				if real(postData_nonStandard == 1) {
+					show_debug_message("postData_nonStandard = 1, nonstandard words allowed")
+					obj_ctrl.nonstandard_allowed = 1
+				} else {
+					show_debug_message("postData_nonStandard != 1, nonstandard words NOT allowed")
+					obj_ctrl.nonstandard_allowed = 0
+				}
+
 				alarm[6] = 1 //will try to get prev+next postIds
 
 				//show_debug_message("postData_levelName = "+string(postData_levelName))

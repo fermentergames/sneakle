@@ -47,6 +47,7 @@ if global.is_reddit = 1 {
 			option_show_timer = _profile.option_show_timer;
 				
 			profile_joined = _profile.profile_joined;
+			nonstandard_tut_seen = _profile.nonstandard_tut_seen;
 
 			scr_profile_update_stats()
 			
@@ -92,7 +93,8 @@ if global.is_reddit = 1 {
 					option_darkmode,
 					option_sfx,
 					option_show_timer,
-					profile_joined
+					profile_joined,
+					nonstandard_tut_seen
 				}, function(_status, _ok, _result) {
 					//alarm[4] = 60;
 				});

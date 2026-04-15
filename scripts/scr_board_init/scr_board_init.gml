@@ -23,6 +23,10 @@ with (obj_ctrl) {
 	global.game_hints_used = 0
 	global.game_hint_length_used = 0
 	global.game_hint_letter_used = 0
+	hint_btn_flash_fd = 0
+	hint_pts_pop_fd = 0
+	hint_pts_pop_y = 0
+	hint_len_flash_fd = 0
 	
 	//reset
 	global.game_score_guesses_and_hints = 0
@@ -190,12 +194,13 @@ with (obj_ctrl) {
 					my_letter_str = string_upper(global.letters_bag[tile_id])
 				} else {
 					//take first array entry
-					my_letter_str = array_shift(global.letters_bag)
+					my_letter_str = string_upper(array_shift(global.letters_bag))
 					//replace letters array end
 					array_push(global.letters_bag,my_letter_str)
 				}
 				
 				
+				// set my_letter_num based on my_letter_str
 				for (var l = 1; l <= array_length(global.letter_data); ++l) {
 					//show_debug_message(string(l)+": "+string(my_letter_str))
 				   if my_letter_str = global.letter_data[l,1] {

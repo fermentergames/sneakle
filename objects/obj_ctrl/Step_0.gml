@@ -203,7 +203,7 @@ if keyboard_check_pressed(ord("R")) && global.is_mobile <= 0 && global.is_reddit
 
 
 
-if global.show_TypeLetters_input_prompt >= 1 || global.show_PostTitle_input_prompt >= 1 || global.show_export_prompt >= 1 || global.show_archives >= 1 || global.show_lb >= 1 || global.show_howto >= 1 || global.show_options >= 1 || global.show_submitting_post >= 1 {
+if global.show_TypeLetters_input_prompt >= 1 || global.show_PostTitle_input_prompt >= 1 || global.show_export_prompt >= 1 || global.show_archives >= 1 || global.show_lb >= 1 || global.show_howto >= 1 || global.show_options >= 1 || global.show_submitting_post >= 1 || global.show_nonstandard_info >= 1 {
 	global.show_any_modal = 1
 } else {
 	global.show_any_modal = 0
@@ -217,6 +217,38 @@ global.show_lb_fd = lerp(global.show_lb_fd,global.show_lb,0.1)
 global.show_howto_fd = lerp(global.show_howto_fd,global.show_howto,0.2)
 
 global.show_options_fd = lerp(global.show_options_fd,global.show_options,0.2)
+global.show_nonstandard_info_fd = lerp(global.show_nonstandard_info_fd,global.show_nonstandard_info,0.2)
+
+hint_btn_flash_fd = lerp(hint_btn_flash_fd,0,0.02)
+hint_len_flash_fd = lerp(hint_len_flash_fd,0,0.03)
+if hint_pts_pop_fd > 0.001 {
+	hint_pts_pop_fd = lerp(hint_pts_pop_fd,0,0.02)
+	hint_pts_pop_y = lerp(hint_pts_pop_y,1,0.015)
+} else {
+	hint_pts_pop_fd = 0
+	hint_pts_pop_y = 0
+}
+
+//auto show nonstandard info tutorial if loading a nonstandard puzzle on reddit and haven't seen the tut before
+if obj_ctrlp.nonstandard_tut_auto_shown <= 0 {
+	//obj_ctrlp.nonstandard_tut_seen = "0" //debug test
+	if global.is_reddit = 1 {
+		if global.am_creating <= 0 && global.game_phase >= 3 && global.game_loading <= 0 {
+			if obj_ctrlp.load_profile_complete >= 1 && obj_ctrlp.load_post_data_complete >= 1 {
+				if real(obj_ctrlp.postData_nonStandard) >= 1 {
+					if string(obj_ctrlp.nonstandard_tut_seen) != "1" && obj_ctrlp.nonstandard_tut_auto_shown <= 0 {
+						obj_ctrlp.nonstandard_tut_auto_shown = 1
+						obj_ctrlp.nonstandard_tut_seen = "1"
+						global.show_nonstandard_info = 1
+						with (obj_ctrlp) {
+							api_save_profile({nonstandard_tut_seen}, undefined)
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 if 1=1 {//global.is_browser = 0 {
 	if keyboard_check_pressed(vk_escape) {
@@ -361,6 +393,9 @@ if mouse_check_button_pressed(mb_left) {
 						//secret
 						global.loadBoard = "SEWCATRED" 
 						global.loadSecret = "1-2-4-7-8-6"
+
+						global.loadBoard = "HAPPYBIRTHDAYTOMYDADPANTS" 
+						global.loadSecret = "3-2-8-9-5"
 						
 						//global.loadBoard = "TASOMGYFTODOMOBF" 
 						//global.loadSecret = "1-2-3-4-7"
@@ -386,61 +421,60 @@ if mouse_check_button_pressed(mb_left) {
 				};
 				GoogHit("screen_view",_event_struct)
 				
-				global.show_archives = 1
-				global.browser_tag = "daily"
-				global.browser_cursor = 0;
-				global.browser_puzzles = [];
-				global.browser_hasMore = true;
-
 				if global.is_reddit = 1 {
-					
-					scr_browser_load_next_page()
+					global.show_archives = 0
+					showGameArchive("true")
 					
 				} else if global.is_reddit = 0 {
+					global.show_archives = 1
+					global.browser_tag = "daily"
+					global.browser_cursor = 0;
+					global.browser_puzzles = [];
+					global.browser_hasMore = true;
 					
 					show_debug_message("api_list_levels");
 					global.browser_loading = false;
 					show_debug_message("global.is_reddit = 0");
 					//var _ok = true
 					// Instead of parsing _result, assign dummy data
-				   var _dummy_data = {
-				      puzzles: [
-				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"community", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30 very incredibly long name wow", levelTag:"community", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #29 longer name", levelTag:"community", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #29", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #29", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+				   	var _dummy_data = {
+						puzzles: [
+							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"community", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30 very incredibly long name wow", levelTag:"community", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s69vdy", levelName:"Daily Sneakle #29 longer name", levelTag:"community", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s69vdy", levelName:"Daily Sneakle #29", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cmhg", levelName:"Daily Sneakle #30", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s69vdy", levelName:"Daily Sneakle #29", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #31", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
 							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				         { postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
-				      ],
-				      nextCursor: 8,
-				      hasMore: true,
-				      total: 67
+							{ postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cmhg", levelName:"Daily Sneakle #40", levelTag:"daily", levelID:"62", levelDate:"2026-03-28T21:30:39.713Z", levelCreator:"SneakleBot", dailyID:"30", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s69vdy", levelName:"Daily Sneakle #49", levelTag:"daily", levelID:"61", levelDate:"2026-03-28T19:40:14.189Z", levelCreator:"SneakleBot", dailyID:"29", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+							{ postId:"t3_1s6cwsp", levelName:"Daily Sneakle #41", levelTag:"daily", levelID:"63", levelDate:"2026-03-28T21:42:39.715Z", levelCreator:"SneakleBot", dailyID:"31", gameData:"loadBoard=DARKNESSHELLFIRE&loadSecret=8-11-10-5-1-6-3" },
+						],
+						nextCursor: 8,
+						hasMore: true,
+						total: 67
 					}
 
 				
 					var data = _dummy_data;
 				
-	            show_debug_message("LIST LEVELS OK");
-	            show_debug_message(json_stringify(data));
+					show_debug_message("LIST LEVELS OK");
+					show_debug_message(json_stringify(data));
 
-	            var puzzles = data.puzzles;
+					var puzzles = data.puzzles;
 
-	            // Append results
-	            for (var i = 0; i < array_length(puzzles); i++) {
+					// Append results
+					for (var i = 0; i < array_length(puzzles); i++) {
 						array_push(global.browser_puzzles, puzzles[i]);
 						
 						var _ldate = scr_format_levelDate(global.browser_puzzles[i].levelDate,false)
@@ -450,12 +484,12 @@ if mouse_check_button_pressed(mb_left) {
 						var _ldaywk = scr_format_levelDate(global.browser_puzzles[i].levelDate,2)
 						global.browser_puzzles[i].date_wkday = _ldaywk
 						
-	            }
+					}
 
-	            // Update pagination
+	            	// Update pagination
 					global.browser_page = 0;
-	            global.browser_cursor = data.nextCursor;
-	            global.browser_hasMore = data.hasMore;
+					global.browser_cursor = data.nextCursor;
+					global.browser_hasMore = data.hasMore;
 				}
 				
 			} else if scr_mouse_over_button((global.sw*0.5),0+(210*_scl)+(80*_scl*2),0.64*_tscl,0.12*_tscl) {
@@ -1048,6 +1082,12 @@ if mouse_check_button_pressed(mb_left) {
 				
 				if _hint_used_now = 1 {
 					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+					hint_btn_flash_fd = 1
+					hint_pts_pop_fd = 1
+					hint_pts_pop_y = 0
+					if global.game_hints_used = 1 {
+						hint_len_flash_fd = 1
+					}
 				
 					
 				

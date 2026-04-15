@@ -22,15 +22,25 @@
 
     <div class="main">
       
-      <div class="join-button-wrapper wiggle-intermittent" id="join-button-wrapper"> 
-        <button id="join-button"><span><b><span class="emoji-shadowed">⭐</span> Join <u>r/Sneakle</b></u></br><span class="SpanFordailypuzzles">for daily puzzles!</span></span></button>
+      <div class="top-right-controls" id="top-right-controls">
+        <div class="join-button-wrapper wiggle-intermittent" id="join-button-wrapper"> 
+          <button id="join-button"><span><b><span class="emoji-shadowed">⭐</span> Join <u>r/Sneakle</b></u></br><span class="SpanFordailypuzzles">for daily puzzles!</span></span></button>
+        </div>
+        <div class="create-button-wrapper">
+          <button id="create-button" disabled="true"><span><b><span class="emoji-shadowed">🔠✏️</span> Create<span class="hidden-sm"> Your Own</span>!</b></span></button>
+        </div>
       </div>
-      <div class="create-button-wrapper">
-        <button id="create-button" disabled="true"><span><b>Create<span class="hidden-sm"> Your Own</span>! <span class="emoji-shadowed">🔠✏️</span></b></span></button>
+      <div class="debug-button-wrapper" id="debug-button-wrapper" hidden>
+        <button id="debug-button"><span><b>Debug Redis</b><br><span class="SpanFordailypuzzles">moderator only</span></span></button>
       </div>
-      <img class="img-logo" src="/sneakle-logo.png" alt="Sneakle Logo" />
+      <img class="img-logo" src="/sneakle-logo.png" alt="Sneakle Logo" decoding="async" fetchpriority="high" />
       <!-- <div class="join-ask wiggle-intermittent" id="">Join for daily puzzles!</div> -->
-      <img class="img-prev" src="/sneakle-prev.gif" alt="Sneakle Preview Gif" />
+      <div class="img-prev-frame" aria-hidden="true">
+        <video class="img-prev" aria-label="Sneakle Preview" muted loop playsinline autoplay preload="none" disablepictureinpicture disableremoteplayback>
+          <source data-src="/SneakleGif-comp.webm" type="video/webm" />
+          <source data-src="/SneakleGif-comp.mp4" type="video/mp4" />
+        </video>
+      </div>
       <h1 class="title" id="title"></h1>
       <div class="content border-gradient">
         <div class="level-details-wrapper">
@@ -66,7 +76,7 @@
       </div>
     </div>
     
-    <script type="module" src="splash/splash.ts" defer></script>
+    <script type="module" src="splash/splash.ts?v=20260408a" defer></script>
 
 
   </body>

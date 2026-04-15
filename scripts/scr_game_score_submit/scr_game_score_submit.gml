@@ -85,8 +85,9 @@ if (live_call()) return live_result;
 					});
 					
 					api_submit_score(postId,score_combined,function(_status, _ok, _result) {
-						alarm[1] = 30; //will fetch lb after
-					});
+						//still fetch lb for rank and pinned comment update
+						alarm[1] = 20; //will fetch lb after
+					}, score_time);
 			
 					api_update_postData(postId, { totalPlayers, totalPlayersCompleted, totalGuesses, totalTime, totalScore }, function(_status, _ok, _result) {
 						alarm[0] = 60;
@@ -139,7 +140,8 @@ if (live_call()) return live_result;
 			show_debug_message("scr_game_score_submit skipping because already finished")
 			
 			//obj_ctrlp
-			alarm[1] = 30; //will fetch lb after
+			//still fetch lb for rank and pinned comment update
+			alarm[1] = 20; //will fetch lb after
 			
 		}
 		

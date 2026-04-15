@@ -13,16 +13,18 @@ from collections import defaultdict
 # CONFIGURATION (default values)
 # -------------------------
 BOARD_COUNT = 10        # default number of boards to generate
-BOARD_SIZE = 7         # default board size - set from 3-7
+BOARD_SIZE = 5         # default board size - set from 3-7
 SHOW_BOARD_PREVIEW = True # shows preview of board with rows and columns laid out as they would be in game 
 USE_RANDOM_FILL = False # instead of each row being a word, just fill empty tiles with the LETTER_SET_DEFAULT
+FORCED_SECRET_WORD = "REMAINDER" # None # set to a string like "REMINDER" to force a specific secret word
 
 LETTER_SET_DEFAULT = (
     "AAAAAAAAAAAAABBBCCCDDDDDDEEEEEEEEEEEEEEEEEEFFFGGGGHHH"
     "IIIIIIIIIIIIJJKKLLLLLMMMNNNNNNNNOOOOOOOOOOOPPPQQRRRRRRRRRSSSSSSTTTTTTTTTUUUUUUVVVWWWXXYYYZZ"
 )
 
-DICT_FOLDER = "."  # folder containing 3.txt → 12.txt and full-simple.txt
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DICT_FOLDER = SCRIPT_DIR  # folder containing 3.txt → 12.txt and full-simple.txt
 
 # -------------------------
 # PREMADE PATHS (0-indexed)
@@ -332,7 +334,7 @@ def print_board(grid):
 # GENERATE SINGLE BOARD
 # -------------------------
 
-def generate_board(size, row_words, index, secret_words, board_number):
+def generate_board(size, row_words, index, secret_words, board_number, forced_secret_word=None):
 
     # if size not in PREMADE_PATHS:
     # raise ValueError(f"No premade paths defined for board size {size}")
@@ -344,7 +346,9 @@ def generate_board(size, row_words, index, secret_words, board_number):
     if not eligible:
         return None
 
-    word = choose_secret_word(eligible)
+    word = forced_secret_word if forced_secret_word else choose_secret_word(eligible)
+    if len(word) > len(path):
+        return None
     start = random.randint(0, len(path)-len(word))
     secret_path = path[start:start+len(word)]
 
@@ -378,20 +382,39 @@ def generate_board(size, row_words, index, secret_words, board_number):
 # GENERATE MULTIPLE BOARDS
 # -------------------------
 
-def generate_multiple_boards(count=5, board_size=5, preview=SHOW_BOARD_PREVIEW):
+def generate_multiple_boards(count=5, board_size=5, preview=SHOW_BOARD_PREVIEW, forced_secret_word=None):
     master_dict = load_master_dictionary()
     row_words = load_words(board_size, master_dict)
     random.shuffle(row_words)  # randomize row word order
     index = build_position_index(row_words)
     secret_words = load_secret_words(master_dict)
 
+    if not secret_words:
+        raise RuntimeError(
+            f"No secret words loaded from {DICT_FOLDER}. "
+            "Make sure full-simple.txt and length dictionaries exist."
+        )
+
+    if forced_secret_word:
+        forced_secret_word = forced_secret_word.strip().upper()
+        if not forced_secret_word.isalpha():
+            raise ValueError("Secret word must contain letters only.")
+
+        max_secret_len = max(len(p) for p in PREMADE_PATHS[board_size])
+        if len(forced_secret_word) > max_secret_len:
+            raise ValueError(
+                f"Secret word '{forced_secret_word}' is too long for {board_size}x{board_size}. "
+                f"Max supported length is {max_secret_len}."
+            )
+
     mode_str = "randomFilled" if USE_RANDOM_FILL else "rowsAreWords"
 
     filename = f"boards_{board_size}x{board_size}_{mode_str}.json"
+    output_path = os.path.join(SCRIPT_DIR, filename)
 
     # Load existing boards if file exists
-    if os.path.exists(filename):
-        with open(filename) as f:
+    if os.path.exists(output_path):
+        with open(output_path) as f:
             try:
                 existing_boards = json.load(f)
             except json.JSONDecodeError:
@@ -416,7 +439,14 @@ def generate_multiple_boards(count=5, board_size=5, preview=SHOW_BOARD_PREVIEW):
         attempts += 1
         print("Attempt", attempts)
         board_number = next_board_number + len(boards)
-        b = generate_board(board_size, row_words, index, secret_words=secret_words, board_number=board_number)
+        b = generate_board(
+            board_size,
+            row_words,
+            index,
+            secret_words=secret_words,
+            board_number=board_number,
+            forced_secret_word=forced_secret_word,
+        )
         if b:
             boards.append(b)
             print(b["encoded"])
@@ -429,7 +459,7 @@ def generate_multiple_boards(count=5, board_size=5, preview=SHOW_BOARD_PREVIEW):
 
     # Append to existing JSON and save
     existing_boards.extend(boards_to_save)
-    with open(filename, "w") as f:
+    with open(output_path, "w") as f:
         json.dump(existing_boards, f, indent=2)
 
     print(f"\n=========================================================")
@@ -440,7 +470,7 @@ def generate_multiple_boards(count=5, board_size=5, preview=SHOW_BOARD_PREVIEW):
         if preview:
             print_board(b["grid"])
 
-    print(f"\n==========Generated {len(boards)} boards, now {len(existing_boards)} total, saved to {filename}===========")
+    print(f"\n==========Generated {len(boards)} boards, now {len(existing_boards)} total, saved to {output_path}===========")
 
 
 # -------------------------
@@ -451,6 +481,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate letter grid boards")
     parser.add_argument("--count", type=int, help="Number of boards to generate")
     parser.add_argument("--size", type=int, help="Board size (4-7)")
+    parser.add_argument("--secret-word", type=str, help="Force a specific secret word")
     parser.add_argument("--preview", action="store_true", help="Show board preview (overrides default)")
     parser.add_argument("--no-preview", action="store_true", help="Hide board preview")
     parser.add_argument("--random_letters", action="store_true", help="Fill empty spaces with random letters instead of words")
@@ -463,7 +494,8 @@ if __name__ == "__main__":
     elif args.no_preview:
         SHOW_BOARD_PREVIEW = False
     USE_RANDOM_FILL = args.random_letters or USE_RANDOM_FILL
+    secret_word = args.secret_word if args.secret_word else FORCED_SECRET_WORD
 
     print(f"Generating {count} boards of size {size}x{size}")
-    generate_multiple_boards(count, size)
+    generate_multiple_boards(count, size, forced_secret_word=secret_word)
     input("\nPress Enter to exit...")

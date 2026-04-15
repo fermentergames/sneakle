@@ -1,18 +1,34 @@
 ///
 function scr_validate_word() {
 	if (live_call()) return live_result;
+
 	
 	var _valid_guess = 1
 	var _already_guessed = 0
 	selected_word_not_in_dictionary = 0 //reset
+	selected_word_not_allowed = 0 //reset
+	selected_word_too_long = 0 //reset
 	selected_word_already_guessed = 0 //reset
 	selected_word_is_valid = 1 //reset
 	selected_word_base_points = 0 //reset
 	
-	if selected_word_length <= 3 {
+	var _min_word_length = (nonstandard_allowed >= 1) ? 2 : 4
+	if selected_word_length < _min_word_length {
 		_valid_guess = 0
 		selected_word_is_valid = 0
 	}
+	
+	//limit guess length on non-standard guessing to prevent abuse of very long words that aren't in the dictionary
+	var _max_nonstandard_length = max(11, floor(secret_word_length * 1.5))
+	if global.game_phase >= 3 && nonstandard_allowed >= 1 && selected_word_length > _max_nonstandard_length {
+		_valid_guess = 0
+		selected_word_is_valid = 0
+		selected_word_too_long = 1
+		//show_debug_message("selected word too long: "+string(selected_word_length)+" vs max allowed "+string(_max_nonstandard_length)+" (secret word length "+string(secret_word_length)+")")
+	}
+	// } else {
+	// 	show_debug_message("selected word length: "+string(selected_word_length)+" vs max allowed "+string(_max_nonstandard_length)+" (secret word length "+string(secret_word_length)+")")
+	// }
 	
 	
 	
@@ -22,9 +38,6 @@ function scr_validate_word() {
 	
 	if _valid_guess = 1 {
 		
-		
-		
-
 		
 		var _letters_str = ""
 		for (var l = 0; l < selected_word_length; ++l) {
@@ -57,20 +70,31 @@ function scr_validate_word() {
 		if _already_guessed = 0 {
 				
 			var word = string_lower(selected_word_str)
-			if (global.dictionary.check(word)) {
-				//show_debug_message("\"" + word + "\" is a valid English word.");
-				if global.am_creating >= 1 {
-					if (global.dictionary_simple.check(word)) {
-						selected_word_is_valid = 2 //extra valid if checked with simple dictionary
-					}
+			if global.am_creating >= 1 && global.game_phase = 2 {
+				if (global.dictionary_banned.check(word)) {
+					_valid_guess = 0
+					selected_word_not_allowed = 1
+					selected_word_is_valid = 0
+					selected_word_base_points = 0
 				}
-				
-			} else {
-				//show_debug_message("\"" + word + "\" is not a valid English word.");
-				_valid_guess = 0
-				selected_word_not_in_dictionary = 1
-				selected_word_is_valid = 0
-				selected_word_base_points = 0
+			}
+
+			if _valid_guess = 1 {
+				if (global.dictionary.check(word)) {
+					//show_debug_message("\"" + word + "\" is a valid English word.");
+					if global.am_creating >= 1 {
+						if (global.dictionary_simple.check(word)) {
+							selected_word_is_valid = 2 //extra valid if checked with simple dictionary
+						}
+					}
+					
+				} else {
+					//show_debug_message("\"" + word + "\" is not a valid English word.");
+					_valid_guess = 0
+					selected_word_not_in_dictionary = 1
+					selected_word_is_valid = 0
+					selected_word_base_points = 0
+				}
 			}
 		
 		}
@@ -81,19 +105,19 @@ function scr_validate_word() {
 	
 	if _valid_guess = 0 {
 		if nonstandard_allowed = 1 {
-			if selected_word_length >= 2 {
+			if selected_word_length >= 2 && selected_word_too_long <= 0 && selected_word_not_allowed <= 0 {
 				_valid_guess = 1
 				nonstandard_used = 1
-				selected_word_is_valid = 3 //
+				selected_word_is_valid = 3 //nonstandard word
 			}
 		}
 	}
 	
 	if _valid_guess = 0 {
-		if selected_word_length >= 2 {
+		if selected_word_length >= 2 && selected_word_too_long <= 0 && selected_word_not_allowed <= 0 {
 			if real(obj_ctrlp.postData_nonStandard) >= 1 {
 				_valid_guess = 1
-				selected_word_is_valid = 3
+				selected_word_is_valid = 3 //nonstandard word
 			}
 		}
 	}
@@ -101,7 +125,7 @@ function scr_validate_word() {
 	//make sure nonstandard_used tag gets added even if allowed is off
 	if nonstandard_used <= 0 {
 		
-		if selected_word_is_valid = 1 { //only 1 not in simple dict
+		if selected_word_is_valid = 1 { //only 1, not in simple dict
 			nonstandard_used = 1
 		}
 		if selected_word_length <= 4 { //needs to be >= 5

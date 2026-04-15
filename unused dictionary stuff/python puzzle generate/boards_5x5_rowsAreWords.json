@@ -45,11 +45,6 @@
     "encoded": "loadBoard=TIGHTRANDYCITEDOUTERLUNCH&loadSecret=11-16-22-23-18-14-9"
   },
   {
-    "title": "5x5 - rowsAreWords - #12",
-    "secret_word": "MISTAKE",
-    "encoded": "loadBoard=DEVILKARMATRACKSMARTINTRO&loadSecret=17-21-16-11-7-6-2"
-  },
-  {
     "title": "5x5 - rowsAreWords - #13",
     "secret_word": "EARNING",
     "encoded": "loadBoard=FLYERCLEANMULTIWOMENALIGN&loadSecret=8-9-5-10-15-20-24"
@@ -63,5 +58,55 @@
     "title": "5x5 - rowsAreWords - #15",
     "secret_word": "DEALING",
     "encoded": "loadBoard=TIGHTAGREEENDEDWRITEATLAS&loadSecret=15-20-24-23-18-12-7"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #16",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=RANDYEXTRAMAKERAUDITSINCE&loadSecret=1-6-11-16-22-23-18-14-9"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #17",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=ELDERBOREDSAINTALARMTIMER&loadSecret=19-24-23-18-13-14-10-9-8"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #18",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=GLORYPRIZESPENDWOMANMULTI&loadSecret=7-13-18-19-25-20-15-10-4"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #19",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=RULEDKARMATODAYSHINEHEARD&loadSecret=8-4-9-14-18-19-25-20-24"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #20",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=IDEALNAMEDDREAMEXTRAFROST&loadSecret=19-13-8-7-1-6-11-16-22"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #21",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=SCREWAIMEDMONTHENDEDROGER&loadSecret=21-16-11-6-7-13-18-19-25"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #22",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=SERVESMALLPLAINMOUNTFIRED&loadSecret=3-2-7-13-14-19-25-24-23"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #23",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=WHEREADOPTUNDERSPINEFRAME&loadSecret=15-20-24-23-18-12-7-3-4"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #24",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=SMALLELITEROUNDREADYBREAK&loadSecret=11-6-2-3-8-14-19-23-22"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #25",
+    "secret_word": "REMAINDER",
+    "encoded": "loadBoard=RIDGEEMPTYARENAIDEALNAMED&loadSecret=1-6-7-11-16-21-17-13-12"
   }
 ]

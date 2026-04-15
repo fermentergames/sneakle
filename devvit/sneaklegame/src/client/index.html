@@ -23,7 +23,7 @@
     <!-- <button type="button" onclick="document.getElementById('canvas').contentWindow.postMessage('Hello this is a message from your host window','*')">Post Message</button> -->
     <!-- <div id="menu-modal" class="puzzleMenuWrapper active" >  --> 
     
-    <!-- <button class="callGameMakerTestBtn" id="callGameMakerTestBtn">callGameMakerTestBtn</button> -->
+    <button class="callGameMakerTestBtn hidden" id="callGameMakerTestBtn">callGameMakerTestBtn</button>
 
     <!-- <div id="menu-modal" class="modalMenu puzzleMenuWrapper" >
       <div class="modalMenuHeader">
@@ -70,6 +70,34 @@
         <!-- <a id="submitTypedLettersBtn2" class="submitTypedLettersBtn2" title="Submit" href="#">iOS Submit</a> -->
         <button type="submit" class="submitPostTitleBtn" id="submitPostTitleBtn" href="#">Okay</button>
       </form>
+    </div>
+
+    <div id="game-leaderboard-modal" class="game-leaderboard-overlay hidden">
+      <div class="game-leaderboard-card" role="dialog" aria-modal="true" aria-labelledby="game-leaderboard-title">
+        <button type="button" class="game-leaderboard-close" aria-label="Close">✕</button>
+        <div class="game-leaderboard-header">
+          <h2 id="game-leaderboard-title">🏆 LEADERBOARD 🏆</h2>
+          <div class="game-leaderboard-meta">
+            <p id="game-leaderboard-levelname" class="game-leaderboard-levelname"></p>
+            <p id="game-leaderboard-author" class="game-leaderboard-author"></p>
+          </div>
+        </div>
+        <div class="game-leaderboard-subtabs" role="tablist" aria-label="Leaderboard metric">
+          <button type="button" class="game-leaderboard-subtab is-active" id="game-leaderboard-tab-score" role="tab" aria-selected="true">#️⃣ By Score</button>
+          <button type="button" class="game-leaderboard-subtab" id="game-leaderboard-tab-time" role="tab" aria-selected="false">⏱️ By Time</button>
+        </div>
+        <div class="game-leaderboard-list" id="game-leaderboard-list">
+          <p class="game-leaderboard-loading">Loading leaderboard...</p>
+        </div>
+        <div class="game-leaderboard-pagination" id="game-leaderboard-pagination">
+          <div class="game-leaderboard-self" id="game-leaderboard-self-row"></div>
+          <div class="game-leaderboard-page-controls">
+            <button type="button" class="game-leaderboard-page-btn" id="game-leaderboard-prev-btn">◀  Prev</button>
+            <span class="game-leaderboard-page-meta" id="game-leaderboard-page-meta">Page 1 / 1</span>
+            <button type="button" class="game-leaderboard-page-btn" id="game-leaderboard-next-btn">Next  ▶</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="loading" id="loading">

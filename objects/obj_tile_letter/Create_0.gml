@@ -16,6 +16,8 @@ am_dragging_flash = 0
 am_dragging_flash2 = 0
 am_dragging_fd = 0
 
+am_hoverchanged_flash = 0
+
 am_being_pushed = 0
 am_being_pushed_fd = 0
 
@@ -52,7 +54,7 @@ y_targ = targ_id.y
 prev_targ_id = self
 
 my_letter_num = -1
-my_letter_str = "X"
+my_letter_str = string_upper("X")
 
 born_fd = 0
 spawn_slam = 1+random(0.2)
@@ -72,6 +74,10 @@ hovered_over_changer = 0
 
 tile_going_to_replace = 0
 tile_going_to_replace_id = noone
+
+letter_hue = 150
+tile_color_def = make_color_hsv(letter_hue, 90, 100)
+tile_color_dragging = make_color_hsv(letter_hue, 90, 220)
 
 
 

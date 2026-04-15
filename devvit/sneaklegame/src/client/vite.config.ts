@@ -9,6 +9,7 @@ export default defineConfig({
       input: {
         splash: "splash.html",
         game: "index.html",
+        debug: "debug.html",
       },
       output: {
         entryFileNames: "[name].js",

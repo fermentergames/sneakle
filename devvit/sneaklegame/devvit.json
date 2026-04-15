@@ -123,6 +123,20 @@
         "endpoint": "/internal/menu/resync-single-user"
       },
       {
+        "label": "🪪⬆️ Resync Created Karma",
+        "description": "Refresh creator karma totals in the background",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/resync-created-karma"
+      },
+      {
+        "label": "🪪✏️ Edit Single User Profile",
+        "description": "Load and edit one user's profile data",
+        "location": ["subreddit"],
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/edit-user-profile"
+      },
+      {
         "label": "🚫💼 Cancel Job",
         "description": "",
         "location": ["subreddit"],
@@ -139,6 +153,8 @@
     "managePostDataForm": "/internal/form/manage-postdata",
     "manageDailyListForm": "/internal/form/manage-dailylist",
     "resyncSingleUserForm": "/internal/form/resync-single-user",
+    "loadUserProfileForm": "/internal/form/load-user-profile",
+    "editUserProfileForm": "/internal/form/edit-user-profile",
     "cancelJobForm": "/internal/form/cancel-job"
   },
   "triggers": {
@@ -152,6 +168,10 @@
       },
       "resync-user-profiles-task": {
         "endpoint": "/internal/scheduler/resync-user-profiles",
+        "cron": "* * * * *"
+      },
+      "resync-created-karma-task": {
+        "endpoint": "/internal/scheduler/resync-created-karma",
         "cron": "* * * * *"
       }
     }

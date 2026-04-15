@@ -203,6 +203,11 @@ export async function createGamePostFromPuzzle(
     levelCreator,
     gameData,
     dailyID,
+    totalPlayers: "0",
+    totalPlayersCompleted: "0",
+    totalGuesses: "0",
+    totalTime: "0",
+    totalScore: "0",
     nonStandard: nonStandard,
 	});
 

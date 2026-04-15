@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Hono } from "hono";
 import { Logger } from "../utils/Logger";
 import {
   redis
@@ -8,15 +8,15 @@ import {
 
 const CANCEL_KEY_PREFIX = "job:cancel:";
 
-export const resyncUserProfilesJob = (router: Router): void => {
-  router.post("/internal/scheduler/resync-user-profiles", async (req, res) => {
+export const resyncUserProfilesJob = (router: Hono): void => {
+  router.post("/internal/scheduler/resync-user-profiles", async (c) => {
     const logger = await Logger.Create("Scheduler - Resync Profiles");
 
     try {
       const raw = await redis.get("job:resyncProfiles");
       if (!raw) {
         //logger.info("No resyncProfiles job found");
-        return res.json({ ok: true });
+        return c.json({ ok: true });
       }
 
       const job = JSON.parse(raw);
@@ -35,6 +35,26 @@ export const resyncUserProfilesJob = (router: Router): void => {
       const end = Math.min(start + BATCH_SIZE, job.total);
 
       logger.info(`Processing users ${start} → ${end}`);
+
+      const getPostPlayersTotal = async (postId: string): Promise<number> => {
+        try {
+          const levelID = await redis.get(`post:${postId}:levelID`);
+          if (levelID) {
+            const puzzleData = await redis.hGetAll(`puzzle:${levelID}`);
+            if (puzzleData && Object.keys(puzzleData).length > 0 && puzzleData.totalPlayers !== undefined) {
+              return Number(puzzleData.totalPlayers ?? "0") || 0;
+            }
+          }
+        } catch (_e) {
+          // fall through to leaderboard cardinality fallback
+        }
+
+        try {
+          return Number((await redis.zCard(`lb:${postId}`)) ?? 0) || 0;
+        } catch (_e) {
+          return 0;
+        }
+      };
 
       for (let i = start; i < end; i++) {
 
@@ -422,6 +442,16 @@ export const resyncUserProfilesJob = (router: Router): void => {
         const created_total = createdPostIds.length;
         const created_ids = createdPostIds;
 
+        // Compute created_players by summing each created puzzle's totalPlayers cache.
+        // Fallback to per-puzzle leaderboard size if cache is missing.
+        let created_players = 0;
+        for (const postId of createdPostIds) {
+          try {
+            const count = await getPostPlayersTotal(postId);
+            created_players += Number(count ?? 0);
+          } catch (_e) { /* ignore per-post errors */ }
+        }
+
 
         // ---------- Build next profile ----------
         const next = {
@@ -431,6 +461,7 @@ export const resyncUserProfilesJob = (router: Router): void => {
             ...newStats,
             created_total,
             created_ids,
+            created_players,
           },
           username,
           updatedBy: username,
@@ -439,7 +470,11 @@ export const resyncUserProfilesJob = (router: Router): void => {
 
 
         // ---------- Save!!! ----------
-        await redis.set(profileKey, JSON.stringify(next));   
+        await redis.set(profileKey, JSON.stringify(next));
+
+        // Sync created leaderboard sorted sets (bypassed saveUserProfile, so update directly)
+        await redis.zAdd("lb:alltime:created:total",   { score: created_total,   member: username });
+        await redis.zAdd("lb:alltime:created:players", { score: created_players, member: username });
 
         logger.info(`[${i}] Processed ${username}`);
 
@@ -461,13 +496,13 @@ export const resyncUserProfilesJob = (router: Router): void => {
         logger.info(`Job JSON: ${JSON.stringify(job)}`);
       }
 
-      res.json({
+      return c.json({
         showToast: { text: `Job Progress: ${job.index}/${job.total}`}
       });
 
     } catch (err) {
       logger.error(err);
-      showToast: { text: `Job Failed?`}
+      return c.json({ error: "Job failed" }, 500);
     }
   });
 };

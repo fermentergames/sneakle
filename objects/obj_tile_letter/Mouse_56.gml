@@ -39,7 +39,7 @@ if am_dragging >= 1 && global.show_any_modal_fd < 0.1 {
 	
 		prev_targ_id = targ_id
 		prev_tile_id = tile_id
-		targ_id = instance_nearest(x,y,obj_tile_space)
+		targ_id = instance_nearest(mouse_x,mouse_y,obj_tile_space)
 		tile_id = targ_id.tile_id
 		//global.tile_letter[tile_id] = id
 	
@@ -48,7 +48,7 @@ if am_dragging >= 1 && global.show_any_modal_fd < 0.1 {
 	
 		obj_ctrl.dragging = 0
 	
-		if point_distance(x,y,targ_id.x,targ_id.y) > 40 || _swapped_letter {
+		if point_distance(mouse_x,mouse_y,targ_id.x,targ_id.y) > 40 || _swapped_letter {
 			targ_id = prev_targ_id
 			tile_id = prev_tile_id
 		}
@@ -119,12 +119,13 @@ if am_dragging >= 1 && global.show_any_modal_fd < 0.1 {
 					image_angle = (-20+random(40))		
 					//my_letter_str = string_upper(global.letters_bag[tile_id])
 					//take first array entry
-					my_letter_str = array_shift(global.letters_bag)
+					my_letter_str = string_upper(array_shift(global.letters_bag))
 					//replace letters array end
 					array_push(global.letters_bag,my_letter_str)
 							
 					am_set = 1
 				
+					//set my_letter_num based on my_letter_str
 					for (var l = 1; l <= array_length(global.letter_data); ++l) {
 						if my_letter_str = global.letter_data[l,1] {
 							my_letter_num = l
@@ -154,7 +155,7 @@ if am_dragging >= 1 && global.show_any_modal_fd < 0.1 {
 			
 			} else {
 		
-				if point_distance(x,y,xstart,ystart) <= 999940 {
+				if point_distance(mouse_x,mouse_y,xstart,ystart) <= 999940 {
 					x_targ = xstart
 					y_targ = ystart
 				}

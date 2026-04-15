@@ -17,7 +17,7 @@ if (live_call()) return live_result;
 		global.game_score_time_bonus = clamp(global.game_score_time_bonus*(1-global.gave_up),0,9999)
 		show_debug_message("global.game_score_time_bonus: "+string(global.game_score_time_bonus))
 
-		global.game_score_guesses_and_hints = ceil((10-(guesses_count+global.game_hints_used))*100)
+		global.game_score_guesses_and_hints = ceil((10-(guesses_count+(global.game_hints_used*2)))*100)
 		global.game_score_guesses_and_hints = clamp(global.game_score_guesses_and_hints*(1-global.gave_up),0,9999)
 		show_debug_message("global.game_score_guesses_and_hints: "+string(global.game_score_guesses_and_hints))
 	

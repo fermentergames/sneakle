@@ -243,14 +243,22 @@ if (live_call()) return live_result;
 				if _generated_arr_2d[3][(o)+((i)*_grid_sz)] != -1 {
 					//show_debug_message("MATCH")
 					//my_letter_str = string(_generated_arr_2d[3][(o)+((i)*_grid_sz)]) //string_char_at(global.generated_word,tile_id)
-					my_letter_str = string_char_at(global.generated_word,_generated_arr_2d[3][(o)+((i)*_grid_sz)])
+					my_letter_str = string_upper(string_char_at(global.generated_word,_generated_arr_2d[3][(o)+((i)*_grid_sz)]))
 					//show_debug_message(my_letter_str)
 					
 					obj_ctrl.secret_word_array_id[(_generated_arr_2d[3][(o)+((i)*_grid_sz)])-1] = id
 					obj_ctrl.secret_word_array[(_generated_arr_2d[3][(o)+((i)*_grid_sz)])-1] = (o)+((i)*_grid_sz)+1
 					
 					//spawn_slam = 2+(-0.5*tile_col*(1/global.game_grid_size))+(-0.5*tile_row*(1/global.game_grid_size))
-					//image_angle = (-20+random(40))	
+					//image_angle = (-20+random(40))
+
+					// set my_letter_num based on my_letter_str
+					for (var l = 1; l <= array_length(global.letter_data); ++l) {
+						if my_letter_str = global.letter_data[l,1] {
+							my_letter_num = l
+							l = array_length(global.letter_data)
+						}
+					}
 					
 				}
 			}
@@ -279,7 +287,7 @@ if (live_call()) return live_result;
 				
 				//my_letter_str = string_upper(global.letters_bag[tile_id])
 				//take first array entry
-				my_letter_str = array_shift(global.letters_bag)
+				my_letter_str = string_upper(array_shift(global.letters_bag))
 				//replace letters array end
 				array_push(global.letters_bag,my_letter_str)
 							
@@ -287,6 +295,7 @@ if (live_call()) return live_result;
 				
 				show_debug_message("CHECK tile "+string(tile_id))
 				
+				// set my_letter_num based on my_letter_str
 				for (var l = 1; l <= array_length(global.letter_data); ++l) {
 					if my_letter_str = global.letter_data[l,1] {
 						my_letter_num = l

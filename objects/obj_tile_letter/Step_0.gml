@@ -13,7 +13,7 @@ if am_dragging = 1 {
 	
 	//targ_id = self//instance_nearest(x,y,obj_tile_space)
 	x_targ = mouse_x
-	y_targ = mouse_y-20+(obj_ctrl.pulse_2*3)
+	y_targ = mouse_y-25+(obj_ctrl.pulse_2*3)+((clamp(-1+(am_hoverchanged_flash*20),0,1))*-60)
 	
 	
 }
@@ -86,12 +86,18 @@ if am_set = 0 && am_dragging = 0 {
 
 
 var _fast_lerp = clamp(am_set-am_dragging,0,1)
+var _settle_epsilon = 0.001
+var _move_lerp = 0.2+(0.3*_fast_lerp)
 
-if x != x_targ {
-	x = lerp(x,x_targ,0.2+(0.3*_fast_lerp))
+if abs(x-x_targ) > _settle_epsilon {
+	x = lerp(x,x_targ,_move_lerp)
+} else {
+	x = x_targ
 }
-if y != y_targ {
-	y = lerp(y,y_targ+((1-born_fd)*0),0.2+(0.3*_fast_lerp))
+if abs(y-y_targ) > _settle_epsilon {
+	y = lerp(y,y_targ,_move_lerp)
+} else {
+	y = y_targ
 }
 
 var _dragging_or_set = clamp(am_dragging_fd+am_set_fd,0,1)
@@ -102,38 +108,118 @@ scl = 0.125*(0.8+(0.2*_dragging_or_set)+(0.4*am_dragging_flash2)+(-0.6*am_set_fl
 image_xscale = scl
 image_yscale = image_xscale
 
-am_set_fd = lerp(am_set_fd,am_set,0.2)
-am_set_flash = lerp(am_set_flash,0,0.3)
-am_set_flash2 = lerp(am_set_flash2,am_set_flash,0.5)
-
-am_dragging_fd = lerp(am_dragging_fd,am_dragging,0.4)
-am_dragging_flash = lerp(am_dragging_flash,0,0.1)
-am_dragging_flash2 = lerp(am_dragging_flash2,am_dragging_flash,0.4)
-
-am_being_pushed_fd = lerp(am_being_pushed_fd,am_being_pushed,0.3)
-
-am_selected_fd = lerp(am_selected_fd,am_selected,0.2)
-am_selected_flash = lerp(am_selected_flash,0,0.1)
-am_selected_flash2 = lerp(am_selected_flash2,am_selected_flash,0.4)
-
-am_exed_fd = lerp(am_exed_fd,am_exed,0.2)
-am_clued_fd = lerp(am_clued_fd,am_clued,0.2)
-am_samelettered_fd = lerp(am_samelettered_fd,am_samelettered,0.2)
-
-am_clued_flash = lerp(am_clued_flash,0,0.1)
-am_clued_flash2 = lerp(am_clued_flash2,am_clued_flash,0.4)
-
-am_clued_won_fd = lerp(am_clued_won_fd,am_clued_won,0.1)
-
-if global.game_phase < 3 {
-	am_part_of_secret_word_fd = lerp(am_part_of_secret_word_fd,am_part_of_secret_word,0.2)
-} else if global.game_phase = 3 {
-	am_part_of_secret_word_fd = lerp(am_part_of_secret_word_fd,0,0.2)
+if abs(am_set_fd-am_set) > _settle_epsilon {
+	am_set_fd = lerp(am_set_fd,am_set,0.2)
 } else {
-	am_part_of_secret_word_fd = lerp(am_part_of_secret_word_fd,am_part_of_secret_word,0.2)
+	am_set_fd = am_set
+}
+if am_set_flash > _settle_epsilon {
+	am_set_flash = lerp(am_set_flash,0,0.3)
+} else {
+	am_set_flash = 0
+}
+if abs(am_set_flash2-am_set_flash) > _settle_epsilon {
+	am_set_flash2 = lerp(am_set_flash2,am_set_flash,0.5)
+} else {
+	am_set_flash2 = am_set_flash
 }
 
-born_fd = lerp(born_fd,1,0.05)
+if abs(am_dragging_fd-am_dragging) > _settle_epsilon {
+	am_dragging_fd = lerp(am_dragging_fd,am_dragging,0.4)
+} else {
+	am_dragging_fd = am_dragging
+}
+if am_dragging_flash > _settle_epsilon {
+	am_dragging_flash = lerp(am_dragging_flash,0,0.1)
+} else {
+	am_dragging_flash = 0
+}
+if abs(am_dragging_flash2-am_dragging_flash) > _settle_epsilon {
+	am_dragging_flash2 = lerp(am_dragging_flash2,am_dragging_flash,0.4)
+} else {
+	am_dragging_flash2 = am_dragging_flash
+}
+
+if am_hoverchanged_flash > _settle_epsilon {
+	am_hoverchanged_flash = lerp(am_hoverchanged_flash,0,0.06)
+} else {
+	am_hoverchanged_flash = 0
+}
+
+if abs(am_being_pushed_fd-am_being_pushed) > _settle_epsilon {
+	am_being_pushed_fd = lerp(am_being_pushed_fd,am_being_pushed,0.3)
+} else {
+	am_being_pushed_fd = am_being_pushed
+}
+
+if abs(am_selected_fd-am_selected) > _settle_epsilon {
+	am_selected_fd = lerp(am_selected_fd,am_selected,0.2)
+} else {
+	am_selected_fd = am_selected
+}
+if am_selected_flash > _settle_epsilon {
+	am_selected_flash = lerp(am_selected_flash,0,0.1)
+} else {
+	am_selected_flash = 0
+}
+if abs(am_selected_flash2-am_selected_flash) > _settle_epsilon {
+	am_selected_flash2 = lerp(am_selected_flash2,am_selected_flash,0.4)
+} else {
+	am_selected_flash2 = am_selected_flash
+}
+
+if abs(am_exed_fd-am_exed) > _settle_epsilon {
+	am_exed_fd = lerp(am_exed_fd,am_exed,0.2)
+} else {
+	am_exed_fd = am_exed
+}
+if abs(am_clued_fd-am_clued) > _settle_epsilon {
+	am_clued_fd = lerp(am_clued_fd,am_clued,0.2)
+} else {
+	am_clued_fd = am_clued
+}
+if abs(am_samelettered_fd-am_samelettered) > _settle_epsilon {
+	am_samelettered_fd = lerp(am_samelettered_fd,am_samelettered,0.2)
+} else {
+	am_samelettered_fd = am_samelettered
+}
+
+if am_clued_flash > _settle_epsilon {
+	am_clued_flash = lerp(am_clued_flash,0,0.1)
+} else {
+	am_clued_flash = 0
+}
+if abs(am_clued_flash2-am_clued_flash) > _settle_epsilon {
+	am_clued_flash2 = lerp(am_clued_flash2,am_clued_flash,0.4)
+} else {
+	am_clued_flash2 = am_clued_flash
+}
+
+if abs(am_clued_won_fd-am_clued_won) > _settle_epsilon {
+	am_clued_won_fd = lerp(am_clued_won_fd,am_clued_won,0.1)
+} else {
+	am_clued_won_fd = am_clued_won
+}
+
+var _secret_word_targ = am_part_of_secret_word
+if global.game_phase < 3 {
+	_secret_word_targ = am_part_of_secret_word
+} else if global.game_phase = 3 {
+	_secret_word_targ = 0
+} else {
+	_secret_word_targ = am_part_of_secret_word
+}
+if abs(am_part_of_secret_word_fd-_secret_word_targ) > _settle_epsilon {
+	am_part_of_secret_word_fd = lerp(am_part_of_secret_word_fd,_secret_word_targ,0.2)
+} else {
+	am_part_of_secret_word_fd = _secret_word_targ
+}
+
+if abs(born_fd-1) > _settle_epsilon {
+	born_fd = lerp(born_fd,1,0.05)
+} else {
+	born_fd = 1
+}
 
 if spawn_slam > 0 {
 	spawn_slam -= 0.05
@@ -154,8 +240,10 @@ if am_set = 0 || am_dragging = 1 {
 	image_angle -= angle_difference(image_angle,_ang_targ)*0.06*clamp(am_dragging_fd+am_being_pushed,0,1)
 } else {
 	var _tile_ang = 0//+(2*global.am_creating_fd2*(sin((-1*tile_id)+(obj_ctrl.timey*0.1))))
-	if image_angle != 0 {
+	if abs(image_angle-_tile_ang) > _settle_epsilon {
 		image_angle -= angle_difference(image_angle,_tile_ang)*0.3
+	} else {
+		image_angle = _tile_ang
 	}
 }
 

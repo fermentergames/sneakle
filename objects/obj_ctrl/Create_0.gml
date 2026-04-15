@@ -67,8 +67,10 @@ global.show_submitting_post = 0
 global.show_lb_fd = 0
 global.show_howto_fd = 0
 global.show_options_fd = 0
+global.show_nonstandard_info = 0
+global.show_nonstandard_info_fd = 0
 
-global.tile_style = 1
+global.tile_style = 3
 global.tile_raises = 0
 
 global.current_copy_code = "ABCD_1-2-3-4"
@@ -125,8 +127,10 @@ if string_count("devvit",_info_href) > 0 {
 global.is_android = 0
 global.is_ios = 0
 global.is_firefox = 0
+global.is_reddit_app = 0
 
 var _info_userAgentString = _info_ds_map[? "userAgentString"]
+var _info_userAgentStringLower = string_lower(string(_info_userAgentString))
 
 if string_count("android",string_lower(_info_userAgentString)) > 0 {
 	global.is_android = 1
@@ -153,6 +157,14 @@ if string_count("firefox",string_lower(_info_userAgentString)) > 0 {
 	show_debug_message("firefox detected")
 } else {
 	show_debug_message("firefox NOT detected")	
+}
+
+//probably doesn't actually detect, because idk the string to search for.
+if global.is_reddit = 1 && (string_count("reddit/", _info_userAgentStringLower) > 0 || string_count("redditapp", _info_userAgentStringLower) > 0) {
+	global.is_reddit_app = 1
+	show_debug_message("Reddit app detected")
+} else {
+	show_debug_message("Reddit app NOT detected")
 }
 
 global.do_basic_input = 0
@@ -224,6 +236,11 @@ global.game_hints_used = 0
 global.game_hint_length_used = 0
 global.game_hint_letter_used = 0
 
+hint_btn_flash_fd = 0
+hint_pts_pop_fd = 0
+hint_pts_pop_y = 0
+hint_len_flash_fd = 0
+
 global.game_score_guesses_and_hints = 0
 global.game_score_time_bonus = 0
 global.game_score_total = 0
@@ -248,9 +265,14 @@ selected_word_array_id = 0
 selected_word_latest_tile = -1
 selected_word_latest_tile_id = noone
 selected_word_not_in_dictionary = 0
+selected_word_not_allowed = 0
+selected_word_too_long = 0
 selected_word_is_valid = 0
 selected_word_already_guessed = 0
 selected_word_base_points = 0
+
+phase1_banned_scan_signature = ""
+phase1_grid_has_banned_words = 0
 
 secret_word_length = 0
 secret_word_str = ""
