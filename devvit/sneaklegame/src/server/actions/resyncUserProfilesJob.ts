@@ -56,6 +56,8 @@ export const resyncUserProfilesJob = (router: Hono): void => {
         }
       };
 
+      const normalizeUsername = (value: unknown): string => String(value ?? "").trim().toLowerCase();
+
       for (let i = start; i < end; i++) {
 
         // Cancel if job.name is missing or cancel flag is set
@@ -78,6 +80,24 @@ export const resyncUserProfilesJob = (router: Hono): void => {
         }
 
         const username = job.usernames[i];
+
+        // TEMPORARY MIGRATION CLEANUP:
+        // Remove legacy per-user keys now replaced by profile.profileData (created_total / created_ids).
+        // Safe to delete this block after resync has run across all users in production.
+        const legacyPuzzleCountKey = `user:${username}:puzzleCount`;
+        const legacyPuzzlesKey = `user:${username}:puzzles`;
+        const [removedPuzzleCount, removedPuzzles] = await Promise.all([
+          redis.del(legacyPuzzleCountKey),
+          redis.del(legacyPuzzlesKey),
+        ]);
+
+        if ((Number(removedPuzzleCount) || 0) > 0 || (Number(removedPuzzles) || 0) > 0) {
+          logger.info(
+            `${username}: cleaned legacy keys (${legacyPuzzleCountKey}, ${legacyPuzzlesKey})`,
+          );
+        }
+
+        //// TEMPORARY MIGRATION CLEANUP DONE
 
         const profileKey = `profile:${username}`;
         const profileRaw = await redis.get(profileKey);
@@ -150,7 +170,7 @@ export const resyncUserProfilesJob = (router: Hono): void => {
             //logger.info(`trying post ${postId} (levelTag = ${levelTag})`);
 
             const levelCreator = job.postCreatorMap[postId];
-            if (levelCreator === username) {
+            if (normalizeUsername(levelCreator) === normalizeUsername(username)) {
               createdPostIds.push(postId);
               logger.info(`${username} created ${postId}`);
             }
@@ -363,84 +383,9 @@ export const resyncUserProfilesJob = (router: Hono): void => {
         } else {
           logger.info(`${username}: no stat changes`);
         }
-
-
-        // ---------- Rebuild created puzzles ----------
-        const puzzleKey = `user:${username}:puzzles`;
-
-        // Clear old data (important for resync)
-        await redis.del(puzzleKey);
-
-        if (createdPostIds.length > 0) {
-          const now = Date.now();
-
-          // logger.info(`DEBUG createdPostIds sample: ${JSON.stringify(createdPostIds.slice(0, 5), null, 2)}`);
-          // logger.info(`DEBUG timestampMap sample: ${JSON.stringify(
-          //   Object.entries(job.postTimestampMap || {}).slice(0, 5),
-          //   null,
-          //   2
-          // )}`);
-
-          // createdPostIds.forEach(postId => {
-          //   if (!postId) logger.error(`❌ postId undefined in createdPostIds`);
-          //   else if (!(postId in job.postTimestampMap)) {
-          //     logger.warn(`⚠️ postId ${postId} missing in postTimestampMap`);
-          //   }
-          // });
-
-          const zEntries: { member: string; score: number }[] = [];
-
-          for (const postId of createdPostIds) {
-
-            // ✅ ensure valid string
-            if (typeof postId !== "string" || postId.length === 0) {
-              logger.error(`❌ Invalid postId: ${JSON.stringify(postId)}`);
-              continue;
-            }
-
-            const rawScore = job.postTimestampMap?.[postId];
-
-            const score =
-              typeof rawScore === "number" && !isNaN(rawScore)
-                ? rawScore
-                : Date.now();
-
-            if (rawScore === undefined) {
-              logger.warn(`⚠️ Missing timestamp for ${postId}`);
-            }
-
-            zEntries.push({
-              member: postId,
-              score,
-            });
-          }
-
-
-          //logger.info(`zEntries: ${zEntries}`);
-
-          /*const missing = createdPostIds.filter(id => !(id in job.postTimestampMap));
-
-          if (missing.length) {
-            logger.error(`❌ Missing timestamps for ${missing.length} posts`);
-            logger.error(`Sample: ${JSON.stringify(missing.slice(0, 5))}`);
-          }*/
-
-          // Spread array into individual arguments
-          if (zEntries.length > 0) {
-            await redis.zAdd(puzzleKey, ...zEntries);
-            const createdList = await redis.zRange(puzzleKey, 0, -1);
-            logger.info(`${username} created puzzles: ${JSON.stringify(createdList)}`);
-          }
-
-        }
-
-        // Set count safely (NOT incr)
-        await redis.set(`user:${username}:puzzleCount`, createdPostIds.length.toString());
-        
-
         //
         const created_total = createdPostIds.length;
-        const created_ids = createdPostIds;
+        const created_ids = createdPostIds.length > 0 ? createdPostIds.join(",") : "-1";
 
         // Compute created_players by summing each created puzzle's totalPlayers cache.
         // Fallback to per-puzzle leaderboard size if cache is missing.

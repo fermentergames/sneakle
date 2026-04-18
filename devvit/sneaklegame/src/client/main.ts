@@ -426,6 +426,28 @@ if (document.readyState === 'loading') {
   // setupFullscreenButton();
 }
 
+// Early capture-phase keyboard guard for dynamically created archive search inputs.
+// Must be registered HERE (before runner.js is dynamically loaded) so our capture
+// listener is ordered ahead of the GameMaker runner's own keydown/keyup listeners.
+// When either archive text input is focused, we stop runner key processing so the
+// browser can deliver characters to the input normally.
+{
+  const ARCHIVE_INPUT_IDS = new Set(["game-archive-title-input", "game-archive-author-input"]);
+  const earlyArchiveKeyGuard = (event: KeyboardEvent) => {
+    const activeId = (document.activeElement as HTMLElement | null)?.id ?? "";
+    if (ARCHIVE_INPUT_IDS.has(activeId)) {
+      event.stopImmediatePropagation();
+    }
+  };
+  // Register on both document and window (runner may target either) in capture phase.
+  document.addEventListener("keydown", earlyArchiveKeyGuard, true);
+  document.addEventListener("keypress", earlyArchiveKeyGuard, true);
+  document.addEventListener("keyup", earlyArchiveKeyGuard, true);
+  window.addEventListener("keydown", earlyArchiveKeyGuard, true);
+  window.addEventListener("keypress", earlyArchiveKeyGuard, true);
+  window.addEventListener("keyup", earlyArchiveKeyGuard, true);
+}
+
 // const FULLSCREEN_ICON_ENTER = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
 // const FULLSCREEN_ICON_EXIT  = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`;
 
@@ -438,6 +460,112 @@ function isMobileDevice(): boolean {
   return /Android|iPhone|iPod|iPad/i.test(navigator.userAgent) ||
     ('ontouchstart' in window) ||
     (navigator.maxTouchPoints > 0);
+}
+
+// Toggle this to true when debugging Reddit app/WebView bridge behavior.
+// Keep false for normal play so the debug HUD and test button stay hidden.
+const GM_BRIDGE_DEBUG = false;
+
+const GM_POSTMSG_HUD_ID = "gm-postmsg-debug-hud";
+const GM_POSTMSG_HUD_LOG_ID = "gm-postmsg-debug-log";
+const GM_POSTMSG_HUD_CLEAR_ID = "gm-postmsg-debug-clear";
+const GM_POSTMSG_HUD_MAX_LINES = 16;
+let gmPostMsgHudLogEl: HTMLDivElement | null = null;
+
+function appendGmPostMsgHud(line: string) {
+  if (!GM_BRIDGE_DEBUG) return;
+  if (!gmPostMsgHudLogEl) return;
+  const row = document.createElement("div");
+  row.className = "gm-postmsg-debug-row";
+  row.textContent = line;
+  gmPostMsgHudLogEl.prepend(row);
+
+  while (gmPostMsgHudLogEl.childElementCount > GM_POSTMSG_HUD_MAX_LINES) {
+    gmPostMsgHudLogEl.removeChild(gmPostMsgHudLogEl.lastElementChild as Element);
+  }
+}
+
+function initGmPostMsgDebugHud() {
+  if (!GM_BRIDGE_DEBUG) return;
+
+  if (document.getElementById(GM_POSTMSG_HUD_ID)) {
+    gmPostMsgHudLogEl = document.getElementById(GM_POSTMSG_HUD_LOG_ID) as HTMLDivElement | null;
+    return;
+  }
+
+  const hud = document.createElement("div");
+  hud.id = GM_POSTMSG_HUD_ID;
+  hud.innerHTML = `
+    <div class="gm-postmsg-debug-head">
+      <span>GM Bridge Debug</span>
+      <button type="button" id="${GM_POSTMSG_HUD_CLEAR_ID}" class="gm-postmsg-debug-clear">Clear</button>
+    </div>
+    <div id="${GM_POSTMSG_HUD_LOG_ID}" class="gm-postmsg-debug-log"></div>
+  `;
+  document.body.appendChild(hud);
+
+  gmPostMsgHudLogEl = document.getElementById(GM_POSTMSG_HUD_LOG_ID) as HTMLDivElement | null;
+  const clearBtn = document.getElementById(GM_POSTMSG_HUD_CLEAR_ID) as HTMLButtonElement | null;
+  clearBtn?.addEventListener("click", () => {
+    if (gmPostMsgHudLogEl) {
+      gmPostMsgHudLogEl.innerHTML = "";
+    }
+  });
+
+  appendGmPostMsgHud(`UA: ${navigator.userAgent}`);
+  appendGmPostMsgHud(`isInRedditApp=${isInRedditApp() ? "1" : "0"}`);
+}
+
+function sendGameMakerMessage(payload: Record<string, unknown>, label = "message"): boolean {
+  const stamp = new Date().toLocaleTimeString();
+  const normalizedPayload: Record<string, unknown> = { ...payload };
+  if (normalizedPayload.msgId === undefined || normalizedPayload.msgId === null) {
+    normalizedPayload.msgId = `js-${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
+  }
+
+  const action = String(normalizedPayload.action ?? "unknown");
+  let attempted = 0;
+
+  const attempt = (channel: string, fn: () => void) => {
+    attempted += 1;
+    try {
+      fn();
+      if (GM_BRIDGE_DEBUG) {
+        appendGmPostMsgHud(`${stamp} [ok] ${label} ${action} via ${channel}`);
+      }
+    } catch (err) {
+      if (GM_BRIDGE_DEBUG) {
+        appendGmPostMsgHud(`${stamp} [err] ${label} ${action} via ${channel}: ${String(err)}`);
+      }
+    }
+  };
+
+  // Temporarily disabled while isolating cross-platform behavior.
+  // attempt("window.postMessage(origin)", () => {
+  //   window.postMessage(normalizedPayload, window.location.origin);
+  // });
+
+  // Temporarily disabled while isolating cross-platform behavior.
+  // attempt("window.postMessage(*)", () => {
+  //   window.postMessage(normalizedPayload, "*");
+  // });
+
+  // Temporarily disabled while isolating cross-platform behavior.
+  // if (window.parent && window.parent !== window) {
+  //   attempt("window.parent.postMessage(*)", () => {
+  //     window.parent.postMessage(normalizedPayload, "*");
+  //   });
+  // }
+
+  attempt("window.dispatchEvent(message)", () => {
+    window.dispatchEvent(new MessageEvent("message", {
+      data: normalizedPayload,
+      origin: window.location.origin,
+      source: window,
+    }));
+  });
+
+  return attempted > 0;
 }
 
 // function setupFullscreenButton(): void {
@@ -535,17 +663,19 @@ function isMobileDevice(): boolean {
 
 
 document.addEventListener("DOMContentLoaded", () => {
+  initGmPostMsgDebugHud();
+
   // Only send callback if NOT in Reddit app (where callbacks may not work reliably).
   // GML defaults to is_reddit_app = 1; only override to 0 if we detect a browser.
   const isRedditApp = isInRedditApp();
   if (!isRedditApp) {
     const msg = { action: "set-is-reddit-app", isRedditApp: 0 };
-    window.postMessage(msg, "*");
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage(msg, "*");
-    }
+    sendGameMakerMessage(msg, "boot");
     console.log("Detected browser, set is_reddit_app to 0");
   } else {
+    if (GM_BRIDGE_DEBUG) {
+      appendGmPostMsgHud("Reddit app detected; callbacks can be unreliable");
+    }
     console.log("Detected Reddit app, skipping postMessage (callbacks unreliable in app)");
   }
 
@@ -559,34 +689,31 @@ document.addEventListener("DOMContentLoaded", () => {
   //   funcCloseArchiveMenu();
   // });
 
-  const closeCreateTypeLetters = document.getElementById("closeCreateTypeLetters");
+  const closeCreateTypeLetters = document.getElementById("closeCreateTypeLetters") as HTMLElement | null;
 
-  closeCreateTypeLetters.addEventListener("click", () => {
+  closeCreateTypeLetters?.addEventListener("click", () => {
     funcCloseCreateTypeLetters();
   });
 
-  const closeCreatePostTitle = document.getElementById("closeCreatePostTitle");
+  const closeCreatePostTitle = document.getElementById("closeCreatePostTitle") as HTMLElement | null;
 
-  closeCreatePostTitle.addEventListener("click", () => {
+  closeCreatePostTitle?.addEventListener("click", () => {
     funcCloseCreatePostTitle();
   });
 
 
-  const callGameMakerTestBtn = document.getElementById("callGameMakerTestBtn");
+  const callGameMakerTestBtn = document.getElementById("callGameMakerTestBtn") as HTMLButtonElement | null;
 
-  callGameMakerTestBtn.addEventListener("click", () => {
+  // Keep the test button hidden unless bridge debugging is intentionally enabled.
+  if (callGameMakerTestBtn && !GM_BRIDGE_DEBUG) {
+    callGameMakerTestBtn.style.setProperty("display", "none", "important");
+  }
 
-    window.postMessage({
+  callGameMakerTestBtn?.addEventListener("click", () => {
+    sendGameMakerMessage({
       action: "display_message",
       msg: "THIS IS A MESSAGE FROM JS :)"
-    }, "*");
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-        action: "display_message",
-        msg: "THIS IS A MESSAGE FROM JS :)"
-      }, "*");
-    }
-
+    }, "test-btn");
   });
 
   // const submitTypedLettersBtn = document.getElementById("submitTypedLettersBtn");
@@ -599,21 +726,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //TypeLetters
 
-  document.getElementById("submitTypedLettersForm").addEventListener("submit", (e) => {
+  document.getElementById("submitTypedLettersForm")?.addEventListener("submit", (e) => {
     e.preventDefault(); // prevent page reload
     // submitTypedLettersSend(); 
     funcCloseCreateTypeLetters();
-    document.getElementById('CreateTypeLettersInput').blur();
+    (document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null)?.blur();
   });
 
 
   // iOS fallbacks
-  const btn = document.getElementById("submitTypedLettersBtn");
-  btn.addEventListener("touchend", (e) => {
+  const btn = document.getElementById("submitTypedLettersBtn") as HTMLButtonElement | null;
+  btn?.addEventListener("touchend", (e) => {
     e.preventDefault(); // stop double trigger
     // submitTypedLettersSend();
     funcCloseCreateTypeLetters();
-    document.getElementById('CreateTypeLettersInput').blur();
+    (document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null)?.blur();
   });
 
     const input = document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null;
@@ -626,10 +753,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .toUpperCase()
         .replace(/[^A-Z]/g, "");
       const msg = { action: "submit-typed-letters", letters: letters };
-      window.postMessage(msg, "*");
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage(msg, "*");
-      }
+      sendGameMakerMessage(msg, "typed-letters");
       input.value = "";
     }
     funcCloseCreateTypeLetters();
@@ -640,7 +764,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       // submitTypedLettersSend();
       funcCloseCreateTypeLetters();
-      document.getElementById('CreateTypeLettersInput').blur();
+      (document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null)?.blur();
     }
   });
 
@@ -651,30 +775,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //PostTitle
 
-  document.getElementById("submitPostTitleForm").addEventListener("submit", (e) => {
+  document.getElementById("submitPostTitleForm")?.addEventListener("submit", (e) => {
     e.preventDefault(); // prevent page reload
     // submitPostTitleSend(); 
     funcCloseCreatePostTitle();
-    document.getElementById('CreatePostTitleInput').blur();
+    (document.getElementById("CreatePostTitleInput") as HTMLInputElement | null)?.blur();
   });
 
 
   // iOS fallbacks
-  const btnPT = document.getElementById("submitPostTitleBtn");
-  btnPT.addEventListener("touchend", (e) => {
+  const btnPT = document.getElementById("submitPostTitleBtn") as HTMLButtonElement | null;
+  btnPT?.addEventListener("touchend", (e) => {
     e.preventDefault(); // stop double trigger
     // submitPostTitleSend();
     funcCloseCreatePostTitle();
-    document.getElementById('CreatePostTitleInput').blur();
+    (document.getElementById("CreatePostTitleInput") as HTMLInputElement | null)?.blur();
   });
 
-  const inputPT = document.getElementById("CreatePostTitleInput");
-  inputPT.addEventListener("keydown", (e) => {
+  const inputPT = document.getElementById("CreatePostTitleInput") as HTMLInputElement | null;
+  inputPT?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       // submitPostTitleSend();
       funcCloseCreatePostTitle();
-      document.getElementById('CreatePostTitleInput').blur();
+      (document.getElementById("CreatePostTitleInput") as HTMLInputElement | null)?.blur();
     }
   });
 
@@ -885,13 +1009,9 @@ function funcCloseCreateTypeLetters() {
     thething.classList.remove("active");
     console.log("REMOVE "+"active"+" from "+"modalCreateTypeLetters");
 
-    window.postMessage({
+    sendGameMakerMessage({
       action: "close-modals"
-    }, "*");
-
-    if (window.parent !== window) {
-        window.parent.postMessage({ action: "close-modals" }, "*");
-    }
+    }, "close-type-modal");
   }
 }
 
@@ -903,13 +1023,9 @@ function funcCloseCreatePostTitle() {
     thething.classList.remove("active");
     console.log("REMOVE "+"active"+" from "+"modalCreatePostTitle");
 
-    window.postMessage({
+    sendGameMakerMessage({
       action: "close-modals"
-    }, "*");
-
-    if (window.parent !== window) {
-        window.parent.postMessage({ action: "close-modals" }, "*");
-    }
+    }, "close-title-modal");
   }
 }
 
@@ -1443,12 +1559,7 @@ function tryLoadPuzzleInGame(postId: string): boolean {
   }
 
   const msg = { action: "load-archive-post", postId: normalizedPostId };
-  window.postMessage(msg, "*");
-  if (window.parent && window.parent !== window) {
-    window.parent.postMessage(msg, "*");
-  }
-
-  return true;
+  return sendGameMakerMessage(msg, "archive-open");
 }
 
 function openPuzzleFromGameArchive(postId: string) {
@@ -1608,6 +1719,11 @@ function setupGameArchiveModal() {
   const prevBtn = modalOverlay.querySelector("#game-archive-prev-btn") as HTMLButtonElement | null;
   const nextBtn = modalOverlay.querySelector("#game-archive-next-btn") as HTMLButtonElement | null;
 
+  const releaseGameCanvasFocus = () => {
+    const canvas = document.getElementById("canvas") as HTMLCanvasElement | null;
+    canvas?.blur();
+  };
+
   const applyArchiveFilters = () => {
     gameArchiveTitleState = titleInput?.value.trim() ?? "";
     gameArchiveAuthorState = authorInput?.value.trim() ?? "";
@@ -1648,6 +1764,12 @@ function setupGameArchiveModal() {
   });
 
   [titleInput, authorInput].forEach((input) => {
+    ["mousedown", "touchstart", "pointerdown"].forEach((eventName) => {
+      input?.addEventListener(eventName, (event) => {
+        event.stopPropagation();
+        releaseGameCanvasFocus();
+      });
+    });
     input?.addEventListener("input", () => {
       scheduleGameArchiveFilterApply();
     });
@@ -1732,6 +1854,7 @@ function closeGameArchiveModal() {
 
 function openGameArchiveModal() {
   setupGameArchiveModal();
+  (document.getElementById("canvas") as HTMLCanvasElement | null)?.blur();
   gameArchiveCategoryState = "all";
   gameArchiveSortState = "date";
   gameArchivePageState = 1;

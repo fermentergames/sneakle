@@ -7,6 +7,7 @@ draw_set_font(fnt_main)
 //	device_mouse_dbclick_enable(true);
 //}
 
+//show_debug_overlay(true,0,1.5)
 
 
 var _letter_hue = 160

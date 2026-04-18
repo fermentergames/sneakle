@@ -108,5 +108,55 @@
     "title": "5x5 - rowsAreWords - #25",
     "secret_word": "REMAINDER",
     "encoded": "loadBoard=RIDGEEMPTYARENAIDEALNAMED&loadSecret=1-6-7-11-16-21-17-13-12"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #26",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=MIXEDSMILEUPPERSCARYTOWER&loadSecret=2-7-12-18-17-21"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #27",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=MULTICLAIMSETUPPIZZACATCH&loadSecret=5-10-15-20-24-23"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #28",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=CLIMBADOPTSCALESTOCKEIGHT&loadSecret=3-4-9-13-12-17"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #29",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=MICROSMALLUPSETSCALETOWER&loadSecret=2-7-12-18-17-21"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #30",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=VOTEDPASTAMICROINTERDRIED&loadSecret=16-11-6-7-13-18"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #31",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=YIELDEMPTYSPENTSCARYTITLE&loadSecret=2-7-12-18-17-21"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #32",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=IMAGEMOUTHPATIOACTORLATEX&loadSecret=1-6-11-16-17-13"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #33",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=IMAGEMOUTHPUPPYCAROLSTUCK&loadSecret=1-6-11-17-16-22"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #34",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=AIMEDRAPIDVIRALSTACKPATIO&loadSecret=2-3-8-14-19-23"
+  },
+  {
+    "title": "5x5 - rowsAreWords - #35",
+    "secret_word": "IMPACT",
+    "encoded": "loadBoard=HEARTSTAMPSCALEGRAPHCRIME&loadSecret=23-24-19-13-12-7"
   }
 ]

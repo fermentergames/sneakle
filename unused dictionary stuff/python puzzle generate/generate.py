@@ -16,7 +16,7 @@ BOARD_COUNT = 10        # default number of boards to generate
 BOARD_SIZE = 5         # default board size - set from 3-7
 SHOW_BOARD_PREVIEW = True # shows preview of board with rows and columns laid out as they would be in game 
 USE_RANDOM_FILL = False # instead of each row being a word, just fill empty tiles with the LETTER_SET_DEFAULT
-FORCED_SECRET_WORD = "REMAINDER" # None # set to a string like "REMINDER" to force a specific secret word
+FORCED_SECRET_WORD = "IMPACT" # None # set to a string like "REMINDER" to force a specific secret word
 
 LETTER_SET_DEFAULT = (
     "AAAAAAAAAAAAABBBCCCDDDDDDEEEEEEEEEEEEEEEEEEFFFGGGGHHH"

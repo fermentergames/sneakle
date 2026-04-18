@@ -2008,7 +2008,6 @@ if global.game_phase = 3 || global.game_phase = 4 {
 							obj_ctrlp.daily_next_postId = "-9999"
 							
 							scr_board_reset_defs()
-						
 							scr_reddit_reset_post()
 							//room_restart()
 							

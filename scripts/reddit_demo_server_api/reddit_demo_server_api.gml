@@ -20,6 +20,10 @@ function api_register_request(_req, _callback) {
 function api_save_state(_postId, _data, _callback) {
 	
 	if _postId = "-9999" {_postId = ""}
+	if string(_postId) = "" {
+		show_debug_message("api_save_state aborted: missing postId")
+		return -1;
+	}
 	
 	// Build request url
     var _url = reddit_get_base_url() + "/api/state?postId="+string(_postId);
@@ -208,6 +212,10 @@ function api_join_subreddit(_callback) {
 function api_submit_score(_postId, _score, _callback, _score_time = undefined) {
 	
 	if _postId = "-9999" {_postId = ""}
+	if string(_postId) = "" {
+		show_debug_message("api_submit_score aborted: missing postId")
+		return -1;
+	}
 	
 	// Build request url
     var _url = reddit_get_base_url() + "/api/score?postId="+string(_postId);
@@ -275,6 +283,10 @@ function api_get_leaderboard(_postId, _limit, _callback) {
 function api_leaderboard_comment(_postId, _callback) {
 	
 	if _postId = "-9999" {_postId = ""}
+	if string(_postId) = "" {
+		show_debug_message("api_leaderboard_comment aborted: missing postId")
+		return -1;
+	}
 	
 	// Build request url
     var _url = reddit_get_base_url() + "/api/leaderboard-comment?postId="+string(_postId);
@@ -312,6 +324,10 @@ function api_leaderboard_comment(_postId, _callback) {
 function api_comment_score(_postId, _score, _callback) {
 	
 	if _postId = "-9999" {_postId = ""}
+	if string(_postId) = "" {
+		show_debug_message("api_comment_score aborted: missing postId")
+		return -1;
+	}
 	
 	// Build request url
     var _url = reddit_get_base_url() + "/api/comment-score?postId="+string(_postId);
@@ -377,6 +393,10 @@ function api_load_postData(_postId,_callback) {
 function api_update_postData(_postId, _data, _callback) {
 	
 	if _postId = "-9999" {_postId = ""}
+	if string(_postId) = "" {
+		show_debug_message("api_update_postData aborted: missing postId")
+		return -1;
+	}
 	
 	// Build request url
     var _url = reddit_get_base_url() + "/api/update-post-data?postId="+string(_postId);

@@ -849,8 +849,8 @@ async function loadLeaderboardModalData() {
             : entry.rank === 3
               ? "is-rank-3"
               : "";
-        const profileLink = leaderboardCategoryState === "created" && entry.searchUrl
-          ? `<button type="button" class="lb-user-link" data-url="${escapeHtml(entry.searchUrl)}">u/${escapeHtml(entry.username)} <span class="lb-link-emoji">🔗</span></button>`
+        const profileLink = leaderboardCategoryState === "created"
+          ? `<button type="button" class="lb-user-link" data-author="${escapeHtml(entry.username)}">u/${escapeHtml(entry.username)} <span class="lb-link-emoji">🔍</span></button>`
           : `u/${escapeHtml(entry.username)}`;
         const playedCountMarkup = leaderboardCategoryState !== "created"
           ? ` <span class="lb-score-meta">(${Number(entry.playedCount ?? 0).toLocaleString()})</span>`
@@ -880,7 +880,7 @@ async function loadLeaderboardModalData() {
       : `Ranks ${rankStart}–${rankEnd}`;
     const rankedLabel = isCreatedCategory ? "creators ranked" : "players ranked";
     const explainer = isCreatedCategory
-      ? `<p class="leaderboard-explainer">Tap the usernames to see all their puzzles.</p>`
+      ? `<p class="leaderboard-explainer">Tap a username to browse their puzzles in the archive.</p>`
       : leaderboardMetricState === "avg"
         ? `<p class="leaderboard-explainer">Must complete at least 5 puzzles to get ranked</p>`
         : "";
@@ -896,9 +896,10 @@ async function loadLeaderboardModalData() {
     const userLinkButtons = list.querySelectorAll(".lb-user-link") as NodeListOf<HTMLButtonElement>;
     userLinkButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
-        const url = btn.dataset.url;
-        if (!url) return;
-        navigateTo(url);
+        const author = btn.dataset.author;
+        if (!author) return;
+        document.getElementById(LEADERBOARD_MODAL_ID)?.classList.add("hidden");
+        openArchiveModalWithAuthor(author);
       });
     });
   } catch (err) {
@@ -1062,6 +1063,29 @@ function openArchiveModal() {
   if (modalOverlay) {
     modalOverlay.classList.remove("hidden");
   }
+}
+
+function openArchiveModalWithAuthor(author: string) {
+  setupArchiveModal();
+  archiveCategoryState = "all";
+  archiveSortState = "date";
+  archivePageState = 1;
+  archiveTotalPagesState = 1;
+  archiveSizeState = "";
+  archiveNonStandardState = "any";
+  archiveUnplayedOnlyState = false;
+  archiveTitleState = "";
+  archiveAuthorState = author;
+  setArchiveActiveCategory(archiveCategoryState);
+  setArchiveActiveSort(archiveSortState);
+  updateArchivePaginationUi(1, 1);
+  const authorInput = document.getElementById("archive-author-input") as HTMLInputElement | null;
+  if (authorInput) authorInput.value = author;
+  const moreOptions = document.querySelector(".archive-more-options") as HTMLDetailsElement | null;
+  if (moreOptions) moreOptions.open = true;
+  void loadArchiveModalData();
+  const modalOverlay = document.getElementById(ARCHIVE_MODAL_ID);
+  modalOverlay?.classList.remove("hidden");
 }
 
 function initSplashExtraModals() {

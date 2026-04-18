@@ -186,18 +186,52 @@ async function updateState({
 }): Promise<StoredState> {
 
   const key = stateKey(postId, username);
+  const GAMEPLAY_STATE_FIELDS = ["score_guesses", "score_hints", "score_time", "score_combined", "level_status"] as const;
+
+  const toLevelStatusNum = (value: unknown): number | null => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
 
   const prevRaw = await redis.get(key);
   const prev = (prevRaw ? JSON.parse(prevRaw) : {}) as Partial<StoredState>;
+
+  let mergedData = {
+    ...(prev.data ?? {}),
+    ...(data ?? {}),
+  };
+
+  const prevLevelStatus = toLevelStatusNum(prev.data?.level_status);
+  const nextLevelStatus = toLevelStatusNum(data?.level_status);
+
+  // Keep gameplay state monotonic so a stale level_status = "started" write cannot overwrite
+  // a later complete/gave-up result and its associated score fields.
+  const isLevelStatusDowngrade =
+    prevLevelStatus !== null &&
+    nextLevelStatus !== null &&
+    nextLevelStatus < prevLevelStatus;
+
+  if (isLevelStatusDowngrade) {
+    mergedData = {
+      ...mergedData,
+      level_status: String(prevLevelStatus),
+    };
+
+    for (const field of GAMEPLAY_STATE_FIELDS) {
+      if (field === "level_status") continue;
+      if (prev.data?.[field] !== undefined) {
+        mergedData[field] = prev.data[field];
+      } else {
+        delete mergedData[field];
+      }
+    }
+  }
 
   // build the new state; only include optional fields if they exist 
   const next: StoredState = {
     ...prev,
     username,
-    data: {
-      ...(prev.data ?? {}),
-      ...(data ?? {}),
-    },
+    data: mergedData,
     updatedAt: Date.now(),
   };
 
@@ -1681,32 +1715,7 @@ router.post("/api/create-user-post", async (c) => {
     }
 
     if (post !== null) {
-
-      const timestamp = Date.now();
-
-      await redis.zAdd(`user:${username}:puzzles`, {
-        member: post.id,
-        score: timestamp
-      });
-
-      // increment puzzle count
-      // I think this is redundant because zAdd already tracks the puzzles, and also the profile holds the count
-      await redis.incrBy(`user:${username}:puzzleCount`, 1);
-
       await redis.incrBy("globalStats:puzzlesCreatedTotal", 1);
-
-      //now later i could do
-      /*
-      //Get All Puzzles by User function
-      const puzzles = await redis.zRange(
-        `user:${username}:puzzles`,
-        0,
-        -1
-      );
-      */
-
-      //and
-      //const puzzleCount = Number(await redis.get(`user:${username}:puzzleCount`) || 0);
 
       /////////
 
@@ -1725,16 +1734,19 @@ router.post("/api/create-user-post", async (c) => {
         const profile = await getUserProfile(username);
         const prevProfileData = profile?.profileData ?? {};
 
-        // --- created_total ---
-        const prevTotal = Number(prevProfileData.created_total) || 0;
-        const created_total = String(prevTotal + 1);
-
         // --- created_ids ---
-        // normalize -1 being empty
         let ids: string[] = [];
 
-        if (prevProfileData.created_ids && prevProfileData.created_ids !== "-1") {
-          ids = prevProfileData.created_ids.split(",");
+        const rawCreatedIds = prevProfileData.created_ids;
+        if (Array.isArray(rawCreatedIds)) {
+          ids = rawCreatedIds
+            .map((id) => String(id).trim())
+            .filter(Boolean);
+        } else if (typeof rawCreatedIds === "string" && rawCreatedIds !== "-1") {
+          ids = rawCreatedIds
+            .split(",")
+            .map((id) => id.trim())
+            .filter(Boolean);
         }
 
         // prevent duplicates
@@ -1742,6 +1754,8 @@ router.post("/api/create-user-post", async (c) => {
           ids.push(post.id);
         }
 
+        // Keep created_total in lockstep with canonical created_ids.
+        const created_total = String(ids.length);
         const created_ids = ids.length > 0 ? ids.join(",") : "-1";
 
         await saveUserProfile({

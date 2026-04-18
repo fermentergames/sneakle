@@ -18,6 +18,14 @@ type DebugDialogField = {
 const THEME_STORAGE_KEY = "sneakle_debug_theme";
 const DEBUG_CLOSE_PATH = "/splash.html";
 
+async function debugFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+    return await fetch(input, {
+        credentials: "include",
+        cache: "no-store",
+        ...init,
+    });
+}
+
 function escapeHtml(value: string): string {
     return value
         .replaceAll("&", "&amp;")
@@ -438,7 +446,7 @@ export function mountDebugPage(root: HTMLElement): void {
         });
 
         try {
-            const response = await fetch("/api/debug/key", {
+            const response = await debugFetch("/api/debug/key", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -500,7 +508,7 @@ export function mountDebugPage(root: HTMLElement): void {
         refreshButtonEl.disabled = true;
 
         try {
-            const response = await fetch("/api/debug/catalog");
+            const response = await debugFetch("/api/debug/catalog");
             const data = (await response.json()) as KeyCatalogResponseDto;
             catalog = data;
 
@@ -538,7 +546,7 @@ export function mountDebugPage(root: HTMLElement): void {
 
         try {
             const payload: KeyDebugRequestDto = { key, action: "get", cursor };
-            const response = await fetch("/api/debug/key", {
+            const response = await debugFetch("/api/debug/key", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

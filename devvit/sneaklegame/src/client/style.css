@@ -1417,7 +1417,7 @@ form button {
 }
 
 /* Fullscreen toggle button — mobile browser only, hidden in Reddit app via JS */
-#fullscreen-btn {
+/* #fullscreen-btn {
   position: fixed;
   top: 12px;
   left: 12px;
@@ -1447,12 +1447,88 @@ form button {
 #fullscreen-btn svg {
   display: block;
   pointer-events: none;
-}
+} */
 
 #callGameMakerTestBtn {
-  position: absolute;
+  position: fixed;
   top: 10px;
-  z-index: 9999;
+  left: 10px;
+  z-index: 10020;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(12, 18, 28, 0.82);
+  color: #f4f8ff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#callGameMakerTestBtn:active {
+  transform: translateY(1px);
+}
+
+#gm-postmsg-debug-hud {
+  position: fixed;
+  left: 10px;
+  top: 52px;
+  width: min(92vw, 420px);
+  max-height: 44vh;
+  z-index: 10019;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(9, 12, 18, 0.88);
+  color: #dce8ff;
+  font-family: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.gm-postmsg-debug-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.gm-postmsg-debug-clear {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f6f9ff;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.gm-postmsg-debug-log {
+  overflow: auto;
+  max-height: calc(44vh - 42px);
+  padding: 8px 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.gm-postmsg-debug-row {
+  font-size: 11px;
+  line-height: 1.3;
+  color: #c6dbff;
+  word-break: break-word;
 }
 
 .hidden {

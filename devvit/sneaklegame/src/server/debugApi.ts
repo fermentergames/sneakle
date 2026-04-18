@@ -62,7 +62,13 @@ function unique(values: Iterable<string>): string[] {
 }
 
 async function getAuthorizedUsername(): Promise<string | null> {
-    const username = await reddit.getCurrentUsername();
+    let username: string | null = null;
+    try {
+        username = await reddit.getCurrentUsername();
+    } catch {
+        return null;
+    }
+
     if (!username || !DEBUG_USERS.has(username)) {
         return null;
     }
@@ -84,6 +90,12 @@ async function getExistingKeys(keys: string[], source: string): Promise<KeyCatal
     ).filter((item) => item.type !== "none");
 }
 
+// Safety caps to avoid blowing up on high-traffic subreddits
+const MAX_CATALOG_POSTS = 100;
+const MAX_CATALOG_LB_MEMBERS_PER_POST = 20;
+const MAX_CATALOG_STATE_KEYS = 200;
+const MAX_CATALOG_USER_KEYS = 150;
+
 async function buildKeyCatalog(): Promise<KeyCatalogResponseDto> {
     const [levelPostIdsRaw, dailyPostIdsRaw] = await Promise.all([
         redis.zRange("levelList", 0, -1),
@@ -93,7 +105,7 @@ async function buildKeyCatalog(): Promise<KeyCatalogResponseDto> {
     const levelPostIds = zRangeMembers(levelPostIdsRaw);
     const dailyPostIds = zRangeMembers(dailyPostIdsRaw);
 
-    const postIds = unique([...levelPostIds, ...dailyPostIds]);
+    const postIds = unique([...levelPostIds, ...dailyPostIds]).slice(0, MAX_CATALOG_POSTS);
     const postLevelPairs = await Promise.all(
         postIds.map(async (postId) => ({
             postId,
@@ -110,7 +122,7 @@ async function buildKeyCatalog(): Promise<KeyCatalogResponseDto> {
     const leaderboardMembers = await Promise.all(
         postIds.map(async (postId) => ({
             postId,
-            members: zRangeMembers(await redis.zRange(`lb:${postId}`, 0, -1)),
+            members: zRangeMembers(await redis.zRange(`lb:${postId}`, 0, MAX_CATALOG_LB_MEMBERS_PER_POST - 1)),
         })),
     );
 
@@ -126,16 +138,16 @@ async function buildKeyCatalog(): Promise<KeyCatalogResponseDto> {
         ...puzzleEntries
             .map((entry) => entry.data.levelCreator ?? "")
             .filter((creator) => creator !== ""),
-    ]);
+    ]).slice(0, MAX_CATALOG_USER_KEYS / 3);
 
-    const stateKeys = leaderboardMembers.flatMap((entry) =>
-        entry.members.map((username) => `state:${entry.postId}:${username}`),
-    );
+    const stateKeys = leaderboardMembers
+        .flatMap((entry) =>
+            entry.members.map((username) => `state:${entry.postId}:${username}`),
+        )
+        .slice(0, MAX_CATALOG_STATE_KEYS);
 
     const userKeys = usernames.flatMap((username) => [
         `profile:${username}`,
-        `user:${username}:puzzleCount`,
-        `user:${username}:puzzles`,
     ]);
 
     const sections = [
@@ -168,7 +180,7 @@ async function buildKeyCatalog(): Promise<KeyCatalogResponseDto> {
         sections,
         totalKeys: sections.reduce((sum, section) => sum + section.keys.length, 0),
         note:
-            "Catalog is derived from application-owned indices because the Devvit Redis SDK does not expose a keyspace SCAN/KEYS API.",
+            `Catalog is derived from application-owned indices because the Devvit Redis SDK does not expose a keyspace SCAN/KEYS API. Capped at ${MAX_CATALOG_POSTS} posts, ${MAX_CATALOG_LB_MEMBERS_PER_POST} lb members/post, ${MAX_CATALOG_STATE_KEYS} state keys, ${MAX_CATALOG_USER_KEYS} user keys.`,
     };
 }
 

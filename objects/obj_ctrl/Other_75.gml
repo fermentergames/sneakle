@@ -21,7 +21,6 @@ if (async_load[? "event_type"] == "post_message_received")
 			// Already a struct
 			json = _data;
 		}
-		
 
 
 		if (json != undefined) {
@@ -32,6 +31,18 @@ if (async_load[? "event_type"] == "post_message_received")
 				   show_debug_message("json.type == 'devvit-message'");
 				}
 			}
+
+			var _skipDuplicate = false;
+			if (variable_struct_exists(json, "msgId")) {
+				var _msgId = string(json.msgId);
+				if (variable_global_exists("last_js_msg_id") && string(global.last_js_msg_id) == _msgId) {
+					_skipDuplicate = true;
+					show_debug_message("Skipping duplicate js msgId: " + _msgId);
+				} else {
+					global.last_js_msg_id = _msgId;
+				}
+			}
+			if (_skipDuplicate) exit;
 		
 			switch (json.action)
 			{
@@ -78,54 +89,4 @@ if (async_load[? "event_type"] == "post_message_received")
     }
 }
 
-
-//if (async_load[? "event_type"] == "virtual keyboard status")
-//{
-
-//	var _screen_height = async_load[? "screen_height"];
-//	var _keyboard_status = async_load[? "keyboard_status"];
-//	var _keyboard_string = string_upper(string_letters(keyboard_string))
 	
-//	show_debug_message("virtual keyboard status happening")
-	
-//	show_debug_message("_screen_height = "+string(_screen_height))
-//	show_debug_message("_keyboard_status = "+string(_keyboard_status))
-//	/*
-//	"hiding"
-//	"hidden"
-//	"showing"
-//	"visible"
-//	*/
-	
-//	show_debug_message("_keyboard_string = "+string(_keyboard_string))
-	
-//	if _keyboard_status == "hiding" {
-		
-//		show_debug_message("_keyboard_status == 'hiding'")
-		
-//		if string_length(_keyboard_string) >= 4 {
-			
-//			show_debug_message("submit-typed-letters from virtual keyboard status happening");
-		
-//			scr_submit_typed_letters(_keyboard_string);
-			
-//		} else {
-//			show_debug_message("submit-typed-letters not long enough from virtual keyboard...");
-//		}
-		
-//		html_submit_closebtn();	
-		
-//		show_debug_message("resetting keyboard_string")
-//		keyboard_string = ""
-		
-//	} else {
-		
-//		show_debug_message("some other _keyboard_status")
-		
-//	}
-	
-	
-	
-	
-	
-//}
