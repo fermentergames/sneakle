@@ -1,12 +1,8 @@
 //
 
-import fs from "fs";
-import path from "path";
-import { Router } from 'express';
 import { context, reddit, redis } from '@devvit/web/server';
-import { Logger } from '../utils/Logger';
-
-import puzzles from "../puzzles.json";
+import type { Post } from '@devvit/reddit';
+import type { QueuedPuzzle } from '../types/QueuedPuzzle';
 
 export async function getCurrentLevelCount(): Promise<string> {
   const count = Number((await redis.zCard("levelList")) ?? 0);

@@ -22,7 +22,7 @@ export const resyncUserProfilesJob = (router: Hono): void => {
       const job = JSON.parse(raw);
 
       const BATCH_SIZE = 50;
-      let resetUnlimited = true;
+      let resetUnlimited = false;
       // Level status macros
       const LEVEL_STATUS_NotStarted = 0;
       const LEVEL_STATUS_Started = 1;

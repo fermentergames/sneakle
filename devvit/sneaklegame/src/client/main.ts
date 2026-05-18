@@ -369,6 +369,19 @@ class GameLoader {
 
       // Setup required global functions before loading GameMaker script
       this.setupGameMakerGlobals();
+
+      // Register the game file service worker (caches assets across iframe instances)
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('/sw.js');
+          await navigator.serviceWorker.ready;
+          console.log('[GameLoader] Service worker registered and ready');
+        } catch (swErr) {
+          console.warn('[GameLoader] Service worker registration failed, proceeding without cache:', swErr);
+        }
+      } else {
+        console.log('[GameLoader] Service workers not supported, proceeding without cache');
+      }
       
       // Load the GameMaker runner script
       const script = document.createElement('script');

@@ -762,6 +762,7 @@ renew
 reply
 reset
 retro
+reuse
 rhode
 rider
 ridge
@@ -871,6 +872,7 @@ spain
 spank
 sparc
 spare
+spasm
 speak
 speed
 spell

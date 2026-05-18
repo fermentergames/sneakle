@@ -4418,6 +4418,7 @@ atilt
 atlantes
 atlas
 atlases
+atlatl
 atmosphere
 atmospheres
 atmospheric
@@ -60760,6 +60761,7 @@ reupholster
 reupholsters
 reusability
 reusable
+reuse
 reused
 reuses
 reusing
@@ -66902,6 +66904,7 @@ sparseness
 sparser
 sparsest
 spas
+spasm
 spasmodic
 spasms
 spastic
