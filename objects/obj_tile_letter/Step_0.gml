@@ -23,6 +23,10 @@ swipe_radius = 29//reset
 if am_selected >= 1 {
 	swipe_radius = 25
 }
+//smaller hitbox on red (not in word) tiles when swiping
+if am_exed >= 1 {
+	swipe_radius = 18
+}
 
 
 am_being_pushed = 0 //reset

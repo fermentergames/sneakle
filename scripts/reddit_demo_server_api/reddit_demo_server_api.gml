@@ -209,7 +209,9 @@ function api_join_subreddit(_callback) {
 /// @param {Real} _score The score to submit.
 /// @param {Function} _callback The callback that you want to be executed upon task completion.
 /// @param {Real} _score_time Optional time value for time-based ranking.
-function api_submit_score(_postId, _score, _callback, _score_time = undefined) {
+/// @param {Real} _score_guesses Optional guess count for tiebreak encoding.
+/// @param {Real} _score_hints Optional hint count for tiebreak encoding.
+function api_submit_score(_postId, _score, _callback, _score_time = undefined, _score_guesses = undefined, _score_hints = undefined) {
 	
 	if _postId = "-9999" {_postId = ""}
 	if string(_postId) = "" {
@@ -229,6 +231,8 @@ function api_submit_score(_postId, _score, _callback, _score_time = undefined) {
     var _body = {};
 	if (is_real(_score)) _body.score = _score;
 	if (is_real(_score_time)) _body.score_time = _score_time;
+	if (is_real(_score_guesses)) _body.score_guesses = _score_guesses;
+	if (is_real(_score_hints)) _body.score_hints = _score_hints;
 
 	// Make request
     var _json = json_stringify(_body);

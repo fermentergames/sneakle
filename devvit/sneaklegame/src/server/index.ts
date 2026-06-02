@@ -136,6 +136,41 @@ function leaderboardKey(postId: string) {
 function leaderboardTimeKey(postId: string) {
   return `lb:time:${postId}`;
 }
+
+// Tiebreak encoding for per-puzzle leaderboards.
+// Score leaderboard (descending): composite = combinedScore + fractionalTiebreak
+//   Higher composite = better rank; fractional encodes fewer guesses/hints/time as higher value.
+// Time leaderboard (ascending):   composite = timeFrames + fractionalTiebreak
+//   Lower composite = better rank;  fractional encodes fewer guesses/hints as lower value.
+// Legacy scores (plain integers) sort correctly alongside composites—same integer part.
+const TIEBREAK_MAX_GUESSES = 99;
+const TIEBREAK_MAX_HINTS = 20;
+const TIEBREAK_MAX_TIME_FRAMES = 36000; // 10 min at 60 fps
+
+function encodeScoreTiebreak(
+  combinedScore: number,
+  guesses: number,
+  hints: number,
+  timeFrames: number
+): number {
+  const guessesInv = Math.max(0, Math.min(TIEBREAK_MAX_GUESSES - Math.floor(guesses), TIEBREAK_MAX_GUESSES));
+  const hintsInv   = Math.max(0, Math.min(TIEBREAK_MAX_HINTS - Math.floor(hints), TIEBREAK_MAX_HINTS));
+  const timeInv    = Math.max(0, Math.min(TIEBREAK_MAX_TIME_FRAMES - Math.floor(timeFrames), TIEBREAK_MAX_TIME_FRAMES));
+  // Positional fractional: digits 1-2 = guesses inverse, 3-4 = hints inverse, 5+ = time inverse
+  return combinedScore + guessesInv * 0.01 + hintsInv * 0.0001 + timeInv * 0.00000001;
+}
+
+function encodeTimeTiebreak(
+  timeFrames: number,
+  guesses: number,
+  hints: number
+): number {
+  const clampedGuesses = Math.max(0, Math.min(Math.floor(guesses), TIEBREAK_MAX_GUESSES));
+  const clampedHints   = Math.max(0, Math.min(Math.floor(hints), TIEBREAK_MAX_HINTS));
+  // For ascending (lower=better), direct guesses/hints make better tiebreaks produce lower composites
+  return timeFrames + clampedGuesses * 0.01 + clampedHints * 0.0001;
+}
+
 async function getUsername(): Promise<string> {
   const u = await reddit.getCurrentUsername();
   return u ?? "anonymous";
@@ -859,10 +894,9 @@ router.post("/api/update-post-data", async (c) => {
   }
 });
 
-// POST /api/score -> submit/update best score for this post
+// POST /api/score -> submit/update best score for this post (with tiebreak encoding)
 router.post("/api/score", async (c) => {
   try {
-
 
     // 1. Explicit override always wins
     const queryPostId = getRequestedPostId(c);
@@ -891,17 +925,50 @@ router.post("/api/score", async (c) => {
     const sanitized = Math.max(0, Math.min(score, 1_000_000_000));
     const lbKey = leaderboardKey(postId);
 
-    // read old score (if any) and keep the max
-    const existing = await redis.zScore(lbKey, username);
-    const best = existing !== undefined && existing !== null
-      ? Math.max(Number(existing), sanitized)
-      : sanitized;
-
-    // zAdd here updates the sorted set; score used for ranking, member is the username
-    await redis.zAdd(lbKey, { score: best, member: username });
-
-    // Track best (lowest) time in a dedicated zset for time-based leaderboard views.
+    // Read tiebreak fields from payload, with fallback to state
+    let guesses = Number(payload?.score_guesses);
+    let hints   = Number(payload?.score_hints);
     let submittedTime = Number(payload?.score_time);
+
+    if (!Number.isFinite(guesses) || guesses < 0) {
+      try {
+        const stateRaw = await redis.get(stateKey(postId, username));
+        if (stateRaw) {
+          const stateJson = JSON.parse(stateRaw) as { data?: Record<string, unknown> };
+          if (!Number.isFinite(guesses) || guesses < 0) guesses = Number(stateJson?.data?.score_guesses ?? 0);
+          if (!Number.isFinite(hints)   || hints < 0)   hints   = Number(stateJson?.data?.score_hints ?? 0);
+          if (!Number.isFinite(submittedTime) || submittedTime <= 0) submittedTime = Number(stateJson?.data?.score_time ?? 0);
+        }
+      } catch {
+        guesses = Math.max(0, guesses);
+        hints   = Math.max(0, hints);
+      }
+    }
+    guesses = Number.isFinite(guesses) ? Math.max(0, guesses) : 0;
+    hints   = Number.isFinite(hints)   ? Math.max(0, hints)   : 0;
+
+    // --- Score leaderboard (descending, higher = better) ---
+    const existingRaw = await redis.zScore(lbKey, username);
+    const newComposite = encodeScoreTiebreak(sanitized, guesses, hints, submittedTime);
+
+    let bestComposite: number;
+    if (existingRaw !== undefined && existingRaw !== null) {
+      const existingCombined = Math.floor(Number(existingRaw));
+      if (sanitized > existingCombined) {
+        bestComposite = newComposite;
+      } else if (sanitized < existingCombined) {
+        bestComposite = Number(existingRaw);
+      } else {
+        // Same combined score — keep better tiebreak (higher composite)
+        bestComposite = Math.max(Number(existingRaw), newComposite);
+      }
+    } else {
+      bestComposite = newComposite;
+    }
+
+    await redis.zAdd(lbKey, { score: bestComposite, member: username });
+
+    // --- Time leaderboard (ascending, lower = better) ---
     if (!Number.isFinite(submittedTime) || submittedTime <= 0) {
       try {
         const stateRaw = await redis.get(stateKey(postId, username));
@@ -917,32 +984,33 @@ router.post("/api/score", async (c) => {
     if (Number.isFinite(submittedTime) && submittedTime > 0) {
       const sanitizedTime = Math.max(0, Math.min(submittedTime, 1_000_000_000));
       const timeKey = leaderboardTimeKey(postId);
-      const existingTime = await redis.zScore(timeKey, username);
-      const bestTime = existingTime !== undefined && existingTime !== null
-        ? Math.min(Number(existingTime) || sanitizedTime, sanitizedTime)
-        : sanitizedTime;
-      await redis.zAdd(timeKey, { score: bestTime, member: username });
+      const existingTimeRaw = await redis.zScore(timeKey, username);
+      const newTimeComposite = encodeTimeTiebreak(sanitizedTime, guesses, hints);
+
+      let bestTimeComposite: number;
+      if (existingTimeRaw !== undefined && existingTimeRaw !== null) {
+        const existingTimeFrames = Math.floor(Number(existingTimeRaw));
+        if (sanitizedTime < existingTimeFrames) {
+          bestTimeComposite = newTimeComposite;
+        } else if (sanitizedTime > existingTimeFrames) {
+          bestTimeComposite = Number(existingTimeRaw);
+        } else {
+          // Same time — keep better tiebreak (lower composite)
+          bestTimeComposite = Math.min(Number(existingTimeRaw), newTimeComposite);
+        }
+      } else {
+        bestTimeComposite = newTimeComposite;
+      }
+
+      await redis.zAdd(timeKey, { score: bestTimeComposite, member: username });
     }
 
     console.log('score submitted in endpoint');
 
-    // also mirror this best score into the per-user state
-    // const sKey = stateKey(postId, username);
-    // const prevRaw = await redis.get(sKey);
-    // const prev = (prevRaw ? JSON.parse(prevRaw) : {}) as Partial<StoredState>;
-
-    // const next: StoredState = {
-    //   username,
-    //   updatedAt: Date.now(),
-    //   ...(prev.data  !== undefined ? { data: prev.data } : {}),
-    //   bestScore: best,
-    // };
-
-    // await redis.set(sKey, JSON.stringify(next));
-
     const updatedAt = Date.now();
+    const displayScore = Math.floor(bestComposite);
 
-    return c.json({ username, score: best, updatedAt: updatedAt });
+    return c.json({ username, score: displayScore, updatedAt: updatedAt });
   } catch (err) {
     console.error("POST /api/score error:", err);
     return c.json({ error: "Failed to submit score" }, 500);
@@ -1004,7 +1072,7 @@ router.post("/api/leaderboard-comment", async (c) => {
       return {
         rank: total - ascIndex,
         username: e.member,
-        score: Number(e.score ?? 0),
+        score: Math.floor(Number(e.score ?? 0)),
       };
     });
 
@@ -1253,7 +1321,7 @@ router.get("/api/leaderboard", async (c) => {
         return {
           rank: total - ascIndex,
           username: e.member,
-          score: Number(e.score ?? 0),
+          score: Math.floor(Number(e.score ?? 0)),
         };
       });
     } else {
@@ -1264,7 +1332,7 @@ router.get("/api/leaderboard", async (c) => {
       top = topAsc.map((e, i) => ({
         rank: topStart + i + 1,
         username: e.member,
-        score: Number(e.score ?? 0),
+        score: Math.floor(Number(e.score ?? 0)),
       }));
     }
 
@@ -1305,7 +1373,7 @@ router.get("/api/leaderboard", async (c) => {
           const entry = {
             rank: total - ascIndex,
             username: e.member,
-            score: Number(e.score ?? 0),
+            score: Math.floor(Number(e.score ?? 0)),
           };
 
           if (e.member === username) {
@@ -1320,7 +1388,7 @@ router.get("/api/leaderboard", async (c) => {
           const entry = {
             rank: ascIndex + 1,
             username: e.member,
-            score: Number(e.score ?? 0),
+            score: Math.floor(Number(e.score ?? 0)),
           };
 
           if (e.member === username) {

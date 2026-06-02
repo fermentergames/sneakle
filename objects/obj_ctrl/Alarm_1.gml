@@ -1,5 +1,3 @@
-
-var _keyboard_string = string_upper(string_letters(keyboard_string))
-
-setElementProperty("CreateTypeLettersInput","value",string(_keyboard_string))
+// Alarm 1: previously used to mirror keyboard_string to the HTML input.
+// No longer needed — HTML input is the source of truth, synced via bridge.
 

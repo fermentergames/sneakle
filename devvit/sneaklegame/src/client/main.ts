@@ -445,7 +445,7 @@ if (document.readyState === 'loading') {
 // When either archive text input is focused, we stop runner key processing so the
 // browser can deliver characters to the input normally.
 {
-  const ARCHIVE_INPUT_IDS = new Set(["game-archive-title-input", "game-archive-author-input"]);
+  const ARCHIVE_INPUT_IDS = new Set(["game-archive-title-input", "game-archive-author-input", "CreateTypeLettersInput", "CreatePostTitleInput"]);
   const earlyArchiveKeyGuard = (event: KeyboardEvent) => {
     const activeId = (document.activeElement as HTMLElement | null)?.id ?? "";
     if (ARCHIVE_INPUT_IDS.has(activeId)) {
@@ -714,6 +714,22 @@ document.addEventListener("DOMContentLoaded", () => {
     funcCloseCreatePostTitle();
   });
 
+  // Auto-focus inputs when modals become visible
+  for (const id of ["modalCreateTypeLetters", "modalCreatePostTitle"]) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const inputId = id === "modalCreateTypeLetters" ? "CreateTypeLettersInput" : "CreatePostTitleInput";
+    const obs = new MutationObserver(() => {
+      if (el.classList.contains("active")) {
+        const input = document.getElementById(inputId) as HTMLInputElement | null;
+        // Try focus; might be blocked by autofocus policy if called outside gesture context.
+        // The synchronous focus in addClassElemID is more reliable for gesture-initiated opens.
+        setTimeout(() => input?.focus(), 100);
+      }
+    });
+    obs.observe(el, { attributes: true, attributeFilter: ["class"] });
+  }
+
 
   const callGameMakerTestBtn = document.getElementById("callGameMakerTestBtn") as HTMLButtonElement | null;
 
@@ -739,46 +755,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //TypeLetters
 
-  document.getElementById("submitTypedLettersForm")?.addEventListener("submit", (e) => {
-    e.preventDefault(); // prevent page reload
-    // submitTypedLettersSend(); 
-    funcCloseCreateTypeLetters();
-    (document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null)?.blur();
-  });
+  const typeLettersInput = document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null;
 
+  // Helper: extract cleaned letters from the input
+  function getCleanedTypedLetters(): string {
+    if (!typeLettersInput?.value) return "";
+    return typeLettersInput.value.toUpperCase().replace(/[^A-Z]/g, "");
+  }
 
-  // iOS fallbacks
-  const btn = document.getElementById("submitTypedLettersBtn") as HTMLButtonElement | null;
-  btn?.addEventListener("touchend", (e) => {
-    e.preventDefault(); // stop double trigger
-    // submitTypedLettersSend();
-    funcCloseCreateTypeLetters();
-    (document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null)?.blur();
-  });
+  // Helper: submit typed letters via bridge
+  function submitTypedLettersViaBridge(): void {
+    const letters = getCleanedTypedLetters();
+    if (letters.length > 0) {
+      sendGameMakerMessage({ action: "submit-typed-letters", letters }, "typed-letters");
+    }
+    typeLettersInput!.value = "";
+    // Don't close modal here — GM's html_submit_closebtn() (called after
+    // scr_submit_typed_letters) already removes the CSS class via removeClassElemID.
+    // Sending close-modals from here would race with submit-typed-letters.
+  }
 
-    const input = document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null;
-
-  // Simple callback: on form submit, send the input value to GML.
+  // On form submit, send the input value to GML via bridge.
   document.getElementById("submitTypedLettersForm")?.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (input?.value && input.value.length > 0) {
-      const letters = input.value
-        .toUpperCase()
-        .replace(/[^A-Z]/g, "");
-      const msg = { action: "submit-typed-letters", letters: letters };
-      sendGameMakerMessage(msg, "typed-letters");
-      input.value = "";
-    }
-    funcCloseCreateTypeLetters();
+    submitTypedLettersViaBridge();
   });
 
-  input?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      // submitTypedLettersSend();
-      funcCloseCreateTypeLetters();
-      (document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null)?.blur();
-    }
+  // Sync HTML input value → GM keyboard_string on every change (for preview grid)
+  typeLettersInput?.addEventListener("input", () => {
+    const val = getCleanedTypedLetters();
+    sendGameMakerMessage({ action: "paste-typed-letters", letters: val }, "paste-letters");
   });
 
 
@@ -788,31 +794,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //PostTitle
 
-  document.getElementById("submitPostTitleForm")?.addEventListener("submit", (e) => {
-    e.preventDefault(); // prevent page reload
-    // submitPostTitleSend(); 
-    funcCloseCreatePostTitle();
-    (document.getElementById("CreatePostTitleInput") as HTMLInputElement | null)?.blur();
-  });
+  const postTitleInput = document.getElementById("CreatePostTitleInput") as HTMLInputElement | null;
 
-
-  // iOS fallbacks
-  const btnPT = document.getElementById("submitPostTitleBtn") as HTMLButtonElement | null;
-  btnPT?.addEventListener("touchend", (e) => {
-    e.preventDefault(); // stop double trigger
-    // submitPostTitleSend();
-    funcCloseCreatePostTitle();
-    (document.getElementById("CreatePostTitleInput") as HTMLInputElement | null)?.blur();
-  });
-
-  const inputPT = document.getElementById("CreatePostTitleInput") as HTMLInputElement | null;
-  inputPT?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      // submitPostTitleSend();
-      funcCloseCreatePostTitle();
-      (document.getElementById("CreatePostTitleInput") as HTMLInputElement | null)?.blur();
+  // Helper: submit post title via bridge
+  function submitPostTitleViaBridge(): void {
+    const title = postTitleInput?.value?.trim() ?? "";
+    if (title.length > 0) {
+      sendGameMakerMessage({ action: "submit-post-title", title }, "post-title");
     }
+    postTitleInput!.value = "";
+    // Modal closes via GM's html_submit_closebtn() after scr_submit_created_puzzle
+  }
+
+  // On form submit, send the title to GML via bridge.
+  document.getElementById("submitPostTitleForm")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    submitPostTitleViaBridge();
   });
 
 
@@ -1068,9 +1065,19 @@ window.hideElemID = function (elemID: string) {
 
 window.addClassElemID = function (elemID: string, className: string) {
   let thething = document.getElementById(elemID);
-  //thething.style.visibility = "visible";
   thething.classList.add(className);
   console.log("ADD "+className+" to "+elemID);
+  // Sync focus: when a modal becomes active, focus its input synchronously
+  // while the user gesture context is still active.
+  if (className === "active") {
+    const inputId = elemID === "modalCreateTypeLetters" ? "CreateTypeLettersInput"
+                 : elemID === "modalCreatePostTitle" ? "CreatePostTitleInput"
+                 : null;
+    if (inputId) {
+      const input = document.getElementById(inputId) as HTMLInputElement | null;
+      input?.focus();
+    }
+  }
 };
 
 // function addClassElemID(elemID,className) {
@@ -1092,15 +1099,48 @@ window.setElementProperty = function (elemID: string, propertyName: string, valu
   if (el) {
     el[propertyName] = value;
     console.log(elemID+" - changed "+propertyName+" to "+value);
-
-    //if changing value, probably an input field
-    if (elemID === "CreateTypeLettersInput") {
-      el.focus();
-      // el.select();
-      console.log("focusing and selecting")
-    }
   }
 }
+
+// GM-callable: submit the current typed letters value via bridge
+window.submitTypedLettersFromGM = function () {
+  const input = document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null;
+  const letters = input?.value?.toUpperCase()?.replace(/[^A-Z]/g, "") ?? "";
+  if (letters.length > 0) {
+    sendGameMakerMessage({ action: "submit-typed-letters", letters }, "typed-letters-gm");
+  }
+  if (input) input.value = "";
+  // Modal closes via GM's html_submit_closebtn() after scr_submit_typed_letters
+};
+
+// GM-callable: clear the typed letters input
+window.clearTypedLettersInput = function () {
+  const input = document.getElementById("CreateTypeLettersInput") as HTMLInputElement | null;
+  if (input) input.value = "";
+};
+
+// GM-callable: autofill typed letters to next perfect square
+window.autofillTypedLettersInput = function () {
+  // Autofill computation happens in GM (global.letter_set_default, letters_bag shuffle, etc.).
+  // GM syncs the result back to the HTML input via setElementProperty after computation.
+};
+
+// GM-callable: submit the current post title value via bridge
+window.submitPostTitleFromGM = function () {
+  const input = document.getElementById("CreatePostTitleInput") as HTMLInputElement | null;
+  const title = input?.value?.trim() ?? "";
+  if (title.length > 0) {
+    sendGameMakerMessage({ action: "submit-post-title", title }, "post-title-gm");
+  }
+  if (input) input.value = "";
+  // Modal closes via GM's html_submit_closebtn() after scr_submit_created_puzzle
+};
+
+// GM-callable: clear the post title input
+window.clearPostTitleInput = function () {
+  const input = document.getElementById("CreatePostTitleInput") as HTMLInputElement | null;
+  if (input) input.value = "";
+};
 
 
 /////////////////////////

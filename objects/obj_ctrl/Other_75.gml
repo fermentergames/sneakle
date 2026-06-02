@@ -70,10 +70,15 @@ if (async_load[? "event_type"] == "post_message_received")
 			      html_submit_closebtn();
 			   break;
 
+			   case "submit-post-title":
+			      show_debug_message("submit-post-title happening");
+			      scr_submit_created_puzzle(string(json.title));
+			      html_submit_closebtn();
+			   break;
+
 			   case "paste-typed-letters":
 			      show_debug_message("paste-typed-letters happening");
-			      keyboard_string += string_upper(string_letters(string(json.letters)));
-			      alarm[1] = 2 //refresh the input display
+			      keyboard_string = string_upper(string_letters(string(json.letters)));
 			   break;
 			   case "set-is-reddit-app":
 			      global.is_reddit_app = json.isRedditApp;

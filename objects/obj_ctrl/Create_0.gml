@@ -168,12 +168,6 @@ if global.is_reddit = 1 && (string_count("reddit/", _info_userAgentStringLower) 
 	show_debug_message("Reddit app NOT detected")
 }
 
-global.do_basic_input = 0
-if global.is_android = 1 && global.is_firefox = 0 {
-	global.do_basic_input = 1
-}
-
-
 show_debug_message("--");
 var map_string = json_encode(_info_ds_map);
 show_debug_message(map_string);

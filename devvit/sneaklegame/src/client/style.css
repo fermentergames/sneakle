@@ -209,7 +209,7 @@ p.subtitle {
   padding-inline: 20px;
   padding-block: 0px; 
   overflow: hidden;
-  transition: all 0.4s ease-in-out;
+  transition: all 0.25s ease-in-out;
   flex-direction: column;
   color: #fff;
 }
@@ -221,6 +221,47 @@ p.subtitle {
   padding-bottom: 15px;
   top: calc(100lvh - 100svh + 290px);
   border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.modalMenu.modalCreateTypeLetters, .modalMenu.modalCreatePostTitle {
+  padding: 0;
+  width: calc(100vw - 40px);
+}
+
+.modalCreateTypeLetters.active {
+  top: 11.5dvh;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding: 0;
+}
+
+@media screen and (max-width: 500px) {
+  .modalCreateTypeLetters.active{
+    top: 24dvw;
+  }
+}
+
+.modalCreatePostTitle.active {
+  top: 13.5dvh;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding: 0;
+}
+
+@media screen and (max-width: 500px) {
+  .modalCreatePostTitle.active {
+    top: 26dvw;
+  }
+} 
+
+.modalCreateTypeLetters  .modalMenuHeader, .modalCreatePostTitle .modalMenuHeader {
+  height: 24px;
+  font-size: 11px;
+  display: none;
+}
+
+.modalCreateTypeLetters form, .modalCreatePostTitle form {
+  margin-bottom: 0;
 }
 
 .puzzleMenu {
@@ -349,12 +390,29 @@ form button {
 }
 
 #CreateTypeLettersInput {
-  margin-bottom: 10px;
-  height: 40px;
+  margin-bottom: 0px;
+  height: 55px;
+  height: 13dvw;
+  height: 8dvh;
+}
+
+@media screen and (max-width: 500px) {
+  #CreateTypeLettersInput {
+    height: 13dvw;
+  }
 }
 
 #submitTypedLettersBtn { 
-  height: 30px;
+  appearance: none;
+  border: 2px solid #ffffff7a;
+  background: #499bfc;
+  color: white;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px #0000004d;
+  display: none;
 }
 
 #CreatePostTitleInput {
@@ -362,8 +420,30 @@ form button {
   height: 40px;
 }
 
+#CreatePostTitleInput {
+  margin-bottom: 0px;
+  height: 55px;
+  height: 13dvw;
+  height: 6dvh;
+}
+
+@media screen and (max-width: 500px) {
+  #CreatePostTitleInput {
+    height: 12dvw;
+  }
+}
+
 #submitPostTitleBtn {
-  height: 30px;
+  appearance: none;
+  border: 2px solid #ffffff7a;
+  background: #499bfc;
+  color: white;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px #0000004d;
+  display: none;
 }
 
 /*************/

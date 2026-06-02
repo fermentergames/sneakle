@@ -710,7 +710,7 @@ if global.game_phase = 0 {
 						y = y_targ
 					}
 					
-			} else if	scr_mouse_over_button((global.sw*0.5)+(0*_scl),global.sh-(198*_scl),0.276*_tscl,0.108*_tscl) {
+				} else if	scr_mouse_over_button((global.sw*0.5)+(0*_scl),global.sh-(198*_scl),0.276*_tscl,0.108*_tscl) {
 					show_debug_message("B CLICKED")
 					
 					show_debug_message("TYPE LETTERS")
@@ -739,208 +739,172 @@ if global.game_phase = 0 {
 						
 						create_typed_letters = ""
 						
-						
-						global.show_TypeLetters_input_prompt = 1
-						
-						if global.do_basic_input = 1 {
-							
-							global.show_TypeLetters_input_prompt = 0
-						
-							async_msg_letters = get_string_async("Enter the letters you want to use.\n(Length needs to be a square number: 9 | 16 | 25 | 36 | 49)\n(Excess length with be rounded down to nearest square number.)", string(_current_board)); 
-							//will set create_typed_letters in async dialog
-						
-						} else if global.is_reddit = 1 {
-						
-							//global.show_input_prompt = 1
-							//if 1=1 {
-							
-							//    var data = {
-							//        "scr": "addClassElemID",
-							//        "args": ["CreateTypeLetters", "active"]
-							//    };
-
-							//    window_post_message(json_stringify(data));
-						
-							//}
-							
-							if global.is_mobile >= 1 {
-								addClassElemID("modalCreateTypeLetters","active")
-							}
-							setElementProperty("CreateTypeLettersInput","value",string(_current_board))
-							
-							keyboard_string = string(_current_board)
-							//keyboard_virtual_show(kbv_type_ascii,kbv_returnkey_continue,kbv_autocapitalize_characters,false)
-						
-							
-						} else {
-							
-							keyboard_string = string(_current_board)
-							//async_msg_letters = get_string_async("Enter the letters you want to use.\n(Length needs to be a square number: 9 | 16 | 25 | 36 | 49)\n(Excess length with be rounded down to nearest square number.)", string(_current_board)); 
-							//will set create_typed_letters in async dialog
-							
-						}
+					global.show_TypeLetters_input_prompt = 1
 					
+					// Always use the web modal — the HTML input is the source of truth.
+					// keyboard_string is kept for GM-side preview grid via bridge sync.
+					addClassElemID("modalCreateTypeLetters","active")
+					setElementProperty("CreateTypeLettersInput","value",string(_current_board))
+					keyboard_string = string(_current_board)
 					}
-					
 				}
 			}
 		}
 	
-	
-	}
-	
-	if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
-		if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
-			if global.game_mode = 1 && scr_mouse_over_button((global.sw*0.5)+(148*_scl),global.sh-(198*_scl),0.24*_tscl,0.108*_tscl) {
-				show_debug_message("SHUFFLE CLICKED")
-				
-				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
-				
-				var _all_spaces = []
-				with (obj_tile_space) {
-					array_push(_all_spaces, id)
-				}
-				_all_spaces = array_shuffle(_all_spaces)
-				
-				var _si = 0
-				with (obj_tile_letter) {
-					targ_id = _all_spaces[_si]
-					x_targ = targ_id.x
-					y_targ = targ_id.y
-					tile_id = targ_id.tile_id
-					prev_targ_id = targ_id
-					am_set = 1
-					am_set_flash = 1
-					born_fd = 0.3
-					_si += 1
-				}
-				
-				global.current_copy_code = ""
-				global.current_copy_link = ""
-				scr_update_copy_code()
-			}
-		}
-	}
-	
-	//draw_sprite_ext(spr_sqr512,0,global.sw*0.5,global.sh-10*_scl,0.4*_tscl,0.08*_tscl,0,c_white,0.06)
-	
-	//if global.game_mode = 1 {
-	//	draw_text_transformed(global.sw*0.5,global.sh-10*_pos_scl,"activate points mode",0.12*_tscl,0.12*_tscl,0)
-	//} else {
-	//	draw_text_transformed(global.sw*0.5,global.sh-10*_pos_scl,"exit points mode",0.12*_tscl,0.12*_tscl,0)
-	//}
-	
-	if ready_for_phase2 = 0 {
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl,0,_highlight_blue,1)
-		
-		draw_text_transformed(global.sw/2,global.sh-(65*_scl),"AUTOFILL",0.2*_scl,0.2*_scl,0)
-
-		
 		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
 			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
-				if		scr_mouse_over_button(global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl) {
-					show_debug_message("C CLICKED")
+				if global.game_mode = 1 && scr_mouse_over_button((global.sw*0.5)+(148*_scl),global.sh-(198*_scl),0.24*_tscl,0.108*_tscl) {
+					show_debug_message("SHUFFLE CLICKED")
+
+					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+
+					var _all_spaces = []
+					with (obj_tile_space) {
+						array_push(_all_spaces, id)
+					}
+					_all_spaces = array_shuffle(_all_spaces)
 					
-					if _empty_tile_count >= 0 { //there are some empty spaces
+					var _si = 0
+					with (obj_tile_letter) {
+						targ_id = _all_spaces[_si]
+						x_targ = targ_id.x
+						y_targ = targ_id.y
+						tile_id = targ_id.tile_id
+						prev_targ_id = targ_id
+						am_set = 1
+						am_set_flash = 1
+						born_fd = 0.3
+						_si += 1
+					}
+					
+					global.current_copy_code = ""
+					global.current_copy_link = ""
+					scr_update_copy_code()
+					
+				}
+			}
+		}
+		//draw_sprite_ext(spr_sqr512,0,global.sw*0.5,global.sh-10*_scl,0.4*_tscl,0.08*_tscl,0,c_white,0.06)
+		
+		//if global.game_mode = 1 {
+		//	draw_text_transformed(global.sw*0.5,global.sh-10*_pos_scl,"activate points mode",0.12*_tscl,0.12*_tscl,0)
+		//} else {
+		//	draw_text_transformed(global.sw*0.5,global.sh-10*_pos_scl,"exit points mode",0.12*_tscl,0.12*_tscl,0)
+		//}
+	
+		if ready_for_phase2 = 0 {
+			draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl,0,_highlight_blue,1)
+			
+			draw_text_transformed(global.sw/2,global.sh-(65*_scl),"AUTOFILL",0.2*_scl,0.2*_scl,0)
+
+			
+			if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+				if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+					if		scr_mouse_over_button(global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl) {
+						show_debug_message("C CLICKED")
+						
+						if _empty_tile_count >= 0 { //there are some empty spaces
+							
+							audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
+			
+							_empty_tile = array_shuffle(_empty_tile)
+		
+							_empty_tile_count = 0 //reset
+							for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+
+								if global.tile_letter[i].am_set = 0 {
+
+									//_empty_letter[i] = global.tile_space[i]
+						
+									with (global.tile_letter[i]) {
+					
+										//show_debug_message(object_get_name(_empty_tile[i].object_index))
+						
+										targ_id = _empty_tile[_empty_tile_count].id
+										_empty_tile_count += 1
+										x_targ = targ_id.x
+										y_targ = targ_id.y
+										am_set = 1
+										prev_targ_id = targ_id
+										am_set_flash = 1
+									}
+								}
+							}
+		
+						}
+						
+					}
+				}
+			}
+			
+		} else {
+			
+			var _confirm_btn_col_outer = merge_colour(_highlight_blue,c_white,0.4)
+			var _confirm_btn_col_inner = _highlight_blue
+			var _confirm_btn_title = "CONFIRM GRID"
+			var _confirm_btn_title_scl = 0.2
+			var _confirm_btn_subtitle = "proceed to set SECRET"
+			
+			if _confirm_blocked_by_banned >= 1 {
+				_confirm_btn_col_outer = merge_colour(make_colour_hsv(2,250,95),c_white,0.15)
+				_confirm_btn_col_inner = make_colour_hsv(2,90,35)
+				_confirm_btn_title = "BANNED WORD FOUND IN GRID :("
+				_confirm_btn_title_scl = 0.16
+				_confirm_btn_subtitle = "uh oh, can't allow that!"
+			}
+			
+			draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl,0,_confirm_btn_col_outer,1)
+			draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.819*_scl,0.17*_scl,0,_confirm_btn_col_inner,1)
+			
+			draw_set_valign(fa_middle)
+			draw_set_alpha(0.7+(-0.6*dragging_fd))
+			draw_text_transformed(global.sw/2,global.sh-(75*_scl),_confirm_btn_title,_confirm_btn_title_scl*_scl,_confirm_btn_title_scl*_scl,0)
+			draw_text_transformed(global.sw/2,global.sh-(50*_scl),_confirm_btn_subtitle,0.12*_scl,0.12*_scl,0)
+			
+			draw_set_alpha(0.7)
+			
+			if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
+				if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
+					if _confirm_blocked_by_banned <= 0 && scr_mouse_over_button(global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl) {
+						show_debug_message("D CLICKED")
 						
 						audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
-		
-						_empty_tile = array_shuffle(_empty_tile)
-	
-						_empty_tile_count = 0 //reset
-						for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
-
-							if global.tile_letter[i].am_set = 0 {
-
-								//_empty_letter[i] = global.tile_space[i]
-					
-								with (global.tile_letter[i]) {
-				
-									//show_debug_message(object_get_name(_empty_tile[i].object_index))
-					
-									targ_id = _empty_tile[_empty_tile_count].id
-									_empty_tile_count += 1
-									x_targ = targ_id.x
-									y_targ = targ_id.y
-									am_set = 1
-									prev_targ_id = targ_id
-									am_set_flash = 1
-								}
-							}
-						}
-	
-					}
-					
-				}
-			}
-		}
-		
-	} else {
-		
-		var _confirm_btn_col_outer = merge_colour(_highlight_blue,c_white,0.4)
-		var _confirm_btn_col_inner = _highlight_blue
-		var _confirm_btn_title = "CONFIRM GRID"
-		var _confirm_btn_title_scl = 0.2
-		var _confirm_btn_subtitle = "proceed to set SECRET"
-		
-		if _confirm_blocked_by_banned >= 1 {
-			_confirm_btn_col_outer = merge_colour(make_colour_hsv(2,250,95),c_white,0.15)
-			_confirm_btn_col_inner = make_colour_hsv(2,90,35)
-			_confirm_btn_title = "BANNED WORD FOUND IN GRID :("
-			_confirm_btn_title_scl = 0.16
-			_confirm_btn_subtitle = "uh oh, can't allow that!"
-		}
-		
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl,0,_confirm_btn_col_outer,1)
-		draw_sprite_ext(spr_sqr512,0,global.sw/2,global.sh-(65*_scl),0.819*_scl,0.17*_scl,0,_confirm_btn_col_inner,1)
-		
-		draw_set_valign(fa_middle)
-		draw_set_alpha(0.7+(-0.6*dragging_fd))
-		draw_text_transformed(global.sw/2,global.sh-(75*_scl),_confirm_btn_title,_confirm_btn_title_scl*_scl,_confirm_btn_title_scl*_scl,0)
-		draw_text_transformed(global.sw/2,global.sh-(50*_scl),_confirm_btn_subtitle,0.12*_scl,0.12*_scl,0)
-		
-		draw_set_alpha(0.7)
-		
-		if mouse_check_button_pressed(mb_left) && global.show_any_modal <= 0 {
-			if !collision_point(mouse_x,mouse_y,obj_tile_letter,true,true) {
-				if _confirm_blocked_by_banned <= 0 && scr_mouse_over_button(global.sw/2,global.sh-(65*_scl),0.83*_scl,0.18*_scl) {
-					show_debug_message("D CLICKED")
-					
-					audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.95+random(0.1))
-					
-					//confirm grid, proceed to setting secret
-					for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
-						with (global.tile_letter[i]) {
-							if am_set >= 1 {
-								if instance_exists(targ_id) && targ_id != -1 {
-				
-									//show_debug_message(object_get_name(_empty_tile[i].object_index))
-					
-									tile_id = targ_id.tile_id
-								
-									global.letters_grid[tile_id] = my_letter_str
 						
+						//confirm grid, proceed to setting secret
+						for (var i = 1; i <= global.game_grid_size_sqr; ++i) {
+							with (global.tile_letter[i]) {
+								if am_set >= 1 {
+									if instance_exists(targ_id) && targ_id != -1 {
+					
+										//show_debug_message(object_get_name(_empty_tile[i].object_index))
+						
+										tile_id = targ_id.tile_id
+									
+										global.letters_grid[tile_id] = my_letter_str
+							
+									}
 								}
 							}
 						}
-					}
-			
 				
-					global.game_phase = 2	
-					dragging = 0
-					selected_word_length = 0
-					selected_word_not_in_dictionary = 0
-					selected_word_not_allowed = 0
-					selected_word_is_valid = 0
-					selected_word_str = ""
-					selected_word_array = 0
-					selected_word_array_id = 0
-					ready_for_phase3 = 0
 					
+						global.game_phase = 2	
+						dragging = 0
+						selected_word_length = 0
+						selected_word_not_in_dictionary = 0
+						selected_word_not_allowed = 0
+						selected_word_is_valid = 0
+						selected_word_str = ""
+						selected_word_array = 0
+						selected_word_array_id = 0
+						ready_for_phase3 = 0
+						
+					}
 				}
 			}
+			
 		}
-		
+
 	}
 	
 	
@@ -1186,49 +1150,10 @@ if global.game_phase = 0 {
 						
 						global.show_PostTitle_input_prompt = 1
 						
-						if global.do_basic_input = 1 {
-							
-							global.show_PostTitle_input_prompt = 0
-							global.show_submitting_post = 1
-						
-							async_msg_title = get_string_async("Enter a title for your puzzle and submit. \n(*This will create a post as "+string(obj_ctrlp.username)+")", string(create_title)); 
-							//will set create_typed_letters in async dialog
-							
-						
-						} else if global.is_reddit = 1 {
-							
-							global.show_PostTitle_input_prompt = 1
-						
-							//global.show_input_prompt = 1
-							//if 1=1 {
-							
-							//    var data = {
-							//        "scr": "addClassElemID",
-							//        "args": ["CreateTypeLetters", "active"]
-							//    };
-
-							//    window_post_message(json_stringify(data));
-						
-							//}
-							
-							if global.is_mobile >= 1 {
-								addClassElemID("modalCreatePostTitle","active")
-							}
-							setElementProperty("CreatePostTitleInput","value",string(create_title))
-							
-							keyboard_string = string(create_title)
-							//keyboard_virtual_show(kbv_type_ascii,kbv_returnkey_continue,kbv_autocapitalize_characters,false)
-						
-							
-						} else {
-							
-							global.show_PostTitle_input_prompt = 1
-							
-							keyboard_string = string(create_title)
-							//async_msg_letters = get_string_async("Enter the letters you want to use.\n(Length needs to be a square number: 9 | 16 | 25 | 36 | 49)\n(Excess length with be rounded down to nearest square number.)", string(_current_board)); 
-							//will set create_typed_letters in async dialog
-							
-						}
+						// Always use the web modal — the HTML input is the source of truth.
+						addClassElemID("modalCreatePostTitle","active")
+						setElementProperty("CreatePostTitleInput","value",string(create_title))
+						keyboard_string = string(create_title)
 				
 						
 						
@@ -2575,7 +2500,7 @@ if global.game_phase <= 0 {
 	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-35*_version_scl*_scl),"<3 @FermenterGames",0.1*_version_scl*_tscl,0.1*_version_scl*_tscl,0)
 	draw_set_font(fnt_main_r)
 	draw_set_alpha(0.2*_version_scl)
-	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-35*_version_scl*_scl),"\n\n\n"+date_datetime_string(GM_build_date)+" - "+string(global.is_ios)+" "+string(global.is_android)+" "+string(global.is_firefox)+" "+string(global.do_basic_input)+" "+string(global.is_mobile),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
+	draw_text_transformed(global.sw*0.5,(global.sh*1)+(-35*_version_scl*_scl),"\n\n\n"+date_datetime_string(GM_build_date)+" - "+string(global.is_ios)+" "+string(global.is_android)+" "+string(global.is_firefox)+" "+string(global.is_mobile),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
 	
 	//draw_text_transformed(global.sw*0.5,(global.sh*1)+(-50*_version_scl*_scl),"\n\n\n"+string(global.sw)+"x"+string(global.sh),0.07*_version_scl*_tscl,0.07*_version_scl*_tscl,0)
 }
@@ -2624,7 +2549,7 @@ if global.show_TypeLetters_input_prompt = 1 {
 	
 	
 	
-	if global.do_basic_input <= 0 {
+	if 1=1 {
 		
 		//X to close
 		draw_sprite_ext(spr_sqr512,4,global.sw+(-40*_scl),(40*_scl),0.05*_scl,0.05*_scl,45,_c_white,0.5*global.show_any_modal_fd) 
@@ -2663,17 +2588,8 @@ if global.show_TypeLetters_input_prompt = 1 {
 		
 		}
 	
-		//var _kbstatus = keyboard_virtual_status();
-		//if (_kbstatus == false) {
-		//	keyboard_virtual_show(kbv_type_ascii,kbv_returnkey_continue,kbv_autocapitalize_characters,false)				
-		//}
-	
-		if keyboard_check_released(vk_anykey) {
-			alarm[1] = 15 //update input value with _keyboard_string
-			//keyboard_string += keyboard_lastchar
-		
-		}
-	
+		// HTML input is the source of truth — no GM keyboard capture needed.
+		// Preview grid stays updated via paste-typed-letters bridge sync.
 	
 		var _keyboard_string = string_upper(string_letters(keyboard_string))
 	
@@ -2686,7 +2602,7 @@ if global.show_TypeLetters_input_prompt = 1 {
 			if global.light_mode = 1 {
 				_box_col = c_white	
 			}
-			draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,_box_col,0.5*global.show_any_modal_fd) 
+			//draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,_box_col,0.5*global.show_any_modal_fd) 
 	
 		
 			draw_set_color(_c_white)
@@ -2708,7 +2624,7 @@ if global.show_TypeLetters_input_prompt = 1 {
 				_keyboard_string += "|"	
 			}
 		
-			draw_text_transformed((global.sw*0.5)+(-380*0.5*_scl),(global.sh*0)+(150*_scl),_keyboard_string,1*_letters_scl,1*_letters_scl,0)
+			//draw_text_transformed((global.sw*0.5)+(-380*0.5*_scl),(global.sh*0)+(150*_scl),_keyboard_string,1*_letters_scl,1*_letters_scl,0)
 		
 			draw_set_halign(fa_center)
 		
@@ -2769,11 +2685,8 @@ if global.show_TypeLetters_input_prompt = 1 {
 	
 		var _submit_letters_now = 0
 	
-		if global.show_any_modal_fd > 0.5 && keyboard_check_pressed(vk_enter) {
-		
-			_submit_letters_now = 1
-		
-		}
+		// Enter key submission is handled by the HTML form's submit event in JS.
+		// The GM-side USE THESE LETTERS button also routes through the JS bridge.
 	
 	
 		if global.show_any_modal_fd > 0.5 && mouse_check_button_pressed(mb_left) {
@@ -2790,18 +2703,11 @@ if global.show_TypeLetters_input_prompt = 1 {
 			}
 		
 		
-			//ENTER/SUBMIT
+			//ENTER/SUBMIT (USE THESE LETTERS button) — route through JS bridge
 			if scr_mouse_over_button(global.sw*0.5,(global.sh*0.0)+(212*_scl),0.4*_scl,0.1*_scl) {
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
-				//close
-				//html_submit_closebtn()
-				//global.show_input_prompt = 0
-		
-				//keyboard_virtual_hide()
-			
-				//show_debug_message("YUP")
-			
-				_submit_letters_now = 1
+				submitTypedLettersFromGM()
+				keyboard_string = ""
 			
 			}
 			
@@ -2849,8 +2755,8 @@ if global.show_TypeLetters_input_prompt = 1 {
 					
 					}
 				
-
-					//setElementProperty("CreateTypeLettersInput","value",keyboard_string)
+					// Sync autofilled value back to the HTML input
+					setElementProperty("CreateTypeLettersInput","value",keyboard_string)
 				}
 			
 			}
@@ -2858,18 +2764,9 @@ if global.show_TypeLetters_input_prompt = 1 {
 			//CLEAR
 			if scr_mouse_over_button((global.sw*0.5)+(160*_scl),(global.sh*0)+(212*_scl),0.19*_scl,0.09*_scl) {
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
-				//close
-				//html_submit_closebtn()
-				//global.show_input_prompt = 0
-		
-				//keyboard_virtual_hide()
 			
-				//show_debug_message("YUP")
-			
-				//_submit_letters_now = 1
-			
+				clearTypedLettersInput()
 				keyboard_string = ""
-				setElementProperty("CreateTypeLettersInput","value","")
 			
 			}
 		
@@ -2880,9 +2777,8 @@ if global.show_TypeLetters_input_prompt = 1 {
 			
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 			
-				if global.is_mobile >= 1 {
-					addClassElemID("modalCreateTypeLetters","active")
-				}
+				addClassElemID("modalCreateTypeLetters","active")
+				// HTML input is the source — value already in sync via bridge
 				setElementProperty("CreateTypeLettersInput","value",string(_keyboard_string))
 			
 			}
@@ -2891,26 +2787,8 @@ if global.show_TypeLetters_input_prompt = 1 {
 		
 		}
 	
-		if _submit_letters_now = 1 {
-		
-			_keyboard_string = string_upper(string_letters(_keyboard_string))
-		
-			if string_length(_keyboard_string) >= 4 {
-			
-				show_debug_message("submit-typed-letters from gui happening");
-		
-				scr_submit_typed_letters(_keyboard_string);
-			
-			} else {
-				show_debug_message("submit-typed-letters not long enough from gui...");
-			}
-		
-			html_submit_closebtn();	
-		
-			show_debug_message("resetting keyboard_string")
-			keyboard_string = ""	
-		
-		}
+		// Submission is now handled via JS bridge (submitTypedLettersFromGM).
+		// No GM-side keyboard_string direct submission needed.
 	
 	}
 	
@@ -2927,7 +2805,7 @@ if global.show_PostTitle_input_prompt = 1 {
 	draw_set_color(_c_white)
 	
 	
-	if global.do_basic_input <= 0 {
+	if 1=1 {
 		
 		//X to close
 		draw_sprite_ext(spr_sqr512,4,global.sw+(-40*_scl),(40*_scl),0.05*_scl,0.05*_scl,45,_c_white,0.5*global.show_any_modal_fd) 
@@ -3011,16 +2889,7 @@ if global.show_PostTitle_input_prompt = 1 {
 		
 		}
 	
-		//var _kbstatus = keyboard_virtual_status();
-		//if (_kbstatus == false) {
-		//	keyboard_virtual_show(kbv_type_ascii,kbv_returnkey_continue,kbv_autocapitalize_characters,false)				
-		//}
-	
-		if keyboard_check_released(vk_anykey) {
-			alarm[2] = 15 //update input value with _keyboard_string
-			//keyboard_string += keyboard_lastchar
-		}
-	
+		// HTML input is the source of truth — no GM keyboard capture needed.
 	
 		var _keyboard_string = keyboard_string //string_upper(string_letters(keyboard_string))
 	
@@ -3033,7 +2902,7 @@ if global.show_PostTitle_input_prompt = 1 {
 			if global.light_mode = 1 {
 				_box_col = c_white	
 			}
-			draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,_box_col,0.5*global.show_any_modal_fd) 
+			//draw_sprite_ext(spr_sqr512,0,global.sw*0.5,(global.sh*0)+(150*_scl),0.8*_scl,0.1*_scl,0,_box_col,0.5*global.show_any_modal_fd) 
 	
 		
 			draw_set_color(_c_white)
@@ -3055,7 +2924,7 @@ if global.show_PostTitle_input_prompt = 1 {
 				_keyboard_string += "|"	
 			}
 		
-			draw_text_transformed((global.sw*0.5)+(-380*0.5*_scl),(global.sh*0)+(150*_scl),_keyboard_string,1*_letters_scl,1*_letters_scl,0)
+			//draw_text_transformed((global.sw*0.5)+(-380*0.5*_scl),(global.sh*0)+(150*_scl),_keyboard_string,1*_letters_scl,1*_letters_scl,0)
 		
 			draw_set_halign(fa_center)
 		
@@ -3065,11 +2934,8 @@ if global.show_PostTitle_input_prompt = 1 {
 
 		var _submit_post_title_now = 0
 	
-		if global.show_any_modal_fd > 0.5 && keyboard_check_pressed(vk_enter) {
-		
-			_submit_post_title_now = 1
-		
-		}
+		// Enter key and button submission is handled via JS bridge.
+		// (The HTML form's submit event in JS reads the input and sends submit-post-title.)
 	
 	
 		if global.show_any_modal_fd > 0.5 && mouse_check_button_pressed(mb_left) {
@@ -3081,22 +2947,15 @@ if global.show_PostTitle_input_prompt = 1 {
 				html_submit_closebtn()
 				global.show_PostTitle_input_prompt = 0
 				
-				
-				//do something
-				//with (obj_ctrl) {
-				//	scr_validate_word()
-				//}
-		
-				//keyboard_virtual_hide()
-			
 			}
 		
 		
-			//ENTER/SUBMIT
+			//ENTER/SUBMIT ([ENTER] TO POST button) — route through JS bridge
 			if scr_mouse_over_button(global.sw*0.5,(global.sh*0.0)+(212*_scl),0.4*_scl,0.1*_scl) {
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 			
-				_submit_post_title_now = 1
+				submitPostTitleFromGM()
+				keyboard_string = ""
 			
 			}
 		
@@ -3104,8 +2963,8 @@ if global.show_PostTitle_input_prompt = 1 {
 			if scr_mouse_over_button((global.sw*0.5)+(160*_scl),(global.sh*0)+(212*_scl),0.19*_scl,0.09*_scl) {
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 			
+				clearPostTitleInput()
 				keyboard_string = ""
-				setElementProperty("CreatePostTitleInput","value","")
 			
 			}
 			
@@ -3126,34 +2985,15 @@ if global.show_PostTitle_input_prompt = 1 {
 			
 				audio_play_sound(snd_mm_click_003,0,0,0.14,0,0.55+random(0.1))
 			
-				if global.is_mobile >= 1 {
-					addClassElemID("modalCreatePostTitle","active")
-				}
+				addClassElemID("modalCreatePostTitle","active")
 				setElementProperty("CreatePostTitleInput","value",string(_keyboard_string))
 			
 			}
 		
 		}
 	
-		if _submit_post_title_now = 1 {
-		
-			//_keyboard_string = string_upper(string_letters(_keyboard_string))
-		
-			if string_length(_keyboard_string) >= 4 {
-			
-				show_debug_message("submit-post-title from gui happening");
-		
-				scr_submit_created_puzzle(_keyboard_string);
-			
-			} else {
-				show_debug_message("submit-post-title not long enough from gui...");
-			}
-		
-			html_submit_closebtn();	
-		
-			show_debug_message("resetting keyboard_string")
-			keyboard_string = ""	
-		
+		if 1=1 {
+			// Submission is now handled via JS bridge (submitPostTitleFromGM).
 		}
 	
 		if keyboard_check(vk_control) && keyboard_check_pressed(ord("C")) {

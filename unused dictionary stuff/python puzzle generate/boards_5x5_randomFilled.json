@@ -58,5 +58,45 @@
     "title": "5x5 - randomFilled - #12",
     "secret_word": "REMINDER",
     "encoded": "loadBoard=INMBCDMRIAEEOAERRTLOZSRTN&loadSecret=8-12-7-1-2-6-11-16"
-  }
+  },
+  {
+    "title": "5x5 - randomFilled - #13",
+    "secret_word": "PROMPT",
+    "encoded": "loadBoard=RPITKIOPODDTMAOVINOAPEFWU&loadSecret=2-1-7-13-8-12"
+  },
+  {
+    "title": "5x5 - randomFilled - #14",
+    "secret_word": "ALLOWANCE",
+    "encoded": "loadBoard=TODFTUULILTONALYEXWOLSCNA&loadSecret=14-10-15-20-19-25-24-23-17"
+  },
+  {
+    "title": "5x5 - randomFilled - #15",
+    "secret_word": "DEALING",
+    "encoded": "loadBoard=BAEIEOSRMROILEHDANENEGGMO&loadSecret=16-21-17-13-12-18-22"
+  },
+  {
+    "title": "5x5 - randomFilled - #16",
+    "secret_word": "CAPTAIN",
+    "encoded": "loadBoard=HPTEAATAOOCEOIIIHANWSRKBA&loadSecret=11-6-2-3-8-14-19"
+  },
+  {
+    "title": "5x5 - randomFilled - #17",
+    "secret_word": "SURFING",
+    "encoded": "loadBoard=SAETGURGXWRNNFNFIYGAAOSDR&loadSecret=1-6-11-16-17-13-8"
+  },
+  {
+    "title": "5x5 - randomFilled - #19",
+    "secret_word": "COUNSEL",
+    "encoded": "loadBoard=IROUNACLSXPVEQNTUYGNSPEIE&loadSecret=7-3-4-5-9-13-8"
+  },
+  {
+    "title": "5x5 - randomFilled - #20",
+    "secret_word": "GENERATOR",
+    "encoded": "loadBoard=GENOVREREJATOYRNQIVMVUKFC&loadSecret=1-2-3-7-6-11-12-13-8"
+  },
+  {
+    "title": "5x5 - randomFilled - #21",
+    "secret_word": "VERIFIED",
+    "encoded": "loadBoard=EIVERAWIIDAAFEIAGTIOBRUOS&loadSecret=3-4-5-9-13-8-14-10"
+  },
 ]
