@@ -63,7 +63,7 @@ export async function togglePostingEnabled(): Promise<boolean> {
 export async function getPrevNextDailyPost(
   postId: string,
   logger: Logger
-): Promise<{ prev: string | null; next: string | null }> {
+): Promise<{ prev: string | null; next: string | null; today: string | null }> {
 
   const count = await redis.zCard("dailyList");
   //logger.info("dailyList count =", count);

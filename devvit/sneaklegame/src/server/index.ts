@@ -1407,22 +1407,27 @@ router.get("/api/leaderboard", async (c) => {
 
     const guessesByUser = new Map<string, number>();
     const hintsByUser = new Map<string, number>();
+    const levelStatusByUser = new Map<string, number>();
     await Promise.all([...usernamesToLoad].map(async (entryUsername) => {
       try {
         const stateRaw = await redis.get(stateKey(postId, entryUsername));
         if (!stateRaw) {
           guessesByUser.set(entryUsername, 0);
           hintsByUser.set(entryUsername, 0);
+          levelStatusByUser.set(entryUsername, 0);
           return;
         }
         const stateJson = JSON.parse(stateRaw) as { data?: Record<string, unknown> };
         const guesses = Number(stateJson?.data?.score_guesses ?? 0);
         const hints = Number(stateJson?.data?.score_hints ?? 0);
+        const levelStatus = Number(stateJson?.data?.level_status ?? 0);
         guessesByUser.set(entryUsername, Number.isFinite(guesses) ? Math.max(0, guesses) : 0);
         hintsByUser.set(entryUsername, Number.isFinite(hints) ? Math.max(0, hints) : 0);
+        levelStatusByUser.set(entryUsername, Number.isFinite(levelStatus) ? Math.max(0, levelStatus) : 0);
       } catch {
         guessesByUser.set(entryUsername, 0);
         hintsByUser.set(entryUsername, 0);
+        levelStatusByUser.set(entryUsername, 0);
       }
     }));
 
@@ -1431,6 +1436,13 @@ router.get("/api/leaderboard", async (c) => {
       guesses: guessesByUser.get(entry.username) ?? 0,
       hints: hintsByUser.get(entry.username) ?? 0,
     });
+
+    // Filter out giveup entries (level_status === LEVEL_STATUS_GaveUp = 2)
+    const LEVEL_STATUS_GaveUp = 2;
+    const isGiveup = (entryUsername: string) => (levelStatusByUser.get(entryUsername) ?? 0) === LEVEL_STATUS_GaveUp;
+    top = top.filter(e => !isGiveup(e.username)).map((e, i) => ({ ...e, rank: (page - 1) * limitTop + i + 1 }));
+    aroundMe = aroundMe.filter(e => !isGiveup(e.username));
+    if (me && isGiveup(me.username)) me = null;
 
     return c.json({
       metric,
@@ -1483,8 +1495,7 @@ router.get('/api/get-surrounding-daily-ids', async (c) => {
         }, 400);
       }
 
-      const { prev, next } = await getPrevNextDailyPost(postId, logger);
-      const today = postId;
+      const { prev, next, today } = await getPrevNextDailyPost(postId, logger);
 
       logger.info("daily_prev_postId = "+prev);
       logger.info("daily_next_postId = "+next);
