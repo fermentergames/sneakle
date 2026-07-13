@@ -365,7 +365,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 				   screen_name: "DailyFromMainMenu",
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				
 				obj_ctrlp.puzzle_is_daily = 1
 				
@@ -419,7 +419,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 				   screen_name: "Archives",
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				
 				if global.is_reddit = 1 {
 					global.show_archives = 0
@@ -505,7 +505,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 				   screen_name: "Create"+string(global.game_grid_size),
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
 			} else if scr_mouse_over_button((global.sw*0.5)+(-160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
@@ -522,7 +522,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 				   screen_name: "Random3",
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
 			} else if scr_mouse_over_button((global.sw*0.5)+(-80*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
@@ -539,7 +539,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 				   screen_name: "Random4",
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
 			} else if scr_mouse_over_button((global.sw*0.5)+(-0*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) { //device_mouse_y_to_gui(0)*global.pr > display_get_gui_height()*0.5 && device_mouse_y_to_gui(0)*global.pr < display_get_gui_height()*0.7 {
@@ -556,7 +556,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 				   screen_name: "Random5",
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
 				
@@ -574,7 +574,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 				   screen_name: "Random6",
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
 			} else if scr_mouse_over_button((global.sw*0.5)+(160*_scl),0+(210*_scl)+(80*_scl*2)+(180*_scl),0.12*_tscl,0.12*_tscl) {
@@ -591,7 +591,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 				   screen_name: "Random7",
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				scr_board_init()
 				
 			}
@@ -949,7 +949,7 @@ if mouse_check_button_pressed(mb_left) {
 				var _event_struct = { //
 					level: guesses_count,
 				};
-				GoogHit("give_up",_event_struct)
+				//GoogHit("give_up",_event_struct)
 				
 				selected_word_array_id = secret_word_array_id
 				selected_word_length = secret_word_length
@@ -1024,7 +1024,7 @@ if mouse_check_button_pressed(mb_left) {
 					var _event_struct = { //
 						level: global.game_hints_used,
 					};
-					GoogHit("hint_used",_event_struct)	
+					//GoogHit("hint_used",_event_struct)	
 					
 				}
 				
@@ -1076,7 +1076,7 @@ if mouse_check_button_pressed(mb_left) {
 			var _event_struct = { //
 				screen_name: "NewLetters"+string(global.game_grid_size),
 			};
-			GoogHit("screen_view",_event_struct)
+			//GoogHit("screen_view",_event_struct)
 			
 			scr_board_reset_defs()
 				
@@ -1093,7 +1093,7 @@ if mouse_check_button_pressed(mb_left) {
 			var _event_struct = { //
 				screen_name: "RandomAnother",
 			};
-			GoogHit("screen_view",_event_struct)
+			//GoogHit("screen_view",_event_struct)
 			scr_board_init()
 	
 		}
@@ -1255,7 +1255,7 @@ if mouse_check_button_released(mb_left) {//|| _too_far_trigger_release = 1 {
 							var _event_struct = { //
 							   level: guesses_count,
 							};
-							GoogHit("post_score",_event_struct)
+							//GoogHit("post_score",_event_struct)
 							
 							selected_word_array_id = secret_word_array_id
 							selected_word_length = secret_word_length

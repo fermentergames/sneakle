@@ -539,7 +539,7 @@ if global.game_phase = 0 {
 					var _event_struct = { //
 					   screen_name: "Create"+string(global.game_grid_size),
 					};
-					GoogHit("screen_view",_event_struct)
+					//GoogHit("screen_view",_event_struct)
 					scr_board_init()	
 					
 					//with (obj_tile_letter) {
@@ -686,7 +686,7 @@ if global.game_phase = 0 {
 					var _event_struct = { //
 					   screen_name: "NewLetters"+string(global.game_grid_size),
 					};
-					GoogHit("screen_view",_event_struct)
+					//GoogHit("screen_view",_event_struct)
 				
 					global.loadSecret = ""
 					global.loadBoard = ""
@@ -720,7 +720,7 @@ if global.game_phase = 0 {
 					var _event_struct = { //
 					   screen_name: "LoadFromCreate",
 					};
-					GoogHit("screen_view",_event_struct)
+					//GoogHit("screen_view",_event_struct)
 					
 					if 1=0 { //html5
 					
@@ -1125,7 +1125,7 @@ if global.game_phase = 0 {
 						var _event_struct = { //
 							screen_name: "CREATE_"+string(global.game_grid_size)+"_"+string(global.current_copy_code),
 						};
-						GoogHit("screen_view",_event_struct)
+						//GoogHit("screen_view",_event_struct)
 						
 						
 						//global.show_submitting_post = 1
@@ -1777,7 +1777,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 						var _event_struct = { //
 						   screen_name: "Archives",
 						};
-						GoogHit("screen_view",_event_struct)
+						//GoogHit("screen_view",_event_struct)
 						
 						if global.is_reddit = 1 {
 							global.show_archives = 0
@@ -1819,7 +1819,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 							var _event_struct = { //
 							   screen_name: "CreateFromDailyEnd"+string(global.game_grid_size),
 							};
-							GoogHit("screen_view",_event_struct)
+							//GoogHit("screen_view",_event_struct)
 							
 							scr_board_init()
 							
@@ -1906,7 +1906,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 						var _event_struct = { //
 						   screen_name: "Archives",
 						};
-						GoogHit("screen_view",_event_struct)
+						//GoogHit("screen_view",_event_struct)
 						
 						if global.is_reddit = 1 {
 							global.show_archives = 0
@@ -1947,7 +1947,7 @@ if global.game_phase = 3 || global.game_phase = 4 {
 							var _event_struct = { //
 							   screen_name: "CreateFromDailyEnd"+string(global.game_grid_size),
 							};
-							GoogHit("screen_view",_event_struct)
+							//GoogHit("screen_view",_event_struct)
 							
 							scr_board_init()
 							
@@ -2094,7 +2094,7 @@ if 1=1 {//global.game_phase >= 3 {
 			var _event_struct = { //
 			   screen_name: "Archives",
 			};
-			GoogHit("screen_view",_event_struct)
+			//GoogHit("screen_view",_event_struct)
 
 			if global.is_reddit = 1 {
 				global.show_archives = 0

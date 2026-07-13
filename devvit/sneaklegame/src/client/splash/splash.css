@@ -808,7 +808,7 @@ button#debug-button:active {
 .splash-modal-card {
   position: relative;
   width: min(560px, calc(100vw - 30px));
-  max-height: 90vh;
+  max-height: 93vh;
   overflow: auto;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1159,8 +1159,7 @@ button#debug-button:active {
 .leaderboard-self {
   text-align: right;
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.86);
-  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .leaderboard-self:empty {
@@ -1239,28 +1238,36 @@ button#debug-button:active {
 }
 
 .archive-tab,
-.archive-sort-tab {
+.archive-sort-tab,
+.archive-filter-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: none;
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   color: #e9eef5;
   font-size: 0.68rem;
-  font-weight: 700;
-  padding: 6px 8px;
+  font-weight: 600;
+  opacity: 0.9;
+  padding: 8px 2px;
   line-height: 1.05;
   cursor: pointer;
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.archive-sort-tab {
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .archive-sort-tab:first-child {
-  border-radius: 7px 0 0 7px;
+  border-radius: 15px 0 0 15px;
 }
 
 .archive-sort-tab:last-child {
-  border-radius: 0 7px 7px 0;
+  border-radius: 0 15px 15px 0;
 }
 
 .archive-sort-tab:not(:first-child):not(:last-child) {
@@ -1273,9 +1280,10 @@ button#debug-button:active {
 
 .archive-tab.is-active,
 .archive-sort-tab.is-active {
-  border-color: rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.18);
   color: #fff;
+  font-weight: 700;
+  opacity: 1;
 }
 
 .archive-tab.is-active[data-category="daily"] {
@@ -1286,6 +1294,11 @@ button#debug-button:active {
 .archive-tab.is-active[data-category="community"] {
   background: #ffc94424;
   border-color: #ffe1a373;
+}
+
+.archive-tab:hover,
+.archive-sort-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .archive-search-row,
@@ -1301,7 +1314,7 @@ button#debug-button:active {
 }
 
 .archive-options-row {
-  margin-top: 0px;
+  margin-top: 6px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
@@ -1311,18 +1324,17 @@ button#debug-button:active {
 .archive-unplayed-wrap {
   height: 18px;
   justify-content: flex-start;
-  font-size: 0.62rem;
+  font-size: .75rem;
   padding: 0;
   border: 0;
   background: none;
 }
 
 .archive-more-summary {
-  height: 16px;
+  height: 24px;
   list-style: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.2);
+  background: #25384b;
   color: #e9eef5;
   font-size: 0.68rem;
   font-weight: 700;
@@ -1333,6 +1345,7 @@ button#debug-button:active {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .archive-more-summary::-webkit-details-marker {
@@ -1369,13 +1382,20 @@ button#debug-button:active {
 .archive-input,
 .archive-select {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.22);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  color: #e9eef5cf;
+  font-weight: 500;
   padding: 7px 9px;
   font-size: 0.73rem;
   min-width: 0;
+  outline: none;
+}
+
+.archive-input:focus,
+.archive-select:focus {
+  border-color: #6efffc;
 }
 
 .archive-toggle-wrap {
@@ -1383,24 +1403,25 @@ button#debug-button:active {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 0;
   border-radius: 7px;
   background: rgba(0, 0, 0, 0.2);
   color: #e9eef5;
-  font-size: 0.45rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  padding: 6px 8px;
   cursor: pointer;
   min-width: 0;
+  padding: 6px 2px;
+  min-height: 24px;
 }
 
 .archive-toggle {
-  accent-color: #7dd9ff;
+  accent-color: #59b4ff;
   margin: 0;
 }
 
 .archive-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgb(255 255 255 / 40%);
 }
 
 .archive-filter-btn {
@@ -1410,6 +1431,8 @@ button#debug-button:active {
 #archive-reset-btn {
   width: 100%;
   justify-self: center;
+  background: #263a4d;
+  border: 0;
 }
 
 #archive-size-select {
@@ -1722,26 +1745,28 @@ button#debug-button:active {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .archive-tab,
+  .archive-tab {
+    font-size: 0.72rem;
+    line-height: 1;
+    padding-inline: 6px;
+  }
+
   .archive-sort-tab,
   .archive-more-summary {
-    font-size: 0.58rem;
-    padding: 3px 3px;
+    font-size: 0.61rem;
+    line-height: 1;
   }
 
   .archive-toggle-wrap {
-    font-size: .45rem;
     gap: 4px;
-    padding: 5px 4px;
-    white-space: nowrap;
   }
 
   .archive-unplayed-wrap {
-    justify-content: flex-start;
+    /* justify-content: flex-start;
     font-size: 0.58rem;
     padding: 0;
     border: 0;
-    background: none;
+    background: none; */
   }
 
   .archive-input,
@@ -1765,6 +1790,10 @@ button#debug-button:active {
   .archive-meta-pill {
     font-size: 0.5em;
     padding: 4px 2px;
+  }
+
+  .archive-filter-btn {
+    font-size: 11px;
   }
 
   .leaderboard-score-tab {

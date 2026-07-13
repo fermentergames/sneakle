@@ -1,0 +1,29 @@
+/* DM Sans - Variable Font */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 100 1000;
+  src: url('/fonts/DMSans-VariableFont_opsz,wght.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  font-style: italic;
+  font-weight: 100 1000;
+  src: url('/fonts/DMSans-Italic-VariableFont_opsz,wght.woff2') format('woff2');
+}
+
+/* DM Mono */
+@font-face {
+  font-family: 'DM Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/DMMono-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'DM Mono';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/DMMono-Medium.woff2') format('woff2');
+}

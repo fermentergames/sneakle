@@ -26,7 +26,7 @@ if (live_call()) return live_result;
 				var _event_struct = { //
 				   screen_name: "Create from reddit launch"+string(global.game_grid_size),
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 				
 				randomize()
 				scr_board_init()
@@ -94,7 +94,7 @@ if (live_call()) return live_result;
 					var _event_struct = { //
 					   screen_name: "Create from reddit launch"+string(global.game_grid_size),
 					};
-					GoogHit("screen_view",_event_struct)
+					//GoogHit("screen_view",_event_struct)
 				
 					randomize()
 					scr_board_init()

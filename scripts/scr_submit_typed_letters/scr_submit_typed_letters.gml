@@ -40,7 +40,7 @@ function scr_submit_typed_letters(_letters) {
 		var _event_struct = { //
 			screen_name: "NewLetters"+string(global.game_grid_size),
 		};
-		GoogHit("screen_view",_event_struct)
+		//GoogHit("screen_view",_event_struct)
 		
 		global.am_generate_random = 0
 		global.loadSecret = ""

@@ -876,8 +876,8 @@ form button {
 }
 
 .game-archive-card h2 {
-  margin: 0 0 10px 0;
-  font-size: 1.05rem;
+  margin: 0 0 5px 0;
+  font-size: 1.25rem;
   text-align: center;
   letter-spacing: -0.03em;
 }
@@ -946,18 +946,17 @@ form button {
 .game-archive-unplayed-wrap {
   height: 18px;
   justify-content: flex-start;
-  font-size: 0.62rem;
+  font-size: .75rem;
   padding: 0;
   border: 0;
   background: none;
 }
 
 .game-archive-more-summary {
-  height: 16px;
+  height: 24px;
   list-style: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.2);
+  background: #25384b;
   color: #e9eef5;
   font-size: 0.68rem;
   font-weight: 700;
@@ -997,24 +996,30 @@ form button {
 .game-archive-tab,
 .game-archive-sort-tab,
 .game-archive-filter-btn {
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: none;
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   color: #e9eef5;
   font-size: 0.68rem;
-  font-weight: 700;
-  padding: 6px 8px;
+  font-weight: 600;
+  opacity: 0.9;
+  padding: 8px 2px;
   line-height: 1.05;
   cursor: pointer;
   font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+.game-archive-sort-tab {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 .game-archive-sort-tab:first-child {
-  border-radius: 7px 0 0 7px;
+  border-radius: 15px 0 0 15px;
 }
 
 .game-archive-sort-tab:last-child {
-  border-radius: 0 7px 7px 0;
+  border-radius: 0 15px 15px 0;
 }
 
 .game-archive-sort-tab:not(:first-child):not(:last-child) {
@@ -1028,6 +1033,8 @@ form button {
 #game-archive-reset-btn {
   width: 100%;
   justify-self: center;
+  background: #263a4d;
+  border: 0;
 }
 
 #game-archive-size-select {
@@ -1038,9 +1045,10 @@ form button {
 
 .game-archive-tab.is-active,
 .game-archive-sort-tab.is-active {
-  border-color: rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.14); 
+  background: rgba(255, 255, 255, 0.18);
   color: #fff;
+  font-weight: 700;
+  opacity: 1;
 }
 
 .game-archive-tab.is-active[data-category="daily"] {
@@ -1053,16 +1061,28 @@ form button {
   border-color: #ffe1a373;
 }
 
+.game-archive-tab:hover,
+.game-archive-sort-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .game-archive-input,
 .game-archive-select {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.22);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  color: #e9eef5cf;
+  font-weight: 500;
   padding: 7px 9px;
   font-size: 0.73rem;
   min-width: 0;
+  outline: none;
+}
+
+.game-archive-input:focus,
+.game-archive-select:focus {
+  border-color: #6efffc;
 }
 
 .game-archive-toggle-wrap {
@@ -1070,11 +1090,11 @@ form button {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 0;
   border-radius: 7px;
   background: rgba(0, 0, 0, 0.2);
   color: #e9eef5;
-  font-size: 0.45rem;
+  font-size: 0.65rem;
   font-weight: 700;
   padding: 6px 8px;
   cursor: pointer;
@@ -1082,12 +1102,12 @@ form button {
 }
 
 .game-archive-toggle {
-  accent-color: #7dd9ff;
+  accent-color: #59b4ff;
   margin: 0;
 }
 
 .game-archive-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgb(255 255 255 / 40%);
 }
 
 .game-archive-list {
@@ -1327,13 +1347,9 @@ form button {
 }
 
 .game-archive-summary {
-  padding: 5px 10px;
-  background: rgba(51, 176, 255, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(51, 176, 255, 0.3);
-  font-size: 0.5em;
-  text-align: left;
-  color: #fff;
+  font-size: .5em;
+  text-align: center;
+  color: #ffffff99;
 }
 
 .game-archive-page-controls {
@@ -1437,26 +1453,23 @@ form button {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .game-archive-tab,
+  .game-archive-tab {
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+
   .game-archive-sort-tab,
   .game-archive-more-summary {
-    font-size: 0.58rem;
-    padding: 3px 3px;
+    font-size: 0.61rem;
+    line-height: 1;
   }
 
   .game-archive-toggle-wrap {
-    font-size: .45rem;
-    gap: 4px;
     padding: 5px 4px;
-    white-space: nowrap;
   }
 
   .game-archive-unplayed-wrap {
-    justify-content: flex-start;
-    font-size: 0.58rem;
-    padding: 0;
     border: 0;
-    background: none;
   }
 
   .game-archive-input,
@@ -1475,7 +1488,6 @@ form button {
   }
 
   .game-archive-entry-author,
-  .game-archive-summary,
   .game-archive-explainer {
     font-size: 11px;
   }

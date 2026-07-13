@@ -364,6 +364,6 @@ if global.loadBoard != "" && global.loadSecret != "" {
 var _event_struct = { //
 	screen_name: string(_gamestart_str),
 };
-GoogHit("screen_view",_event_struct)
+//GoogHit("screen_view",_event_struct)
 
 

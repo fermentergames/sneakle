@@ -207,6 +207,61 @@ async function syncPuzzleCacheFromPostData(postId: string, postData: Record<stri
   });
 }
 
+/**
+ * Recompute aggregate stats from authoritative Redis leaderboard data and sync to
+ * postData and puzzle cache. This corrects any stale values the GML client may
+ * have written via POST /api/update-post-data under concurrent race conditions.
+ */
+async function updateAggregateStats(
+  postId: string,
+): Promise<void> {
+  // Compute stats from authoritative Redis leaderboards
+  const totalPlayers = Number((await redis.zCard(leaderboardKey(postId))) ?? 0);
+  const totalPlayersCompleted = totalPlayers; // only completions submit to /api/score
+
+  // Sum scores from the score leaderboard
+  const allScores = await redis.zRange(leaderboardKey(postId), 0, -1);
+  let totalScore = 0;
+  for (const entry of allScores) {
+    totalScore += Math.floor(Number(entry.score ?? 0));
+  }
+
+  // Sum times from the time leaderboard (in frames)
+  const allTimes = await redis.zRange(leaderboardTimeKey(postId), 0, -1);
+  let totalTime = 0;
+  for (const entry of allTimes) {
+    totalTime += Math.floor(Number(entry.score ?? 0));
+  }
+
+  // 1. Update puzzle cache
+  const levelID = await redis.get(`post:${postId}:levelID`);
+  if (levelID) {
+    await redis.hSet(`puzzle:${levelID}`, {
+      totalPlayers: String(totalPlayers),
+      totalPlayersCompleted: String(totalPlayersCompleted),
+      totalScore: String(totalScore),
+      totalTime: String(totalTime),
+    });
+  }
+
+  // 2. Update Reddit postData (best-effort — metadata preserved via spread)
+  try {
+    const post = await reddit.getPostById(postId as `t3_${string}`);
+    const currentData = (await post.getPostData()) ?? {};
+    const merged = {
+      ...currentData,
+      totalPlayers: String(totalPlayers),
+      totalPlayersCompleted: String(totalPlayersCompleted),
+      totalScore: String(totalScore),
+      totalTime: String(totalTime),
+      lastAggregatedAt: new Date().toISOString(),
+    };
+    await post.setPostData(merged);
+  } catch (err) {
+    console.warn("[api/score] postData aggregation update failed:", err);
+  }
+}
+
 
 // STATE stuff
 
@@ -872,7 +927,38 @@ router.post("/api/update-post-data", async (c) => {
     const post = await reddit.getPostById(postId as `t3_${string}`);
 
     // Get existing post data to merge with updates
-    const currentData = (await post.getPostData()) ?? {};
+    let currentData = (await post.getPostData()) ?? {};
+
+    // Guard: if postData is missing essential metadata (race condition under
+    // concurrent writes can cause getPostData() to return stale/incomplete data),
+    // reconstruct from the authoritative Redis puzzle cache before merging.
+    const ESSENTIAL_METADATA = ['levelName', 'gameData', 'levelCreator', 'levelTag', 'levelDate', 'dailyID', 'nonStandard'] as const;
+    const hasAllMetadata = ESSENTIAL_METADATA.every(f => currentData[f] !== undefined && currentData[f] !== null && currentData[f] !== '');
+    if (!hasAllMetadata) {
+      const levelID = await redis.get(`post:${postId}:levelID`);
+      if (levelID) {
+        const puzzleCache = await redis.hGetAll(`puzzle:${levelID}`);
+        if (puzzleCache && Object.keys(puzzleCache).length > 0) {
+          for (const field of ESSENTIAL_METADATA) {
+            if (currentData[field] === undefined || currentData[field] === null || currentData[field] === '') {
+              const cached = puzzleCache[field];
+              if (cached !== undefined && cached !== null) {
+                currentData[field] = cached;
+              }
+            }
+          }
+        }
+      }
+      // If still missing essential fields after reconstruction, reject rather than writing blanks
+      const stillMissing = ESSENTIAL_METADATA.filter(f => currentData[f] === undefined || currentData[f] === null || currentData[f] === '');
+      if (stillMissing.length > 0) {
+        console.error(`POST /api/update-post-data: Rejecting update — essential metadata fields missing: ${stillMissing.join(', ')}`);
+        return c.json({
+          error: 'Post data metadata is incomplete; rejecting update to prevent data loss',
+          missingFields: stillMissing,
+        }, 409);
+      }
+    }
 
     const merged = {
       ...currentData,
@@ -1006,6 +1092,13 @@ router.post("/api/score", async (c) => {
     }
 
     console.log('score submitted in endpoint');
+
+    // Fire-and-forget: recompute aggregate stats from authoritative Redis
+    // leaderboard data to correct any stale values written by the race-prone
+    // POST /api/update-post-data under concurrent submissions.
+    updateAggregateStats(postId).catch((e) =>
+      console.error("[api/score] aggregate stats recompute failed:", e)
+    );
 
     const updatedAt = Date.now();
     const displayScore = Math.floor(bestComposite);

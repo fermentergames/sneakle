@@ -360,9 +360,9 @@ function setupArchiveModal() {
         <p class="leaderboard-coming-soon">Loading archive...</p>
       </div>
       <div class="leaderboard-pagination archive-pagination" id="archive-pagination">
-        <div class="leaderboard-self archive-summary" id="archive-summary-row"></div>
         <div class="leaderboard-page-controls">
           <button type="button" class="leaderboard-page-btn" id="archive-prev-btn">◀  Prev</button>
+          <div class="leaderboard-self archive-summary" id="archive-summary-row"></div>
           <span class="leaderboard-page-meta" id="archive-page-meta">Page 1 / 1</span>
           <button type="button" class="leaderboard-page-btn" id="archive-next-btn">Next  ▶</button>
         </div>

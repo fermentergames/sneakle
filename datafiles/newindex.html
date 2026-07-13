@@ -599,16 +599,6 @@
         <!-- Builtin injector for injecting flurry analytics code -->
         ${GM_HTML5_InjectFlurryAnalytics}
 
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QXT06CTHEX"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-QXT06CTHEX');
-        </script>
-
     </head>
 
     <!-- Custom PostHead code is injected here -->
@@ -649,9 +639,6 @@
         ${GM_HTML5_InjectRunnerPath}
 
         <script>window.onload = GameMaker_Init;</script>
-
-        <!-- Builtin injector for injecting google analytics code -->
-        ${GM_HTML5_InjectGoogleAnalytics}
 
     </body>
 

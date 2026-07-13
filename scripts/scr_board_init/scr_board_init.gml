@@ -316,7 +316,7 @@ with (obj_ctrl) {
 				var _event_struct = { //
 					screen_name: "LOAD_"+string(global.game_grid_size)+"_"+string(global.current_copy_code),
 				};
-				GoogHit("screen_view",_event_struct)
+				//GoogHit("screen_view",_event_struct)
 			
 			
 			
@@ -405,7 +405,7 @@ with (obj_ctrl) {
 					var _event_struct = { //
 						level: guesses_count,
 					};
-					GoogHit("already_finished_load",_event_struct)
+					//GoogHit("already_finished_load",_event_struct)
 				
 					selected_word_array_id = secret_word_array_id
 					selected_word_length = secret_word_length

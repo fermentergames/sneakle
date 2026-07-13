@@ -1709,9 +1709,9 @@ function setupGameArchiveModal() {
         <p class="game-archive-loading">Loading archive...</p>
       </div>
       <div class="game-archive-pagination">
-        <div class="game-archive-summary" id="game-archive-summary-row"></div>
         <div class="game-archive-page-controls">
           <button type="button" class="game-archive-page-btn" id="game-archive-prev-btn">◀  Prev</button>
+          <div class="game-archive-summary" id="game-archive-summary-row"></div>
           <span class="game-archive-page-meta" id="game-archive-page-meta">Page 1 / 1</span>
           <button type="button" class="game-archive-page-btn" id="game-archive-next-btn">Next  ▶</button>
         </div>
